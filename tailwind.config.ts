@@ -52,36 +52,15 @@ const config: Config = {
       animation: {
         "fade-up": "fade-up 0.6s ease-out forwards",
         "fade-in": "fade-in 0.6s ease-out forwards",
-        "pulse-glow": "pulse-glow 3s ease-in-out infinite",
-        marquee: "marquee 30s linear infinite",
-        "blob-float": "blob-float 14s ease-in-out infinite",
-        shimmer: "shimmer 6s linear infinite",
       },
       keyframes: {
         "fade-up": {
-          "0%": { opacity: "0", transform: "translateY(28px)" },
+          "0%": { opacity: "0", transform: "translateY(20px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
         "fade-in": {
           "0%": { opacity: "0" },
           "100%": { opacity: "1" },
-        },
-        "pulse-glow": {
-          "0%, 100%": { boxShadow: "0 0 30px -5px rgb(var(--accent) / 0.4)" },
-          "50%": { boxShadow: "0 0 60px -5px rgb(var(--accent) / 0.7)" },
-        },
-        marquee: {
-          "0%": { transform: "translateX(0%)" },
-          "100%": { transform: "translateX(-50%)" },
-        },
-        "blob-float": {
-          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
-          "33%": { transform: "translate(20px, -24px) scale(1.06)" },
-          "66%": { transform: "translate(-18px, 14px) scale(0.96)" },
-        },
-        shimmer: {
-          "0%": { backgroundPosition: "200% 0" },
-          "100%": { backgroundPosition: "-200% 0" },
         },
         "accordion-down": {
           from: { height: "0" },
