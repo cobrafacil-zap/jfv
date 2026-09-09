@@ -14,24 +14,25 @@ export function LandingScripts() {
     const root = document.querySelector(".ps-landing");
     if (!root) return;
 
-    // Fade-up animation com stagger automático dentro de cada seção
+    // Reveal .fade-up ao entrar na viewport.
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const section = entry.target.closest("section, #stats");
+            const section = entry.target.closest("section");
             const items = section
-              ? Array.from(section.querySelectorAll(".fade-up:not(.visible)"))
+              ? Array.from(section.querySelectorAll(".fade-up:not(.is-visible)"))
               : [entry.target];
             items.forEach((el, i) => {
-              const delay = (el as HTMLElement).style.transitionDelay || `${i * 70}ms`;
+              const delay =
+                (el as HTMLElement).style.transitionDelay || `${i * 80}ms`;
               (el as HTMLElement).style.transitionDelay = delay;
-              el.classList.add("visible");
+              el.classList.add("is-visible");
             });
           }
         });
       },
-      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+      { threshold: 0.12, rootMargin: "0px 0px -60px 0px" }
     );
 
     root.querySelectorAll(".fade-up").forEach((el) => observer.observe(el));

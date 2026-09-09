@@ -1,5 +1,3 @@
-"use client";
-
 import type { CtaContent } from "@/lib/landing-content";
 
 export function CTAFinal({ content }: { content: CtaContent }) {

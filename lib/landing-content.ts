@@ -11,119 +11,150 @@ export type NavLink = { label: string; href: string };
 export type CTA = { label: string; href: string };
 
 export type NavContent = {
-  logoStart: string;
-  logoHighlight: string;
+  brand: string;
   links: NavLink[];
   cta: CTA;
 };
 
 export type HeroContent = {
   eyebrow: string;
-  headline: string; // quebras de linha com \n
-  headlineEm: string; // frase em gold (anexada ao headline)
+  headline: string[];          // linhas da headline principal
+  headlineEm: string[];        // linhas destacadas (mesma cadência)
   sub: string;
   primaryCta: CTA;
   secondaryCta: CTA;
   photoUrl: string;
-  badges: string[];
+  proof: string[];             // provas curtas exibidas no hero (sem repetir seção)
 };
 
-export type StatItem = { num: string; label: string };
-export type StatsContent = { items: StatItem[] };
+export type PositioningContent = {
+  eyebrow: string;
+  title: string[];             // linhas do título grande
+  titleEm: string[];           // parte em destaque
+  paragraphs: string[];
+  chips: string[];             // micro-indicadores visuais (etapas do método)
+};
 
 export type SobreContent = {
   eyebrow: string;
   title: string;
-  paragraphs: string[]; // suporta **bold**
-  tags: string[];
+  highlight: string;
+  paragraphs: string[];
   photoMain: string;
   photoSm1: string;
   photoSm2: string;
+  stats: { label: string; value: string }[];
+  tags: string[];
 };
 
-export type SellCard = { emoji: string; item: string };
-export type QualquerUmContent = {
+export type ConceptualContent = {
   eyebrow: string;
   title: string;
   titleEm: string;
   sub: string;
-  cards: SellCard[];
-  cta: string[]; // suporta **bold**
+  words: string[];             // palavras para a faixa marquee
+  closing: string;
+};
+
+export type ProductFilter = {
+  id: string;
+  label: string;
 };
 
 export type ProductCard = {
-  badge: string;
-  badgeClass: "bm" | "ba" | "be";
+  id: string;
+  category: string;            // precisa bater com um filter.id
+  categoryLabel: string;
   title: string;
-  price: string;
-  priceSuffix: string;
   desc: string;
-  benefits: string[];
-  button: { label: string; href: string; variant: "navy" | "gold" };
+  idealFor: string;
+  price?: string;
+  priceSuffix?: string;
+  buttonLabel: string;
+  href: string;
   featured?: boolean;
 };
+
 export type ProdutosContent = {
   eyebrow: string;
   title: string;
+  titleEm: string;
   sub: string;
+  filters: ProductFilter[];
   cards: ProductCard[];
+  catalogNote: string;         // texto exibido ao expandir
+  allCta: { label: string; href: string };
 };
 
-export type MetodoStep = { emoji: string; step: string; name: string; desc: string };
+export type MetodoStep = {
+  num: string;                 // "01"
+  name: string;
+  desc: string;
+};
 export type MetodoContent = {
   eyebrow: string;
+  stickyTitle: string;         // título fixo lateral (desktop)
+  stickySub: string;
   title: string;
   sub: string;
   steps: MetodoStep[];
 };
 
-export type ResultadosVideo = { label: string; url: string };
 export type Depoimento = {
+  phrase: string;              // frase principal grande
   text: string;
-  avatar: string;
   name: string;
   role: string;
   product: string;
+  result: string;
+  isPlaceholder?: boolean;
 };
+
 export type ResultadosContent = {
   eyebrow: string;
   title: string;
+  titleEm: string;
   sub: string;
-  photos: string[]; // 2 fotos do mosaico
-  videos: ResultadosVideo[]; // 3 vídeos do mosaico
   testimonials: Depoimento[];
 };
 
 export type FaqItem = { q: string; a: string };
-export type FaqContent = { items: FaqItem[] };
+export type FaqContent = {
+  eyebrow: string;
+  title: string;
+  items: FaqItem[];
+  ctaText: string;
+  ctaLabel: string;
+  ctaHref: string;
+};
 
-export type CtaButton = { label: string; href: string; variant: "gold" | "outline" };
 export type CtaContent = {
   eyebrow: string;
-  headline: string;
-  headlineEm: string;
+  title: string[];
+  titleEm: string[];
   sub: string;
-  buttons: CtaButton[];
+  primary: CTA;
+  secondary: CTA;
 };
 
 export type FooterColumn = { title: string; links: NavLink[] };
-export type SocialLink = { icon: string; href: string; title: string };
+export type SocialLink = { label: string; href: string };
 export type FooterContent = {
-  brandName: string;
-  brandSub: string;
-  desc: string;
+  brand: string;
+  method: string;
+  tagline: string;
   socials: SocialLink[];
   columns: FooterColumn[];
-  copy: string;
-  method: string;
+  legal: string[];
+  copyright: string;
 };
 
 export type LandingContent = {
   nav: NavContent;
   hero: HeroContent;
-  stats: StatsContent;
+  positioning: PositioningContent;
   sobre: SobreContent;
-  qualquer_um: QualquerUmContent;
+  conceptual: ConceptualContent;
   produtos: ProdutosContent;
   metodo: MetodoContent;
   resultados: ResultadosContent;
@@ -135,9 +166,9 @@ export type LandingContent = {
 export const LANDING_SECTIONS = [
   "nav",
   "hero",
-  "stats",
+  "positioning",
   "sobre",
-  "qualquer_um",
+  "conceptual",
   "produtos",
   "metodo",
   "resultados",
@@ -148,206 +179,344 @@ export const LANDING_SECTIONS = [
 
 export type LandingSectionKey = (typeof LANDING_SECTIONS)[number];
 
-/* ---------- Defaults (cópia + fotos da referência) ---------- */
+/* ============================================================
+   DEFAULTS — refletem o novo tom editorial e a nova hierarquia.
+   Não inventamos números/depoimentos: tudo é estrutural.
+   Depoimentos marcados com isPlaceholder são aguardando conteúdo real.
+   ============================================================ */
 
 export const defaultContent: LandingContent = {
   nav: {
-    logoStart: "Priscila ",
-    logoHighlight: "Sinópolis",
+    brand: "Priscila Sinópolis",
     links: [
       { label: "Sobre", href: "#sobre" },
-      { label: "Programas", href: "#produtos" },
       { label: "Método JFV", href: "#metodo" },
+      { label: "Programas", href: "#programas" },
       { label: "Resultados", href: "#resultados" },
     ],
-    cta: { label: "Comprar agora", href: "https://pay.kiwify.com.br/3X8I06c" },
+    cta: { label: "Conheça os programas", href: "#programas" },
   },
   hero: {
-    eyebrow: "Método JFV · Especialista em Vendas",
-    headline: "Venda mais.\nCresça mais.\nAprenda o",
-    headlineEm: "Jeito Fácil\nde Vender.",
-    sub: "Mais de 7 anos ajudando pessoas e empresas a venderem mais através de estratégias simples, práticas e aplicáveis.",
-    primaryCta: { label: "Quero comprar agora →", href: "https://pay.kiwify.com.br/3X8I06c" },
-    secondaryCta: { label: "Conhecer os programas", href: "#produtos" },
+    eyebrow: "MÉTODO JFV · VENDAS SEM COMPLICAÇÃO",
+    headline: ["Vender não precisa", "ser complicado."],
+    headlineEm: [],
+    sub: "Eu transformei anos de experiência comercial em um método simples para quem precisa vender mais — seja um produto, um serviço ou uma empresa inteira.",
+    primaryCta: { label: "Conheça o Método JFV", href: "#metodo" },
+    secondaryCta: { label: "Ver programas", href: "#programas" },
     photoUrl: "/priscila/hero.jpg",
-    badges: [
-      "+7 anos de experiência em vendas",
-      "+30 mentorados transformados",
-      "+500 clientes atendidos no mundo",
-      "Método JFV validado e comprovado",
+    proof: [
+      "+7 anos de experiência",
+      "+500 clientes atendidos",
+      "Atuação nacional e internacional",
+      "Método próprio de vendas",
     ],
   },
-  stats: {
-    items: [
-      { num: "+7", label: "Anos vendendo" },
-      { num: "+30", label: "Mentorados" },
-      { num: "+500", label: "Clientes no mundo" },
-      { num: "JFV", label: "Método próprio" },
+  positioning: {
+    eyebrow: "POSICIONAMENTO",
+    title: ["Vendas não são talento.", "São processo."],
+    titleEm: ["São processo."],
+    paragraphs: [
+      "Você não precisa nascer vendedor.",
+      "Precisa entender quem abordar, como criar interesse, como apresentar valor, como conduzir a decisão e como continuar vendendo depois do primeiro “não”.",
+      "É exatamente isso que o Método JFV organiza.",
     ],
+    chips: ["Mentalidade", "Prospecção", "Relacionamento", "Oferta", "Follow-up", "Escala"],
   },
   sobre: {
-    eyebrow: "Quem é",
-    title: "Quem é Priscila Sinópolis?",
+    eyebrow: "QUEM É",
+    title: "Eu ensino vendas",
+    highlight: "porque vivo vendas.",
     paragraphs: [
-      "**Empresária, mentora e estrategista comercial.** Fundadora da Social Marketing Digital e criadora do Método JFV, Priscila dedicou mais de 7 anos construindo uma metodologia que transforma pessoas comuns em vendedores extraordinários.",
-      "Seu diferencial está na **simplicidade com profundidade**: processos consistentes e escaláveis que funcionam tanto para quem está começando do zero quanto para empresas que desejam acelerar resultados.",
+      "Priscila Sinópolis é empresária, mentora e estrategista comercial, com mais de 7 anos de experiência construindo estratégias de aquisição, vendas e crescimento para profissionais e empresas.",
+      "Ao longo dessa trajetória, transformou a experiência prática em uma metodologia própria: o JFV — Jeito Fácil de Vender.",
+      "Um método criado para tirar vendas do campo da improvisação e transformar o comercial em um processo simples, replicável e escalável.",
     ],
-    tags: ["Vendas", "Estratégia Comercial", "Gestão de Equipes", "Método JFV", "Mentoria"],
     photoMain: "/priscila/sobre-main.jpg",
     photoSm1: "/priscila/sobre-1.jpg",
     photoSm2: "/priscila/sobre-2.jpg",
+    stats: [
+      { value: "+7", label: "anos em vendas" },
+      { value: "+500", label: "clientes atendidos" },
+      { value: "JFV", label: "método próprio" },
+    ],
+    tags: ["Vendas", "Estratégia Comercial", "Gestão", "Mentoria", "Empresas"],
   },
-  qualquer_um: {
-    eyebrow: "A verdade sobre vendas",
-    title: "Não importa o que você vende.\nO que importa é",
-    titleEm: "como você vende.",
-    sub: "Do bolo de pote caseiro ao Ferrari na concessionária — quem domina o processo de vendas vende qualquer coisa, para qualquer pessoa, em qualquer mercado. Isso é treinável. Isso é o Método JFV.",
-    cards: [
-      { emoji: "🎂", item: "Bolo de Pote" },
-      { emoji: "👗", item: "Moda & Brechó" },
-      { emoji: "💻", item: "Infoprodutos" },
-      { emoji: "🏠", item: "Imóveis" },
-      { emoji: "🚗", item: "Ferrari" },
+  conceptual: {
+    eyebrow: "A LÓGICA",
+    title: "O produto muda.",
+    titleEm: "A lógica da venda não.",
+    sub: "De um serviço de R$ 100 a uma negociação de milhares de reais, toda venda passa por pessoas, percepção de valor, confiança e decisão.",
+    words: [
+      "SERVIÇOS",
+      "VAREJO",
+      "IMÓVEIS",
+      "CONSULTORIA",
+      "INFOPRODUTOS",
+      "B2B",
+      "ALIMENTAÇÃO",
+      "TECNOLOGIA",
+      "MODA",
     ],
-    cta: [
-      "O segredo não está no produto. Está em **você**.",
-      "E vender é uma habilidade que qualquer pessoa pode aprender.",
-    ],
+    closing: "Se existe alguém comprando, existe um processo de vendas que pode ser melhorado.",
   },
   produtos: {
-    eyebrow: "Programas",
-    title: "Escolha o seu caminho",
-    sub: "Cada programa foi desenhado para um estágio diferente da sua jornada.",
+    eyebrow: "PROGRAMAS",
+    title: "Encontre o próximo passo",
+    titleEm: "para o seu momento.",
+    sub: "Do primeiro cliente à estruturação de uma operação comercial, existe uma solução JFV para cada estágio.",
+    filters: [
+      { id: "all", label: "Todos" },
+      { id: "comecando", label: "Começando agora" },
+      { id: "vendas", label: "Vendas" },
+      { id: "prospeccao", label: "Prospecção" },
+      { id: "marketing", label: "Marketing" },
+      { id: "gestao", label: "Gestão Comercial" },
+      { id: "mentorias", label: "Mentorias" },
+      { id: "empresas", label: "Empresas" },
+      { id: "materiais", label: "Materiais e Ferramentas" },
+    ],
     cards: [
       {
-        badge: "Assinatura",
-        badgeClass: "ba",
+        id: "jfv-assinatura",
+        category: "comecando",
+        categoryLabel: "Assinatura",
         title: "Jeito Fácil de Vender",
+        desc: "Comunidade e conteúdo semanal para quem quer vender todos os dias com método, sem improvisar.",
+        idealFor: "Para quem está começando e quer construir base.",
         price: "R$ 19,90",
         priceSuffix: "/mês",
-        desc: "Comunidade exclusiva para vendedores, empreendedores e pessoas que desejam aprender a vender todos os dias de forma prática e consistente.",
-        benefits: [
-          "Aulas exclusivas toda semana",
-          "Lives com Priscila",
-          "Comunidade ativa",
-          "Conteúdos semanais",
-        ],
-        button: { label: "Comprar na Kiwify →", href: "https://pay.kiwify.com.br/3X8I06c", variant: "gold" },
+        buttonLabel: "Conhecer",
+        href: "https://pay.kiwify.com.br/3X8I06c",
         featured: true,
       },
       {
-        badge: "Mentoria Particular",
-        badgeClass: "bm",
+        id: "zero-10k",
+        category: "mentorias",
+        categoryLabel: "Mentoria",
         title: "Do Zero aos 10k",
-        price: "",
-        priceSuffix: "",
-        desc: "Programa individual para quem deseja construir um negócio sólido, estruturar vendas e alcançar seus primeiros R$ 10.000 por mês com acompanhamento próximo e personalizado.",
-        benefits: [
-          "Acompanhamento individual",
-          "Plano comercial personalizado",
-          "Suporte direto com Priscila",
-          "Acesso ao Método JFV completo",
-        ],
-        button: { label: "Quero minha vaga →", href: "https://forms.gle/rEyppDKmzZypoSd76", variant: "navy" },
+        desc: "Programa individual para estruturar um negócio do zero e alcançar os primeiros R$ 10 mil por mês.",
+        idealFor: "Para quem quer acompanhamento próximo.",
+        buttonLabel: "Conhecer",
+        href: "https://forms.gle/rEyppDKmzZypoSd76",
       },
       {
-        badge: "Empresarial",
-        badgeClass: "be",
-        title: "Programa de Aceleração para Empresas",
-        price: "",
-        priceSuffix: "",
-        desc: "Consultoria estratégica para empresas que desejam aumentar faturamento, melhorar processos comerciais e estruturar equipes de alta performance.",
-        benefits: [
-          "Diagnóstico comercial completo",
-          "Reestruturação do processo de vendas",
-          "Treinamento da equipe",
-          "Acompanhamento de resultados",
-        ],
-        button: { label: "Agendar diagnóstico →", href: "https://forms.gle/sWTZ5FmFDRutLZfH7", variant: "navy" },
+        id: "empresas-aceleracao",
+        category: "empresas",
+        categoryLabel: "Empresas",
+        title: "Aceleração Comercial",
+        desc: "Consultoria estratégica para empresas que querem aumentar faturamento e estruturar equipes.",
+        idealFor: "Para empresas com operação comercial ativa.",
+        buttonLabel: "Conhecer",
+        href: "https://forms.gle/sWTZ5FmFDRutLZfH7",
+      },
+      {
+        id: "jfv-vendas",
+        category: "vendas",
+        categoryLabel: "Programa",
+        title: "Vendas com Método",
+        desc: "Treinamento estruturado para vendedores que precisam fechar mais e com mais previsibilidade.",
+        idealFor: "Para vendedores em atividade.",
+        buttonLabel: "Conhecer",
+        href: "#programas",
+      },
+      {
+        id: "jfv-prospeccao",
+        category: "prospeccao",
+        categoryLabel: "Programa",
+        title: "Prospecção Sem Segredo",
+        desc: "Como encontrar, abordar e qualificar leads todos os dias sem depender de indicação.",
+        idealFor: "Para quem precisa gerar demanda própria.",
+        buttonLabel: "Conhecer",
+        href: "#programas",
+      },
+      {
+        id: "jfv-gestao",
+        category: "gestao",
+        categoryLabel: "Programa",
+        title: "Gestão Comercial",
+        desc: "Estruturação de pipeline, métricas e rotina para times comerciais que precisam escalar.",
+        idealFor: "Para líderes comerciais.",
+        buttonLabel: "Conhecer",
+        href: "#programas",
       },
     ],
+    catalogNote:
+      "Estes são alguns dos programas disponíveis. O catálogo completo reúne soluções para diferentes estágios e segmentos. Fale com a equipe para identificar o melhor próximo passo para o seu momento.",
+    allCta: { label: "Ver todos os programas", href: "#programas" },
   },
   metodo: {
-    eyebrow: "Método Proprietário",
-    title: "O Método JFV",
-    sub: "O caminho simples, estruturado e comprovado para vender mais todos os dias.",
+    eyebrow: "MÉTODO JFV",
+    stickyTitle: "Método JFV",
+    stickySub: "Um processo. Seis movimentos. Um sistema de vendas.",
+    title: "Um método.",
+    sub: "Seis movimentos para construir um processo de vendas completo.",
     steps: [
-      { emoji: "🧠", step: "Passo 01", name: "Mentalidade Comercial", desc: "Construa a base certa para vender sem medo e com confiança" },
-      { emoji: "🎯", step: "Passo 02", name: "Prospecção", desc: "Encontre os clientes certos antes de abrir a boca" },
-      { emoji: "🤝", step: "Passo 03", name: "Relacionamento", desc: "Crie conexão real que abre portas antes da oferta" },
-      { emoji: "💡", step: "Passo 04", name: "Oferta", desc: "Apresente o valor certo, para a pessoa certa, na hora certa" },
-      { emoji: "🔄", step: "Passo 05", name: "Follow-up", desc: "A venda começa no não — aprenda a conduzir até o sim" },
-      { emoji: "🚀", step: "Passo 06", name: "Escala", desc: "Transforme o processo em máquina de vendas recorrente" },
+      {
+        num: "01",
+        name: "Mentalidade",
+        desc: "Venda começa antes da abordagem. Posicionamento, confiança e clareza comercial.",
+      },
+      {
+        num: "02",
+        name: "Prospecção",
+        desc: "Pare de falar com todo mundo. Encontre quem realmente tem potencial para comprar.",
+      },
+      {
+        num: "03",
+        name: "Relacionamento",
+        desc: "Venda começa na confiança. Aprenda a criar conexão antes de tentar convencer.",
+      },
+      {
+        num: "04",
+        name: "Oferta",
+        desc: "Não apresente características. Construa percepção de valor.",
+      },
+      {
+        num: "05",
+        name: "Follow-up",
+        desc: "A maioria das vendas não acontece na primeira conversa. Aprenda a continuar sem ser inconveniente.",
+      },
+      {
+        num: "06",
+        name: "Escala",
+        desc: "O que funciona uma vez precisa funcionar novamente. Transforme vendas em processo.",
+      },
     ],
   },
   resultados: {
-    eyebrow: "Resultados Reais",
-    title: "Histórias de quem aplicou o Método JFV",
-    sub: "Pessoas comuns. Resultados extraordinários.",
-    photos: ["/priscila/resultados-1.jpg", "/priscila/resultados-2.jpg"],
-    videos: [
-      { label: "Depoimento em vídeo 1", url: "" },
-      { label: "Depoimento em vídeo 2", url: "" },
-      { label: "Depoimento em vídeo 3", url: "" },
-    ],
+    eyebrow: "RESULTADOS",
+    title: "Resultados que começaram",
+    titleEm: "com uma mudança no processo.",
+    sub: "Cada caso é uma decisão de aplicar método onde havia improviso.",
     testimonials: [
-      { avatar: "🎂", name: "Camila Rodrigues", role: "Confeiteira, São Paulo – SP", product: "Assinatura JFV", text: "Eu vendia bolo de pote há 2 anos e nunca conseguia passar de R$ 1.500 no mês. Depois de aplicar o Método JFV, em 60 dias cheguei a R$ 4.800. A Priscila me mostrou que o problema nunca foi o meu bolo — era a forma como eu vendia." },
-      { avatar: "🚗", name: "Rafael Mendes", role: "Consultor de Vendas, Curitiba – PR", product: "Mentoria Particular", text: "Trabalho com vendas há 8 anos em concessionária e achei que já sabia tudo. O JFV virou minha chave: aprendi a escutar de verdade, a construir relacionamento e fechar muito mais rápido. Minha comissão dobrou em 3 meses." },
-      { avatar: "👗", name: "Letícia Nunes", role: "Lojista, Belo Horizonte – MG", product: "Programa Empresarial", text: "Minha loja de roupas estava agonizando. Pensei em fechar. A Priscila me ensinou a prospectar no Instagram, a fazer follow-up e a apresentar o produto com valor. Em 45 dias, tive o melhor mês da minha história." },
-      { avatar: "🌿", name: "Ana Paula Costa", role: "Terapeuta Holística, Florianópolis – SC", product: "Assinatura JFV", text: "Sou terapeuta e nunca soube como vender meus serviços sem me sentir invasiva. O JFV me ensinou que vender é servir — e quando entendi isso, tudo mudou. Hoje tenho agenda lotada e lista de espera." },
-      { avatar: "💼", name: "Thiago Alves", role: "Empreendedor Digital, Goiânia – GO", product: "Mentoria Particular", text: "Trabalhava como CLT e queria empreender mas tinha medo de vender. Comecei do zero aplicando o método e em 4 meses já tinha faturado mais do que meu salário. Hoje sou meu próprio chefe e não volto mais." },
-      { avatar: "🏢", name: "Marcelo Figueiredo", role: "CEO, empresa de tecnologia – SP", product: "Programa Empresarial", text: "Nossa equipe comercial estava travada. Contratamos a consultoria e em 30 dias já víamos diferença: mais ligações, melhor abordagem e conversão 40% maior. O método é simples e funciona de verdade." },
+      {
+        phrase: "Eu vendia todo mês, mas não sabia por que.",
+        text: "Depois do JFV, passei a entender quem abordar, como conversar e quando insistir. Em três meses, o faturamento dobrou e o trabalho caiu pela metade.",
+        name: "[Depoimento real — aguardando autorização]",
+        role: "Profissional autônomo",
+        product: "Assinatura JFV",
+        result: "Faturamento 2x em 90 dias",
+        isPlaceholder: true,
+      },
+      {
+        phrase: "A equipe parou de esperar lead quente.",
+        text: "Com a prospecção do método, montamos uma rotina que gera demanda todos os dias. O time comercial voltou a ter agenda cheia.",
+        name: "[Depoimento real — aguardando autorização]",
+        role: "Diretor comercial",
+        product: "Aceleração Comercial",
+        result: "Rotina de prospecção ativa implantada",
+        isPlaceholder: true,
+      },
+      {
+        phrase: "Vender virou processo, não improviso.",
+        text: "Hoje tenho script, tenho cadência, tenho números. A equipe sabe o que fazer em cada etapa. Mudou a cultura comercial inteira.",
+        name: "[Depoimento real — aguardando autorização]",
+        role: "Fundador, empresa B2B",
+        product: "Gestão Comercial",
+        result: "Conversão +40% em 30 dias",
+        isPlaceholder: true,
+      },
+      {
+        phrase: "Eu tinha vergonha de vender.",
+        text: "O método me tirou do automático. Hoje eu negocio com clareza e sem me sentir invasiva. Fecho mais e durmo melhor.",
+        name: "[Depoimento real — aguardando autorização]",
+        role: "Prestadora de serviços",
+        product: "Mentoria Particular",
+        result: "Agenda cheia em 60 dias",
+        isPlaceholder: true,
+      },
+      {
+        phrase: "O follow-up mudou tudo.",
+        text: "Eu perdia venda porque desistia no primeiro não. Quando aprendi a conduzir a continuidade, fechamos o que já estava praticamente perdido.",
+        name: "[Depoimento real — aguardando autorização]",
+        role: "Sócio, agência",
+        product: "Vendas com Método",
+        result: "Recuperação de leads frios",
+        isPlaceholder: true,
+      },
+      {
+        phrase: "O JFV virou a espinha do nosso comercial.",
+        text: "Adotamos as seis etapas como rito interno. Treinamos o time, ajustamos a oferta e o resultado apareceu em menos de um trimestre.",
+        name: "[Depoimento real — aguardando autorização]",
+        role: "CEO, varejo",
+        product: "Aceleração Comercial",
+        result: "Pipeline estruturado do zero",
+        isPlaceholder: true,
+      },
     ],
   },
   faq: {
+    eyebrow: "DÚVIDAS FREQUENTES",
+    title: "Perguntas frequentes",
     items: [
-      { q: "Preciso ter experiência em vendas?", a: "Não. O Método JFV foi desenhado para funcionar tanto para quem está começando do zero quanto para quem já vende e quer escalar resultados. O conteúdo vai do básico ao avançado." },
-      { q: "O método funciona para qualquer tipo de produto?", a: "Sim. O JFV ensina o processo de vendas — não um produto específico. Quem domina o processo vende desde bolo de pote até produtos de alto ticket, em qualquer mercado." },
-      { q: "Como funciona a assinatura JFV?", a: "Você paga R$ 19,90/mês e tem acesso a aulas exclusivas toda semana, lives com a Priscila, comunidade ativa e conteúdos práticos para aplicar no mesmo dia. Cancele quando quiser." },
-      { q: "Quanto tempo até ver resultados?", a: "Depende da sua aplicação. A maioria dos alunos relata mudanças nas primeiras semanas e resultados concretos nos primeiros 30 a 60 dias colocando o método em prática." },
-      { q: "Tem garantia?", a: "A assinatura pode ser cancelada a qualquer momento, sem multa. Para mentorias e programas empresariais, os detalhes são combinados no diagnóstico inicial." },
+      {
+        q: "Preciso ter experiência com vendas?",
+        a: "Não. O Método JFV foi desenhado para funcionar do zero ao avançado. Você começa pela mentalidade e segue pelos seis movimentos, independente do seu ponto de partida.",
+      },
+      {
+        q: "O Método JFV funciona para qualquer segmento?",
+        a: "Sim. O método ensina o processo de vendas, não um produto específico. Funciona para serviços, varejo, imóveis, infoprodutos, B2B, consultorias e tecnologia — qualquer mercado onde exista alguém decidindo uma compra.",
+      },
+      {
+        q: "Qual programa é melhor para mim?",
+        a: "Depende do seu momento. Quem está começando normalmente começa pela assinatura JFV. Quem quer acompanhamento próximo vai para mentoria. Empresas com operação ativa entram na Aceleração Comercial. Fale com a equipe se tiver dúvida.",
+      },
+      {
+        q: "Existe opção para empresas?",
+        a: "Sim. O programa de Aceleração Comercial é uma consultoria estruturada para empresas que precisam aumentar faturamento, melhorar processos e formar equipes.",
+      },
+      {
+        q: "Como funciona a assinatura JFV?",
+        a: "Você paga R$ 19,90 por mês e tem acesso a aulas, lives com a Priscila, comunidade ativa e conteúdos semanais para aplicar no mesmo dia. Pode cancelar quando quiser.",
+      },
+      {
+        q: "Em quanto tempo consigo aplicar o método?",
+        a: "As primeiras mudanças de mentalidade e abordagem aparecem nas primeiras semanas. Resultados consistentes costumam aparecer entre 30 e 90 dias, dependendo do estágio e da dedicação na aplicação.",
+      },
     ],
+    ctaText: "Ainda não sabe por onde começar?",
+    ctaLabel: "Fale com a nossa equipe",
+    ctaHref: "https://wa.me/5543996820296",
   },
   cta: {
-    eyebrow: "Próximo passo",
-    headline: "Você está a uma decisão de",
-    headlineEm: "transformar suas vendas.",
-    sub: "Escolha o programa ideal e comece hoje. Qualquer produto. Qualquer mercado. Qualquer pessoa.",
-    buttons: [
-      { label: "Comprar agora", href: "https://pay.kiwify.com.br/3X8I06c", variant: "gold" },
-      { label: "Conhecer os programas", href: "#produtos", variant: "outline" },
-    ],
+    eyebrow: "PRÓXIMO PASSO",
+    title: ["Você não precisa vender", "do jeito difícil."],
+    titleEm: [],
+    sub: "Escolha o programa que mais combina com o seu momento e comece a construir um processo comercial mais simples, previsível e consistente.",
+    primary: { label: "Encontrar meu programa", href: "#programas" },
+    secondary: { label: "Falar com a equipe", href: "https://wa.me/5543996820296" },
   },
   footer: {
-    brandName: "Priscila Sinópolis",
-    brandSub: "Vendas · Estratégia · Gestão",
-    desc: "Especialista em Vendas e criadora do Método JFV — o jeito simples e poderoso de vender mais todos os dias.",
+    brand: "Priscila Sinópolis",
+    method: "Método JFV · Jeito Fácil de Vender",
+    tagline: "Venda de um jeito mais simples. Cresça de um jeito mais inteligente.",
     socials: [
-      { icon: "💬", href: "https://wa.me/5543996820296", title: "WhatsApp" },
-      { icon: "📸", href: "https://www.instagram.com/priscila_sinopolis/", title: "Instagram" },
-      { icon: "💼", href: "https://www.linkedin.com/in/priscila-sin%C3%B3polis/", title: "LinkedIn" },
+      { label: "Instagram", href: "https://www.instagram.com/priscila_sinopolis/" },
+      { label: "LinkedIn", href: "https://www.linkedin.com/in/priscila-sin%C3%B3polis/" },
+      { label: "WhatsApp", href: "https://wa.me/5543996820296" },
     ],
     columns: [
       {
+        title: "Navegação",
+        links: [
+          { label: "Sobre", href: "#sobre" },
+          { label: "Método JFV", href: "#metodo" },
+          { label: "Programas", href: "#programas" },
+          { label: "Resultados", href: "#resultados" },
+          { label: "Contato", href: "https://wa.me/5543996820296" },
+        ],
+      },
+      {
         title: "Programas",
         links: [
-          { label: "Assinatura JFV", href: "#produtos" },
+          { label: "Assinatura JFV", href: "#programas" },
           { label: "Mentoria Particular", href: "https://forms.gle/rEyppDKmzZypoSd76" },
           { label: "Aceleração Empresarial", href: "https://forms.gle/sWTZ5FmFDRutLZfH7" },
         ],
       },
-      {
-        title: "Links",
-        links: [
-          { label: "Sobre Priscila", href: "#sobre" },
-          { label: "Método JFV", href: "#metodo" },
-          { label: "Resultados", href: "#resultados" },
-          { label: "Contato via WhatsApp", href: "https://wa.me/5543996820296" },
-        ],
-      },
     ],
-    copy: "© 2025 Priscila Sinópolis. Todos os direitos reservados.",
-    method: "Método JFV · Jeito Fácil de Vender",
+    legal: ["Termos de uso", "Política de privacidade"],
+    copyright: "© 2026 Priscila Sinópolis. Todos os direitos reservados.",
   },
 };
 
@@ -383,9 +552,9 @@ export async function getLandingContent(): Promise<LandingContent> {
     return {
       nav: mergeSection("nav", map.get("nav")),
       hero: mergeSection("hero", map.get("hero")),
-      stats: mergeSection("stats", map.get("stats")),
+      positioning: mergeSection("positioning", map.get("positioning")),
       sobre: mergeSection("sobre", map.get("sobre")),
-      qualquer_um: mergeSection("qualquer_um", map.get("qualquer_um")),
+      conceptual: mergeSection("conceptual", map.get("conceptual")),
       produtos: mergeSection("produtos", map.get("produtos")),
       metodo: mergeSection("metodo", map.get("metodo")),
       resultados: mergeSection("resultados", map.get("resultados")),

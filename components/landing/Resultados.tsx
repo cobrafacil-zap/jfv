@@ -1,34 +1,19 @@
 import type { ResultadosContent } from "@/lib/landing-content";
+import { TestimonialCarousel } from "@/components/ui/TestimonialCarousel";
 
 export function Resultados({ content }: { content: ResultadosContent }) {
   return (
-    <section id="resultados">
-      <div className="container">
-        <div className="resultados-header">
-          <div className="section-eyebrow eyebrow-center">{content.eyebrow}</div>
-          <h2 className="section-title" style={{ textAlign: "center" }}>
-            {content.title}
+    <section className="ps-resultados" id="resultados">
+      <div className="ps-resultados-inner">
+        <header className="ps-sh ps-sh-center tone-light">
+          <div className="ps-sh-eyebrow">{content.eyebrow}</div>
+          <h2 className="ps-sh-title">
+            {content.title} <em>{content.titleEm}</em>
           </h2>
-          <p className="section-sub sub-center">{content.sub}</p>
-        </div>
+          <p className="ps-sh-sub">{content.sub}</p>
+        </header>
 
-        <p className="depos-title">O que nossos alunos dizem</p>
-        <div className="depos-grid">
-          {content.testimonials.map((t, i) => (
-            <div className="depo-card fade-up" key={i}>
-              <div className="depo-stars">★★★★★</div>
-              <p className="depo-text">&ldquo;{t.text}&rdquo;</p>
-              <div className="depo-author-row">
-                <div className="depo-avatar">{t.avatar}</div>
-                <div>
-                  <span className="depo-author-name">{t.name}</span>
-                  <span className="depo-author-role">{t.role}</span>
-                </div>
-              </div>
-              <span className="depo-product">{t.product}</span>
-            </div>
-          ))}
-        </div>
+        <TestimonialCarousel items={content.testimonials} />
       </div>
     </section>
   );

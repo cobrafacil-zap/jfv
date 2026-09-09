@@ -1,10 +1,9 @@
 import { getLandingContent } from "@/lib/landing-content";
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
-import { Stats } from "@/components/landing/Stats";
-import { Marquee } from "@/components/landing/Marquee";
+import { Positioning } from "@/components/landing/Positioning";
 import { Sobre } from "@/components/landing/Sobre";
-import { QualquerUm } from "@/components/landing/QualquerUm";
+import { Conceptual } from "@/components/landing/Conceptual";
 import { Produtos } from "@/components/landing/Produtos";
 import { Metodo } from "@/components/landing/Metodo";
 import { Resultados } from "@/components/landing/Resultados";
@@ -23,10 +22,9 @@ export default async function Home() {
     <main className="ps-landing">
       <Navbar content={c.nav} />
       <Hero content={c.hero} />
-      <Stats content={c.stats} />
-      <Marquee items={c.metodo.steps.map((s) => s.name)} />
+      <Positioning content={c.positioning} />
       <Sobre content={c.sobre} />
-      <QualquerUm content={c.qualquer_um} />
+      <Conceptual content={c.conceptual} />
       <Produtos content={c.produtos} />
       <Metodo content={c.metodo} />
       <Resultados content={c.resultados} />

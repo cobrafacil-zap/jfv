@@ -2,6 +2,10 @@
 
 import type { HeroContent } from "@/lib/landing-content";
 
+/**
+ * Hero — equilíbrio 55-60% conteúdo / 40-45% foto.
+ * Foto em frame vertical com respiro, sem dominar a viewport.
+ */
 export function Hero({ content }: { content: HeroContent }) {
   return (
     <section id="hero">
@@ -36,13 +40,22 @@ export function Hero({ content }: { content: HeroContent }) {
             {content.secondaryCta.label}
           </a>
         </div>
-        <div className="hero-badges">
-          {content.badges.map((b, i) => (
-            <div className="badge fade-up" key={i} style={{ transitionDelay: `${460 + i * 70}ms` }}>
-              <div className="badge-icon">✓</div>
-              {b}
-            </div>
-          ))}
+
+        <div className="ps-hero-visual" aria-hidden={false}>
+          <div className="ps-hero-frame">
+            <div
+              className="ps-hero-photo"
+              role="img"
+              aria-label="Priscila Sinópolis"
+              style={{ backgroundImage: `url(${content.photoUrl})` }}
+            />
+            <div className="ps-hero-frame-tag">JFV</div>
+          </div>
+          <div className="ps-hero-frame-meta" aria-hidden>
+            <span>Estratégia comercial</span>
+            <span>—</span>
+            <span>Processo</span>
+          </div>
         </div>
       </div>
     </section>

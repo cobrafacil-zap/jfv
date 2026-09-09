@@ -9,9 +9,9 @@ import type {
 import {
   NavForm,
   HeroForm,
-  StatsForm,
+  PositioningForm,
   SobreForm,
-  QualquerUmForm,
+  ConceptualForm,
   ProdutosForm,
   MetodoForm,
   ResultadosForm,
@@ -23,10 +23,10 @@ import {
 const TABS: { key: LandingSectionKey; label: string }[] = [
   { key: "nav", label: "Menu" },
   { key: "hero", label: "Hero" },
-  { key: "stats", label: "Estatísticas" },
+  { key: "positioning", label: "Posicionamento" },
   { key: "sobre", label: "Sobre" },
-  { key: "qualquer_um", label: "Qualquer um" },
-  { key: "produtos", label: "Produtos" },
+  { key: "conceptual", label: "Conceitual" },
+  { key: "produtos", label: "Programas" },
   { key: "metodo", label: "Método JFV" },
   { key: "resultados", label: "Resultados" },
   { key: "faq", label: "FAQ" },
@@ -93,12 +93,12 @@ export function LandingEditor({ initial }: { initial: LandingContent }) {
         return <NavForm value={content.nav} onChange={(v) => update("nav", v)} />;
       case "hero":
         return <HeroForm value={content.hero} onChange={(v) => update("hero", v)} />;
-      case "stats":
-        return <StatsForm value={content.stats} onChange={(v) => update("stats", v)} />;
+      case "positioning":
+        return <PositioningForm value={content.positioning} onChange={(v) => update("positioning", v)} />;
       case "sobre":
         return <SobreForm value={content.sobre} onChange={(v) => update("sobre", v)} />;
-      case "qualquer_um":
-        return <QualquerUmForm value={content.qualquer_um} onChange={(v) => update("qualquer_um", v)} />;
+      case "conceptual":
+        return <ConceptualForm value={content.conceptual} onChange={(v) => update("conceptual", v)} />;
       case "produtos":
         return <ProdutosForm value={content.produtos} onChange={(v) => update("produtos", v)} />;
       case "metodo":

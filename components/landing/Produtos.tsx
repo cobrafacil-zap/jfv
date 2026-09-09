@@ -1,63 +1,68 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import type { ProdutosContent } from "@/lib/landing-content";
+import { ProductCard } from "@/components/ui/ProductCard";
+import { ProductFilter } from "@/components/ui/ProductFilter";
 
-function ProductCard({
-  card,
-  index,
-}: {
-  card: ProdutosContent["cards"][number];
-  index: number;
-}) {
-  const isKiwify = card.button.variant === "gold";
-  const href = isKiwify ? "https://pay.kiwify.com.br/3X8I06c" : card.button.href;
-
-  return (
-    <div
-      className={`card fade-up${card.featured ? " card-featured" : ""}`}
-      style={{ transitionDelay: `${index * 100}ms` }}
-    >
-      <span className={`card-badge ${card.badgeClass}`}>{card.badge}</span>
-      <h3 className="card-title">{card.title}</h3>
-      {card.price && (
-        <div className="card-price">
-          {card.price}
-          {card.priceSuffix && <span> {card.priceSuffix}</span>}
-        </div>
-      )}
-      <p className="card-desc">{card.desc}</p>
-      <ul className="card-benefits">
-        {card.benefits.map((b, j) => (
-          <li key={j}>{b}</li>
-        ))}
-      </ul>
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={`btn-card ${isKiwify ? "btn-gold" : "btn-navy"}`}
-      >
-        {card.button.label}
-      </a>
-    </div>
-  );
-}
-
+/**
+ * Produtos — grid premium com filtros e catálogo expansível.
+ * Mostra ~6 cards inicialmente; "Ver todos" abre o catálogo completo.
+ */
 export function Produtos({ content }: { content: ProdutosContent }) {
+  const [active, setActive] = useState("all");
+  const [showAll, setShowAll] = useState(false);
+
+  const filtered = useMemo(() => {
+    if (active === "all") return content.cards;
+    return content.cards.filter((c) => c.category === active);
+  }, [active, content.cards]);
+
+  // Cap inicial: 6 cards visíveis (a não ser que filtro reduza)
+  const visibleCount = 6;
+  const visible = showAll ? filtered : filtered.slice(0, visibleCount);
+  const hasHidden = filtered.length > visibleCount;
+
   return (
-    <section id="produtos" className="stagger-section">
-      <div className="container">
-        <div className="produtos-header">
-          <div className="section-eyebrow eyebrow-center fade-up">{content.eyebrow}</div>
-          <h2 className="section-title fade-up" style={{ textAlign: "center", transitionDelay: "80ms" }}>
-            {content.title}
+    <section className="ps-programas" id="programas">
+      <div className="ps-programas-inner">
+        <header className="ps-sh ps-sh-center tone-light">
+          <div className="ps-sh-eyebrow">{content.eyebrow}</div>
+          <h2 className="ps-sh-title">
+            {content.title} <em>{content.titleEm}</em>
           </h2>
-          <p className="section-sub sub-center fade-up" style={{ transitionDelay: "160ms" }}>{content.sub}</p>
-        </div>
-        <div className="cards-grid">
-          {content.cards.map((card, i) => (
-            <ProductCard key={i} card={card} index={i} />
+          <p className="ps-sh-sub">{content.sub}</p>
+        </header>
+
+        <ProductFilter
+          filters={content.filters}
+          active={active}
+          onChange={(id) => {
+            setActive(id);
+            setShowAll(false);
+          }}
+        />
+
+        <div className="ps-pgrid" data-filter={active}>
+          {visible.map((card, i) => (
+            <ProductCard key={card.id} card={card} index={i} />
           ))}
+        </div>
+
+        <div className="ps-programas-foot">
+          {hasHidden && !showAll && (
+            <button
+              type="button"
+              className="ps-programas-more"
+              onClick={() => setShowAll(true)}
+            >
+              Ver todos os programas
+              <span aria-hidden>→</span>
+            </button>
+          )}
+          {showAll && (
+            <p className="ps-programas-note">{content.catalogNote}</p>
+          )}
         </div>
       </div>
     </section>

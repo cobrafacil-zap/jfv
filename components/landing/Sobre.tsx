@@ -1,6 +1,10 @@
 import type { SobreContent } from "@/lib/landing-content";
 import { RichText } from "./RichText";
 
+/**
+ * Sobre — composição editorial/assimétrica.
+ * Imagem principal deslocada, fotos menores como apoio. Sem tilt 3D infantil.
+ */
 export function Sobre({ content }: { content: SobreContent }) {
   return (
     <section id="sobre">
@@ -17,15 +21,14 @@ export function Sobre({ content }: { content: SobreContent }) {
               <img src={content.photoSm2} alt="Priscila Sinópolis gravando conteúdo" loading="lazy" />
             </div>
           </div>
-          <div className="sobre-text">
-            <div className="section-eyebrow fade-up">{content.eyebrow}</div>
-            <h2 className="section-title fade-up" style={{ transitionDelay: "80ms" }}>
-              {content.title}
-            </h2>
+
+          <h2 className="ps-sobre-title">
+            {content.title} <em>{content.highlight}</em>
+          </h2>
+
+          <div className="ps-sobre-paras">
             {content.paragraphs.map((p, i) => (
-              <p key={i} className="fade-up" style={{ transitionDelay: `${160 + i * 80}ms` }}>
-                <RichText text={p} />
-              </p>
+              <p key={i}>{p}</p>
             ))}
             <div className="sobre-tags fade-up" style={{ transitionDelay: "320ms" }}>
               {content.tags.map((t, i) => (
@@ -35,6 +38,21 @@ export function Sobre({ content }: { content: SobreContent }) {
               ))}
             </div>
           </div>
+
+          <dl className="ps-sobre-stats">
+            {content.stats.map((s) => (
+              <div className="ps-sobre-stat" key={s.label}>
+                <dt>{s.value}</dt>
+                <dd>{s.label}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <ul className="ps-sobre-tags" aria-label="Áreas de atuação">
+            {content.tags.map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

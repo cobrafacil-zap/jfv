@@ -3,33 +3,35 @@ import type { FooterContent } from "@/lib/landing-content";
 export function Footer({ content }: { content: FooterContent }) {
   const isExternal = (href: string) => href.startsWith("http");
   return (
-    <footer>
-      <div className="footer-inner">
-        <div>
-          <div className="footer-brand-name">{content.brandName}</div>
-          <div className="footer-brand-sub">{content.brandSub}</div>
-          <p className="footer-desc">{content.desc}</p>
-          <div className="social-links">
-            {content.socials.map((s, i) => (
-              <a
-                key={i}
-                href={s.href}
-                className="social-link"
-                title={s.title}
-                target={isExternal(s.href) ? "_blank" : undefined}
-                rel={isExternal(s.href) ? "noopener noreferrer" : undefined}
-              >
-                {s.icon}
-              </a>
+    <footer className="ps-footer">
+      <div className="ps-footer-inner">
+        <div className="ps-footer-brand">
+          <div className="ps-footer-name">{content.brand}</div>
+          <div className="ps-footer-method">{content.method}</div>
+          <p className="ps-footer-tagline">{content.tagline}</p>
+
+          <ul className="ps-footer-socials" aria-label="Redes sociais">
+            {content.socials.map((s) => (
+              <li key={s.label}>
+                <a
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.label}
+                >
+                  {s.label}
+                </a>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
-        {content.columns.map((col, i) => (
-          <div className="footer-col" key={i}>
+
+        {content.columns.map((col) => (
+          <div className="ps-footer-col" key={col.title}>
             <h4>{col.title}</h4>
             <ul>
-              {col.links.map((l, j) => (
-                <li key={j}>
+              {col.links.map((l) => (
+                <li key={l.label}>
                   <a
                     href={l.href}
                     target={isExternal(l.href) ? "_blank" : undefined}
@@ -42,10 +44,22 @@ export function Footer({ content }: { content: FooterContent }) {
             </ul>
           </div>
         ))}
+
+        <div className="ps-footer-col">
+          <h4>Legal</h4>
+          <ul>
+            {content.legal.map((l) => (
+              <li key={l}>
+                <a href="#">{l}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-      <div className="footer-bottom">
-        <span className="footer-copy">{content.copy}</span>
-        <span className="footer-method">{content.method}</span>
+
+      <div className="ps-footer-bottom">
+        <span>{content.copyright}</span>
+        <span className="ps-footer-bottom-tag">{content.method}</span>
       </div>
     </footer>
   );
