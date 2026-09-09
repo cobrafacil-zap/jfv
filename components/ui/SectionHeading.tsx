@@ -25,7 +25,7 @@ export function SectionHeading({
   children?: ReactNode;
 }) {
   const isCenter = align === "center";
-  const wrapClass = `ps-sh ${isCenter ? "ps-sh-center" : ""} tone-${tone}`;
+  const wrapClass = `ps-sh ${isCenter ? "tone-center" : ""} tone-${tone}`;
 
   return (
     <header className={wrapClass}>

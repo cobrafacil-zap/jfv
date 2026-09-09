@@ -12,7 +12,7 @@ export function FAQ({ content }: { content: FaqContent }) {
   return (
     <section className="ps-faq" id="faq">
       <div className="ps-faq-inner">
-        <header className="ps-sh ps-sh-center tone-light">
+        <header className="ps-sh tone-center">
           <div className="ps-sh-eyebrow">{content.eyebrow}</div>
           <h2 className="ps-sh-title">{content.title}</h2>
         </header>
@@ -29,7 +29,7 @@ export function FAQ({ content }: { content: FaqContent }) {
                   aria-controls={`ps-faq-a-${i}`}
                   onClick={() => setOpen(isOpen ? null : i)}
                 >
-                  <span className="ps-faq-q-text">{item.q}</span>
+                  <span>{item.q}</span>
                   <span className="ps-faq-icon" aria-hidden>
                     +
                   </span>
@@ -40,19 +40,28 @@ export function FAQ({ content }: { content: FaqContent }) {
                   role="region"
                   aria-hidden={!isOpen}
                 >
-                  <p>{item.a}</p>
+                  <div className="ps-faq-a-inner">
+                    <p>{item.a}</p>
+                  </div>
                 </div>
               </div>
             );
           })}
         </div>
 
-        <div className="ps-faq-cta">
-          <p>{content.ctaText}</p>
-          <a href={content.ctaHref} target="_blank" rel="noopener noreferrer">
-            {content.ctaLabel} →
-          </a>
-        </div>
+        {content.ctaText && content.ctaLabel && (
+          <div className="ps-faq-cta">
+            <p className="ps-faq-cta-text">{content.ctaText}</p>
+            <a
+              className="ps-btn ps-btn--ghost"
+              href={content.ctaHref}
+              target={content.ctaHref?.startsWith("http") ? "_blank" : undefined}
+              rel={content.ctaHref?.startsWith("http") ? "noopener noreferrer" : undefined}
+            >
+              {content.ctaLabel} →
+            </a>
+          </div>
+        )}
       </div>
     </section>
   );

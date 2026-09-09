@@ -5,7 +5,7 @@ export function Resultados({ content }: { content: ResultadosContent }) {
   return (
     <section className="ps-resultados" id="resultados">
       <div className="ps-resultados-inner">
-        <header className="ps-sh ps-sh-center tone-light">
+        <header className="ps-sh tone-center">
           <div className="ps-sh-eyebrow">{content.eyebrow}</div>
           <h2 className="ps-sh-title">
             {content.title} <em>{content.titleEm}</em>

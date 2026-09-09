@@ -1,5 +1,4 @@
 import type { SobreContent } from "@/lib/landing-content";
-import { RichText } from "./RichText";
 
 /**
  * Sobre — composição editorial/assimétrica.
@@ -7,20 +6,41 @@ import { RichText } from "./RichText";
  */
 export function Sobre({ content }: { content: SobreContent }) {
   return (
-    <section id="sobre">
-      <div className="container">
-        <div className="sobre-grid">
-          <div className="sobre-mosaic">
-            <div className="mosaic-main">
-              <img src={content.photoMain} alt="Priscila Sinópolis" loading="lazy" />
-            </div>
-            <div className="mosaic-sm">
-              <img src={content.photoSm1} alt="Priscila Sinópolis" loading="lazy" />
-            </div>
-            <div className="mosaic-sm">
-              <img src={content.photoSm2} alt="Priscila Sinópolis gravando conteúdo" loading="lazy" />
-            </div>
-          </div>
+    <section className="ps-sobre" id="sobre">
+      <div className="ps-sobre-inner">
+        <div className="ps-sobre-visual">
+          <figure className="ps-sobre-fig-main">
+            <img
+              src={content.photoMain}
+              alt="Priscila Sinópolis"
+              loading="lazy"
+              width={780}
+              height={980}
+            />
+          </figure>
+          <figure className="ps-sobre-fig-sm ps-sobre-fig-sm--a">
+            <img
+              src={content.photoSm1}
+              alt="Priscila Sinópolis em ação"
+              loading="lazy"
+              width={420}
+              height={520}
+            />
+          </figure>
+          <figure className="ps-sobre-fig-sm ps-sobre-fig-sm--b">
+            <img
+              src={content.photoSm2}
+              alt="Priscila Sinópolis"
+              loading="lazy"
+              width={420}
+              height={520}
+            />
+          </figure>
+          <span className="ps-sobre-accent" aria-hidden />
+        </div>
+
+        <div className="ps-sobre-text">
+          <div className="ps-sh-eyebrow">{content.eyebrow}</div>
 
           <h2 className="ps-sobre-title">
             {content.title} <em>{content.highlight}</em>
@@ -30,13 +50,6 @@ export function Sobre({ content }: { content: SobreContent }) {
             {content.paragraphs.map((p, i) => (
               <p key={i}>{p}</p>
             ))}
-            <div className="sobre-tags fade-up" style={{ transitionDelay: "320ms" }}>
-              {content.tags.map((t, i) => (
-                <span className="tag" key={i}>
-                  {t}
-                </span>
-              ))}
-            </div>
           </div>
 
           <dl className="ps-sobre-stats">

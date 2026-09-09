@@ -33,6 +33,8 @@ export type PositioningContent = {
   titleEm: string[];           // parte em destaque
   paragraphs: string[];
   chips: string[];             // micro-indicadores visuais (etapas do método)
+  quote: string;
+  quoteSource: string;
 };
 
 export type SobreContent = {
@@ -47,11 +49,13 @@ export type SobreContent = {
   tags: string[];
 };
 
+export type ConceptualCard = { title: string; text: string };
 export type ConceptualContent = {
   eyebrow: string;
   title: string;
   titleEm: string;
   sub: string;
+  cards: ConceptualCard[];
   words: string[];             // palavras para a faixa marquee
   closing: string;
 };
@@ -221,6 +225,8 @@ export const defaultContent: LandingContent = {
       "É exatamente isso que o Método JFV organiza.",
     ],
     chips: ["Mentalidade", "Prospecção", "Relacionamento", "Oferta", "Follow-up", "Escala"],
+    quote: "Vendas é a arte de fazer a coisa certa chegar à pessoa certa, no momento certo.",
+    quoteSource: "Priscila Sinópolis",
   },
   sobre: {
     eyebrow: "QUEM É",
@@ -246,6 +252,24 @@ export const defaultContent: LandingContent = {
     title: "O produto muda.",
     titleEm: "A lógica da venda não.",
     sub: "De um serviço de R$ 100 a uma negociação de milhares de reais, toda venda passa por pessoas, percepção de valor, confiança e decisão.",
+    cards: [
+      {
+        title: "Pessoas compram de pessoas",
+        text: "Antes do produto, o cliente decide se confia em quem está vendendo. Autoridade e clareza vencem argumento.",
+      },
+      {
+        title: "Valor é percepção, não preço",
+        text: "O que define a decisão raramente é o menor valor. É o quanto a solução faz sentido para aquele cenário.",
+      },
+      {
+        title: "Decisão tem tempo",
+        text: "Vender é conduzir a decisão no ritmo certo — sem pressionar, sem sumir. Esse equilíbrio é processo.",
+      },
+      {
+        title: "Confiança se constrói",
+        text: "Não existe venda consistente sem construção de confiança ao longo do tempo. Cada interação soma ou subtrai.",
+      },
+    ],
     words: [
       "SERVIÇOS",
       "VAREJO",

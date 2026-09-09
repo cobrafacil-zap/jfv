@@ -5,8 +5,16 @@ export function Footer({ content }: { content: FooterContent }) {
   return (
     <footer className="ps-footer">
       <div className="ps-footer-inner">
-        <div className="ps-footer-brand">
-          <div className="ps-footer-name">{content.brand}</div>
+        <div className="ps-footer-brand-block">
+          <div className="ps-footer-brand">
+            {content.brand.split(" ").map((w, i, arr) =>
+              i === arr.length - 1 ? (
+                <span key={i}> {w}</span>
+              ) : (
+                <span key={i}>{i === 0 ? w : ` ${w}`}</span>
+              )
+            )}
+          </div>
           <div className="ps-footer-method">{content.method}</div>
           <p className="ps-footer-tagline">{content.tagline}</p>
 
@@ -14,12 +22,13 @@ export function Footer({ content }: { content: FooterContent }) {
             {content.socials.map((s) => (
               <li key={s.label}>
                 <a
+                  className="ps-footer-social"
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={s.label}
                 >
-                  {s.label}
+                  {s.label.charAt(0)}
                 </a>
               </li>
             ))}
@@ -45,7 +54,7 @@ export function Footer({ content }: { content: FooterContent }) {
           </div>
         ))}
 
-        <div className="ps-footer-col">
+        <div className="ps-footer-col ps-footer-col--last">
           <h4>Legal</h4>
           <ul>
             {content.legal.map((l) => (
@@ -58,8 +67,14 @@ export function Footer({ content }: { content: FooterContent }) {
       </div>
 
       <div className="ps-footer-bottom">
-        <span>{content.copyright}</span>
-        <span className="ps-footer-bottom-tag">{content.method}</span>
+        <span className="ps-footer-copy">{content.copyright}</span>
+        <div className="ps-footer-legal">
+          {content.legal.map((l) => (
+            <a key={l} href="#">
+              {l}
+            </a>
+          ))}
+        </div>
       </div>
     </footer>
   );

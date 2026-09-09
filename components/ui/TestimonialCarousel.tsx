@@ -7,11 +7,7 @@ import type { Depoimento } from "@/lib/landing-content";
  * TestimonialCarousel — carrossel premium com 1 ou 2 cards por vez.
  * Autoplay lento; pausa ao interagir; swipe no touch.
  */
-export function TestimonialCarousel({
-  items,
-}: {
-  items: Depoimento[];
-}) {
+export function TestimonialCarousel({ items }: { items: Depoimento[] }) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -58,37 +54,35 @@ export function TestimonialCarousel({
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      <div className="ps-tcar-viewport" ref={trackRef}>
-        {items.map((t, i) => (
-          <article
-            key={i}
-            className={`ps-tcard${i === active ? " is-active" : ""}`}
-            aria-hidden={i !== active}
-          >
-            <div className="ps-tcard-mark" aria-hidden>
-              &ldquo;
+      <div className="ps-tcar-track">
+        <div
+          className="ps-tcar-viewport"
+          ref={trackRef}
+          style={{ transform: `translateX(-${active * 100}%)` }}
+        >
+          {items.map((t, i) => (
+            <div className="ps-tcar-slide" key={i} aria-hidden={i !== active}>
+              <article
+                className={`ps-tcard${t.isPlaceholder ? " is-placeholder" : ""}`}
+              >
+                <p className="ps-tcard-phrase">{t.phrase}</p>
+                <p className="ps-tcard-text">{t.text}</p>
+                <div className="ps-tcard-foot">
+                  <div className="ps-tcard-avatar" aria-hidden>
+                    {t.name?.charAt(0)?.toUpperCase() || "·"}
+                  </div>
+                  <div>
+                    <span className="ps-tcard-name">{t.name}</span>
+                    <span className="ps-tcard-role">{t.role}</span>
+                  </div>
+                </div>
+                {t.product && (
+                  <span className="ps-tcard-tag">{t.product}</span>
+                )}
+              </article>
             </div>
-            <p className="ps-tcard-phrase">{t.phrase}</p>
-            <p className="ps-tcard-text">{t.text}</p>
-
-            <div className="ps-tcard-meta">
-              <div className="ps-tcard-author">
-                <span className="ps-tcard-name">{t.name}</span>
-                <span className="ps-tcard-role">{t.role}</span>
-              </div>
-              <div className="ps-tcard-side">
-                <span className="ps-tcard-product">{t.product}</span>
-                <span className="ps-tcard-result">{t.result}</span>
-              </div>
-            </div>
-
-            {t.isPlaceholder && (
-              <div className="ps-tcard-flag" aria-label="Depoimento placeholder">
-                Placeholder · aguardando conteúdo real
-              </div>
-            )}
-          </article>
-        ))}
+          ))}
+        </div>
       </div>
 
       <div className="ps-tcar-controls">
@@ -107,9 +101,6 @@ export function TestimonialCarousel({
         </div>
 
         <div className="ps-tcar-nav">
-          <span className="ps-tcar-count" aria-live="polite">
-            {String(active + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
-          </span>
           <button
             type="button"
             className="ps-tcar-arrow"

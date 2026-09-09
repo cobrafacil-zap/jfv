@@ -5,12 +5,12 @@ import type { MetodoStep } from "@/lib/landing-content";
 
 /**
  * MethodStep — passo do Método JFV.
- * Entrada via IntersectionObserver. Linha vertical comum entre passos.
+ * Entrada via IntersectionObserver.
  */
 export function MethodStep({
   step,
-  index,
-  total,
+  index: _index,
+  total: _total,
 }: {
   step: MetodoStep;
   index: number;
@@ -37,23 +37,13 @@ export function MethodStep({
     return () => io.disconnect();
   }, []);
 
-  const isLast = index === total - 1;
-
   return (
     <div
       ref={ref}
       className={`ps-mstep${visible ? " is-visible" : ""}`}
-      data-index={index}
     >
-      <div className="ps-mstep-rail">
-        <div className="ps-mstep-dot">
-          <span>{step.num}</span>
-        </div>
-        {!isLast && <div className="ps-mstep-line" aria-hidden />}
-      </div>
-
-      <div className="ps-mstep-body">
-        <span className="ps-mstep-num">PASSO {step.num}</span>
+      <span className="ps-mstep-num">{step.num}</span>
+      <div>
         <h3 className="ps-mstep-name">{step.name}</h3>
         <p className="ps-mstep-desc">{step.desc}</p>
       </div>

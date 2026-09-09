@@ -143,6 +143,12 @@ export function PositioningForm({ value, onChange }: SectionFormProps<Positionin
       <Field label="Chips (etapas do método)">
         <StringList values={value.chips} onChange={(chips) => onChange({ ...value, chips })} itemLabel="Chip" />
       </Field>
+      <Field label="Frase de destaque (quote)">
+        <TextArea value={value.quote} onChange={(quote) => onChange({ ...value, quote })} />
+      </Field>
+      <Field label="Autor da frase">
+        <TextInput value={value.quoteSource} onChange={(quoteSource) => onChange({ ...value, quoteSource })} />
+      </Field>
     </Card>
   );
 }
@@ -237,6 +243,54 @@ export function ConceptualForm({ value, onChange }: SectionFormProps<ConceptualC
       <Field label="Subtítulo">
         <TextArea value={value.sub} onChange={(sub) => onChange({ ...value, sub })} />
       </Field>
+      <div>
+        <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-text-muted">
+          Cards conceituais
+        </span>
+        <div className="space-y-3">
+          {value.cards.map((c, i) => (
+            <div key={i} className="rounded-lg border border-border bg-bg-elevated p-3">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-xs font-semibold text-text-muted">Card {i + 1}</span>
+                <RemoveButton
+                  onClick={() =>
+                    onChange({ ...value, cards: value.cards.filter((_, idx) => idx !== i) })
+                  }
+                />
+              </div>
+              <Field label="Título">
+                <TextInput
+                  value={c.title}
+                  onChange={(title) => {
+                    const cards = [...value.cards];
+                    cards[i] = { ...cards[i], title };
+                    onChange({ ...value, cards });
+                  }}
+                />
+              </Field>
+              <Field label="Texto">
+                <TextArea
+                  value={c.text}
+                  onChange={(text) => {
+                    const cards = [...value.cards];
+                    cards[i] = { ...cards[i], text };
+                    onChange({ ...value, cards });
+                  }}
+                />
+              </Field>
+            </div>
+          ))}
+          <AddButton
+            label="Adicionar card"
+            onClick={() =>
+              onChange({
+                ...value,
+                cards: [...value.cards, { title: "", text: "" }],
+              })
+            }
+          />
+        </div>
+      </div>
       <Field label="Palavras (faixa marquee)">
         <StringList values={value.words} onChange={(words) => onChange({ ...value, words })} itemLabel="Palavra" />
       </Field>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import type { HeroContent } from "@/lib/landing-content";
 
 /**
@@ -7,38 +8,58 @@ import type { HeroContent } from "@/lib/landing-content";
  * Foto em frame vertical com respiro, sem dominar a viewport.
  */
 export function Hero({ content }: { content: HeroContent }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [revealed, setRevealed] = useState(false);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const t = window.setTimeout(() => setRevealed(true), 60);
+    return () => window.clearTimeout(t);
+  }, []);
+
   return (
-    <section id="hero">
-      <div className="hero-visual">
-        <div className="hero-photo" style={{ backgroundImage: `url('${content.photoUrl}')` }} />
-      </div>
-      <div className="hero-content">
-        <div className="hero-eyebrow fade-up">{content.eyebrow}</div>
-        <h1 className="hero-headline">
-          {content.headline.split("\n").map((line, i) => (
-            <span key={i} className="fade-up" style={{ display: "block", transitionDelay: `${80 + i * 80}ms` }}>
-              {line}
-            </span>
-          ))}
-          {content.headlineEm && (
-            <em className="fade-up" style={{ transitionDelay: `${80 + content.headline.split("\n").length * 80}ms` }}>
-              {content.headlineEm.split("\n").map((line, i) => (
-                <span key={i}>
-                  {line}
-                  {i < content.headlineEm.split("\n").length - 1 && <br />}
-                </span>
-              ))}
-            </em>
-          )}
-        </h1>
-        <p className="hero-sub fade-up" style={{ transitionDelay: "300ms" }}>{content.sub}</p>
-        <div className="hero-buttons fade-up" style={{ transitionDelay: "380ms" }}>
-          <a href={content.primaryCta.href} className="btn-primary">
-            {content.primaryCta.label}
-          </a>
-          <a href={content.secondaryCta.href} className="btn-outline">
-            {content.secondaryCta.label}
-          </a>
+    <section
+      ref={sectionRef}
+      className={`ps-hero${revealed ? " is-revealed" : ""}`}
+      id="hero"
+    >
+      <div className="ps-hero-bg" aria-hidden />
+
+      <div className="ps-hero-grid">
+        <div className="ps-hero-content">
+          <div className="ps-hero-eyebrow">{content.eyebrow}</div>
+
+          <h1 className="ps-hero-headline">
+            {content.headline.map((line, i) => (
+              <span key={i} className="ps-hero-line" style={{ transitionDelay: `${120 + i * 90}ms` }}>
+                {line}
+              </span>
+            ))}
+          </h1>
+
+          <p className="ps-hero-sub" style={{ transitionDelay: "360ms" }}>
+            {content.sub}
+          </p>
+
+          <div className="ps-hero-buttons" style={{ transitionDelay: "440ms" }}>
+            <a href={content.primaryCta.href} className="ps-btn ps-btn--primary">
+              {content.primaryCta.label}
+              <span aria-hidden>→</span>
+            </a>
+            <a href={content.secondaryCta.href} className="ps-btn ps-btn--ghost">
+              {content.secondaryCta.label}
+            </a>
+          </div>
+
+          <ul className="ps-hero-proof" style={{ transitionDelay: "520ms" }}>
+            {content.proof.map((p, i) => (
+              <li key={i}>
+                <span className="ps-hero-proof-dot" aria-hidden />
+                {p}
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="ps-hero-visual" aria-hidden={false}>

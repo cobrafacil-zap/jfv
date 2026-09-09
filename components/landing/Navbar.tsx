@@ -22,46 +22,48 @@ export function Navbar({ content }: { content: NavContent }) {
 
   return (
     <header className={`ps-nav${scrolled ? " is-scrolled" : ""}`}>
-      <a href="#hero" className="ps-nav-brand" aria-label="Priscila Sinópolis">
-        {content.brand}
-      </a>
+      <div className="ps-nav-inner">
+        <a href="#hero" className="ps-nav-logo" aria-label="Priscila Sinópolis">
+          {content.brand}
+        </a>
 
-      <nav className={`ps-nav-links${open ? " is-open" : ""}`} aria-label="Navegação principal">
-        {content.links.map((l) => (
+        <nav className={`ps-nav-links${open ? " is-open" : ""}`} aria-label="Navegação principal">
+          {content.links.map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              target={isExternal(l.href) ? "_blank" : undefined}
+              rel={isExternal(l.href) ? "noopener noreferrer" : undefined}
+              onClick={() => setOpen(false)}
+            >
+              {l.label}
+            </a>
+          ))}
           <a
-            key={l.href}
-            href={l.href}
-            target={isExternal(l.href) ? "_blank" : undefined}
-            rel={isExternal(l.href) ? "noopener noreferrer" : undefined}
+            href={content.cta.href}
+            target={isExternal(content.cta.href) ? "_blank" : undefined}
+            rel={isExternal(content.cta.href) ? "noopener noreferrer" : undefined}
+            className="ps-nav-cta"
             onClick={() => setOpen(false)}
           >
-            {l.label}
+            {content.cta.label}
           </a>
-        ))}
-        <a
-          href={content.cta.href}
-          target={isExternal(content.cta.href) ? "_blank" : undefined}
-          rel={isExternal(content.cta.href) ? "noopener noreferrer" : undefined}
-          className="ps-nav-cta"
-          onClick={() => setOpen(false)}
-        >
-          {content.cta.label}
-        </a>
-      </nav>
+        </nav>
 
-      <div className="ps-nav-actions">
-        <ThemeToggle variant="landing" />
-        <button
-          type="button"
-          className={`ps-nav-burger${open ? " is-open" : ""}`}
-          aria-label="Abrir menu"
-          aria-expanded={open}
-          onClick={() => setOpen((o) => !o)}
-        >
-          <span />
-          <span />
-          <span />
-        </button>
+        <div className="ps-nav-actions">
+          <ThemeToggle variant="landing" />
+          <button
+            type="button"
+            className={`ps-nav-toggle${open ? " is-open" : ""}`}
+            aria-label="Abrir menu"
+            aria-expanded={open}
+            onClick={() => setOpen((o) => !o)}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+        </div>
       </div>
     </header>
   );

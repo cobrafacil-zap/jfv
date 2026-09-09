@@ -11,13 +11,10 @@ export function CTASection({ content }: { content: CtaContent }) {
 
   return (
     <section className="ps-cta" id="cta-final">
-      <div className="ps-cta-bg" aria-hidden />
-      <div className="ps-cta-grain" aria-hidden />
       <div className="ps-cta-inner">
-        <div className="ps-cta-eyebrow">{content.eyebrow}</div>
         <h2 className="ps-cta-title">
           {content.title.map((line, i) => (
-            <span key={i}>{line}</span>
+            <span key={i}>{line} </span>
           ))}
         </h2>
         <p className="ps-cta-sub">{content.sub}</p>

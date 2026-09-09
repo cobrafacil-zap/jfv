@@ -26,7 +26,7 @@ export function Produtos({ content }: { content: ProdutosContent }) {
   return (
     <section className="ps-programas" id="programas">
       <div className="ps-programas-inner">
-        <header className="ps-sh ps-sh-center tone-light">
+        <header className="ps-sh tone-center">
           <div className="ps-sh-eyebrow">{content.eyebrow}</div>
           <h2 className="ps-sh-title">
             {content.title} <em>{content.titleEm}</em>
@@ -49,21 +49,22 @@ export function Produtos({ content }: { content: ProdutosContent }) {
           ))}
         </div>
 
-        <div className="ps-programas-foot">
-          {hasHidden && !showAll && (
-            <button
-              type="button"
-              className="ps-programas-more"
-              onClick={() => setShowAll(true)}
-            >
-              Ver todos os programas
-              <span aria-hidden>→</span>
-            </button>
-          )}
-          {showAll && (
-            <p className="ps-programas-note">{content.catalogNote}</p>
-          )}
-        </div>
+        {(hasHidden || showAll) && (
+          <div className="ps-programas-more">
+            {hasHidden && !showAll && (
+              <button
+                type="button"
+                onClick={() => setShowAll(true)}
+              >
+                Ver todos os programas
+                <span aria-hidden> →</span>
+              </button>
+            )}
+            {showAll && (
+              <p className="ps-programas-note">{content.catalogNote}</p>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );

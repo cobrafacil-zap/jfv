@@ -32,5 +32,9 @@ export function ScrollProgress() {
     };
   }, []);
 
-  return <div ref={ref} className="scroll-progress" aria-hidden />;
+  return (
+    <div className="ps-scroll-progress" aria-hidden>
+      <div ref={ref} className="ps-scroll-progress-bar" />
+    </div>
+  );
 }
