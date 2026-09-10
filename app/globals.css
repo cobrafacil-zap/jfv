@@ -10,36 +10,36 @@
 @layer base {
   :root,
   :root[data-theme="light"] {
-    --bg-base: 255 255 255;
-    --bg-alt: 248 246 251;
-    --bg-card: 255 255 255;
-    --bg-elevated: 244 241 248;
-    --bg-dark: 14 12 22;
-    --bg-dark-2: 24 20 36;
-    --bg-nav: 255 255 255;
-    --text-primary: 22 20 32;
-    --text-secondary: 75 70 88;
-    --text-muted: 130 124 144;
-    --heading: 22 20 32;
-    --body: 75 70 88;
-    --body-soft: 110 104 122;
-    --border: 232 228 238;
-    --border-strong: 218 213 226;
-    --accent: 109 40 217;
-    --accent-light: 146 92 226;
-    --accent-deep: 88 34 173;
-    --accent-contrast: 255 255 255;
-    --accent-pale: 240 234 251;
-    --shadow: 60 30 80;
-    --shadow-soft: 60 30 80;
-    --bg-primary: 255 255 255;
-    --bg-secondary: 248 246 251;
+    --bg-base: 251 250 247;          /* #FBFAF7 off-white quente */
+    --bg-alt: 246 244 240;           /* #F6F4F0 */
+    --bg-card: 255 254 252;          /* #FFFEFC */
+    --bg-elevated: 241 238 232;      /* #F1EEE8 */
+    --bg-dark: 24 22 20;             /* grafite profundo p/ CTA */
+    --bg-dark-2: 32 28 26;
+    --bg-nav: 251 250 247;
+    --text-primary: 24 22 20;        /* grafite */
+    --text-secondary: 90 84 78;
+    --text-muted: 140 132 124;
+    --heading: 24 22 20;
+    --body: 70 64 58;
+    --body-soft: 110 104 96;
+    --border: 224 218 208;           /* traço fino sóbrio */
+    --border-strong: 200 192 180;
+    --accent: 198 75 32;             /* terracota queimado */
+    --accent-light: 220 110 60;
+    --accent-deep: 158 56 22;
+    --accent-contrast: 255 254 252;
+    --accent-pale: 248 232 222;      /* pêssego claríssimo */
+    --shadow: 24 22 20;
+    --shadow-soft: 24 22 20;
+    --bg-primary: 251 250 247;
+    --bg-secondary: 246 244 240;
 
     --font-display: var(--font-playfair), Georgia, serif;
     --font-body: var(--font-inter), system-ui, sans-serif;
     --font-label: var(--font-grotesk), var(--font-inter), system-ui, sans-serif;
-    --accent-2: 139 92 246;
-    --accent-3: 171 138 249;
+    --accent-2: 215 145 95;          /* cobre claro */
+    --accent-3: 110 95 78;           /* taupe */
     --max-w: 1180px;
     --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-slow: 0.7s cubic-bezier(0.22, 1, 0.36, 1);
@@ -47,30 +47,30 @@
   }
 
   :root[data-theme="dark"] {
-    --bg-base: 10 10 16;
-    --bg-alt: 16 14 24;
-    --bg-card: 22 19 32;
-    --bg-elevated: 30 26 42;
-    --bg-dark: 8 8 14;
-    --bg-dark-2: 16 14 24;
-    --bg-nav: 12 10 18;
-    --text-primary: 245 244 250;
-    --text-secondary: 196 192 210;
-    --text-muted: 138 134 154;
-    --heading: 245 244 250;
-    --body: 196 192 210;
-    --body-soft: 158 154 174;
-    --border: 42 38 58;
-    --border-strong: 60 54 80;
-    --accent: 146 92 226;
-    --accent-light: 171 138 249;
-    --accent-deep: 109 40 217;
-    --accent-contrast: 255 255 255;
-    --accent-pale: 36 22 64;
+    --bg-base: 16 14 12;
+    --bg-alt: 22 19 16;
+    --bg-card: 28 25 22;
+    --bg-elevated: 36 32 28;
+    --bg-dark: 12 10 8;
+    --bg-dark-2: 22 19 16;
+    --bg-nav: 16 14 12;
+    --text-primary: 245 242 236;
+    --text-secondary: 196 190 180;
+    --text-muted: 138 130 120;
+    --heading: 245 242 236;
+    --body: 196 190 180;
+    --body-soft: 158 150 140;
+    --border: 50 44 38;
+    --border-strong: 70 62 54;
+    --accent: 215 110 65;
+    --accent-light: 230 130 80;
+    --accent-deep: 178 76 32;
+    --accent-contrast: 16 14 12;
+    --accent-pale: 56 36 24;
     --shadow: 0 0 0;
     --shadow-soft: 0 0 0;
-    --bg-primary: 10 10 16;
-    --bg-secondary: 16 14 24;
+    --bg-primary: 16 14 12;
+    --bg-secondary: 22 19 16;
   }
 
   html {
@@ -142,10 +142,11 @@
 }
 
 /* ============================================================
-   LANDING PREMIUM — Priscila Sinópolis
+   LANDING — Priscila Sinópolis
+   Visual editorial sóbrio: off-white quente, grafite, terracota
+   como acento. Sem mesh-blob, sem grão, sem gradient text.
    Estrutura: nav, hero, positioning, sobre, conceptual,
    programas, método, resultados, FAQ, CTA, footer.
-   Todos com prefixo .ps- para escopo isolado.
    ============================================================ */
 
 .ps-landing {
@@ -163,35 +164,12 @@
   box-sizing: border-box;
 }
 
-/* ---------- Decoração de fundo (mesh + grain) ---------- */
-.ps-landing .ps-mesh-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(110px);
-  opacity: 0.32;
-  pointer-events: none;
-  z-index: 0;
-}
-.ps-landing .ps-mesh-blob.b1 {
-  width: 520px; height: 520px;
-  top: -120px; right: -160px;
-  background: radial-gradient(circle at 30% 30%, rgb(var(--accent) / 0.55), transparent 60%);
-}
-.ps-landing .ps-mesh-blob.b2 {
-  width: 460px; height: 460px;
-  top: 40%; left: -180px;
-  background: radial-gradient(circle at 60% 60%, rgb(var(--accent-2) / 0.45), transparent 60%);
-}
-.ps-landing .ps-mesh-blob.b3 {
-  width: 380px; height: 380px;
-  bottom: 8%; right: 12%;
-  background: radial-gradient(circle at 40% 40%, rgb(var(--accent-3) / 0.4), transparent 60%);
-}
-:root[data-theme="dark"] .ps-landing .ps-mesh-blob { opacity: 0.22; }
-
-.ps-landing .ps-grain {
-  position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: 0.045;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+/* ---------- Decoração sutil (uma linha, sem blur) ---------- */
+.ps-landing .ps-rule {
+  width: 56px; height: 1px;
+  background: rgb(var(--accent));
+  margin: 0 0 32px;
+  display: block;
 }
 
 /* ============================================================
@@ -259,11 +237,11 @@
 .ps-landing .ps-nav-cta {
   background: rgb(var(--heading));
   color: rgb(var(--bg-base));
-  padding: 10px 18px;
-  border-radius: 100px;
-  font-weight: 700;
-  font-size: 0.82rem;
-  letter-spacing: 0.02em;
+  padding: 12px 20px;
+  border-radius: 0;
+  font-weight: 600;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em; text-transform: uppercase;
   text-decoration: none;
   transition: background var(--transition), color var(--transition);
 }
@@ -372,15 +350,16 @@
 .ps-landing .ps-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
   font-family: var(--font-label);
-  font-weight: 700;
-  font-size: 0.92rem;
-  letter-spacing: 0.01em;
-  padding: 16px 28px;
-  border-radius: 100px;
+  font-weight: 600;
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 18px 30px;
+  border-radius: 0;
   text-decoration: none;
   cursor: pointer;
-  transition: background var(--transition), color var(--transition), border-color var(--transition), transform var(--transition);
-  border: 1.5px solid transparent;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  border: 1px solid transparent;
   white-space: nowrap;
 }
 .ps-landing .ps-btn--primary {
@@ -390,23 +369,22 @@
 .ps-landing .ps-btn--primary:hover {
   background: rgb(var(--accent));
   color: rgb(var(--accent-contrast));
-  transform: translateY(-1px);
 }
 .ps-landing .ps-btn--ghost {
   background: transparent;
   color: rgb(var(--heading));
-  border-color: rgb(var(--border-strong));
+  border-color: rgb(var(--heading));
 }
 .ps-landing .ps-btn--ghost:hover {
-  border-color: rgb(var(--accent));
-  color: rgb(var(--accent));
+  background: rgb(var(--heading));
+  color: rgb(var(--bg-base));
 }
 .ps-landing .ps-btn--accent {
   background: rgb(var(--accent));
   color: rgb(var(--accent-contrast));
 }
 .ps-landing .ps-btn--accent:hover {
-  background: rgb(var(--accent-light));
+  background: rgb(var(--accent-deep));
   color: rgb(var(--accent-contrast));
 }
 .ps-landing .ps-btn--invert {
@@ -449,10 +427,9 @@
   width: 100%;
   max-width: 360px;
   aspect-ratio: 4 / 5;
-  border-radius: 14px;
+  border-radius: 0;
   overflow: hidden;
   background: rgb(var(--bg-elevated));
-  box-shadow: 0 30px 60px -30px rgb(var(--shadow) / 0.45);
 }
 .ps-landing .ps-hero-photo {
   width: 100%; height: 100%;
@@ -574,27 +551,33 @@
 }
 .ps-landing .ps-positioning-chip {
   font-family: var(--font-label);
-  font-size: 0.78rem; font-weight: 600;
-  letter-spacing: 0.04em;
-  background: rgb(var(--accent-pale));
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  background: transparent;
+  color: rgb(var(--text-secondary));
+  border: none;
+  padding: 0;
+  border-radius: 0;
+  position: relative;
+  padding-right: 28px;
+}
+.ps-landing .ps-positioning-chip::after {
+  content: '·';
+  position: absolute; right: 12px;
   color: rgb(var(--accent));
-  border: 1px solid rgb(var(--accent) / 0.3);
-  padding: 8px 14px;
-  border-radius: 100px;
 }
 
 .ps-landing .ps-positioning-statement {
   position: relative;
   padding: 40px 36px;
   background: rgb(var(--bg-card));
-  border: 1.5px solid rgb(var(--border));
-  border-radius: 18px;
+  border: 1px solid rgb(var(--border));
+  border-radius: 0;
 }
 .ps-landing .ps-positioning-statement::before {
   content: '';
-  position: absolute; top: 0; left: 36px; right: 36px; height: 1px;
-  background: linear-gradient(90deg, transparent, rgb(var(--accent)), transparent);
-  opacity: 0.5;
+  position: absolute; top: 0; left: 0; width: 32px; height: 1px;
+  background: rgb(var(--accent));
 }
 .ps-landing .ps-positioning-quote {
   font-family: var(--font-display);
@@ -642,10 +625,9 @@
 .ps-landing .ps-sobre-fig-main,
 .ps-landing .ps-sobre-fig-sm {
   position: absolute;
-  border-radius: 14px;
+  border-radius: 0;
   overflow: hidden;
   background: rgb(var(--bg-elevated));
-  box-shadow: 0 24px 48px -28px rgb(var(--shadow) / 0.4);
 }
 .ps-landing .ps-sobre-fig-main {
   top: 0; left: 0;
@@ -675,11 +657,12 @@
 .ps-landing .ps-sobre-accent {
   position: absolute;
   top: -28px; right: -28px;
-  width: 130px; height: 130px;
-  border: 1.5px solid rgb(var(--accent) / 0.5);
-  border-radius: 50%;
+  width: 120px; height: 120px;
+  border: 1px solid rgb(var(--accent));
+  border-radius: 0;
   z-index: 0;
   pointer-events: none;
+  display: none;
 }
 
 .ps-landing .ps-sobre-text { position: relative; z-index: 1; }
@@ -734,18 +717,26 @@
 }
 .ps-landing .ps-sobre-tags li {
   font-family: var(--font-label);
-  font-size: 0.75rem; font-weight: 600;
-  letter-spacing: 0.06em;
-  background: rgb(var(--bg-card));
-  border: 1px solid rgb(var(--border));
+  font-size: 0.74rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  background: transparent;
+  border: none;
   color: rgb(var(--text-secondary));
-  padding: 7px 14px;
-  border-radius: 100px;
-  transition: border-color var(--transition), color var(--transition);
+  padding: 0;
+  border-radius: 0;
+  transition: color var(--transition);
+  position: relative;
+  padding-right: 24px;
 }
+.ps-landing .ps-sobre-tags li::after {
+  content: '/';
+  position: absolute; right: 8px;
+  color: rgb(var(--border-strong));
+}
+.ps-landing .ps-sobre-tags li:last-child { padding-right: 0; }
+.ps-landing .ps-sobre-tags li:last-child::after { content: ''; }
 .ps-landing .ps-sobre-tags li:hover {
-  border-color: rgb(var(--accent));
-  color: rgb(var(--accent));
+  color: rgb(var(--heading));
 }
 
 /* ============================================================
@@ -767,15 +758,15 @@
   margin-top: 56px;
 }
 .ps-landing .ps-conceptual-card {
-  background: rgb(var(--bg-card));
-  border: 1.5px solid rgb(var(--border));
-  border-radius: 18px;
-  padding: 36px 32px;
-  transition: border-color var(--transition), transform var(--transition);
+  background: transparent;
+  border: none;
+  border-top: 1px solid rgb(var(--heading));
+  border-radius: 0;
+  padding: 32px 0;
+  transition: border-color var(--transition);
 }
 .ps-landing .ps-conceptual-card:hover {
-  border-color: rgb(var(--accent) / 0.6);
-  transform: translateY(-2px);
+  border-top-color: rgb(var(--accent));
 }
 .ps-landing .ps-conceptual-card-num {
   font-family: var(--font-display);
@@ -841,32 +832,37 @@
 
 .ps-landing .ps-pfilter {
   display: flex; flex-wrap: wrap; justify-content: center;
-  gap: 8px;
+  gap: 0;
   margin: 0 auto 40px;
-  padding: 6px;
-  background: rgb(var(--bg-card));
-  border: 1.5px solid rgb(var(--border));
-  border-radius: 100px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid rgb(var(--border));
+  border-radius: 0;
   width: max-content;
   max-width: 100%;
 }
 .ps-landing .ps-pfilter-btn {
   font-family: var(--font-label);
-  font-size: 0.78rem; font-weight: 600;
-  letter-spacing: 0.04em;
+  font-size: 0.74rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
   background: transparent;
   color: rgb(var(--text-secondary));
   border: none;
-  padding: 9px 18px;
-  border-radius: 100px;
+  border-right: 1px solid rgb(var(--border));
+  padding: 12px 22px;
+  border-radius: 0;
   cursor: pointer;
-  transition: background var(--transition), color var(--transition);
+  transition: color var(--transition);
   white-space: nowrap;
 }
+.ps-landing .ps-pfilter-btn:last-child { border-right: none; }
 .ps-landing .ps-pfilter-btn:hover { color: rgb(var(--heading)); }
 .ps-landing .ps-pfilter-btn.is-active {
-  background: rgb(var(--heading));
-  color: rgb(var(--bg-base));
+  background: transparent;
+  color: rgb(var(--heading));
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: rgb(var(--accent));
 }
 
 .ps-landing .ps-pgrid {
@@ -878,17 +874,14 @@
 .ps-landing .ps-pcard {
   position: relative;
   background: rgb(var(--bg-card));
-  border: 1.5px solid rgb(var(--border));
-  border-radius: 18px;
+  border: 1px solid rgb(var(--border));
+  border-radius: 4px;
   padding: 32px 28px;
   display: flex; flex-direction: column;
-  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
-  overflow: hidden;
+  transition: border-color var(--transition);
 }
 .ps-landing .ps-pcard:hover {
-  border-color: rgb(var(--accent) / 0.6);
-  transform: translateY(-3px);
-  box-shadow: 0 24px 50px -28px rgb(var(--shadow) / 0.4);
+  border-color: rgb(var(--heading));
 }
 .ps-landing .ps-pcard.is-featured {
   border-color: rgb(var(--accent));
@@ -897,12 +890,13 @@
   position: absolute;
   top: 16px; right: 16px;
   font-family: var(--font-label);
-  font-size: 0.62rem; font-weight: 800;
+  font-size: 0.62rem; font-weight: 700;
   letter-spacing: 0.14em; text-transform: uppercase;
-  background: rgb(var(--accent));
-  color: rgb(var(--accent-contrast));
-  padding: 5px 10px;
-  border-radius: 100px;
+  background: transparent;
+  color: rgb(var(--accent));
+  padding: 0;
+  border-radius: 0;
+  border: none;
 }
 .ps-landing .ps-pcard-cat {
   font-family: var(--font-label);
@@ -961,19 +955,22 @@
 }
 .ps-landing .ps-pcard-cta {
   font-family: var(--font-label);
-  font-size: 0.78rem; font-weight: 700;
-  letter-spacing: 0.04em;
-  background: rgb(var(--heading));
-  color: rgb(var(--bg-base));
-  padding: 11px 18px;
-  border-radius: 100px;
+  font-size: 0.74rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  background: transparent;
+  color: rgb(var(--heading));
+  padding: 12px 0;
+  border-top: 1px solid rgb(var(--heading));
+  border-radius: 0;
   text-decoration: none;
-  transition: background var(--transition), color var(--transition);
+  transition: color var(--transition), border-color var(--transition);
   white-space: nowrap;
+  text-align: left;
+  display: inline-block;
 }
 .ps-landing .ps-pcard-cta:hover {
-  background: rgb(var(--accent));
-  color: rgb(var(--accent-contrast));
+  color: rgb(var(--accent));
+  border-top-color: rgb(var(--accent));
 }
 .ps-landing .ps-pcard-top {
   display: flex; align-items: center; justify-content: space-between;
@@ -1018,32 +1015,20 @@
   color: rgb(var(--text-secondary));
 }
 
-.ps-landing .ps-programas-more {
-  text-align: center;
-  margin-top: 44px;
+.ps-landing .ps-programas-foot {
+  margin-top: 40px;
+  padding-top: 28px;
+  border-top: 1px solid rgb(var(--border));
+  display: flex; align-items: center; justify-content: space-between; gap: 18px;
+  flex-wrap: wrap;
 }
-.ps-landing .ps-programas-more button {
-  font-family: var(--font-label);
-  font-size: 0.86rem; font-weight: 700;
-  letter-spacing: 0.04em;
-  background: transparent;
+.ps-landing .ps-programas-foot-text {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
   color: rgb(var(--heading));
-  border: 1.5px solid rgb(var(--border-strong));
-  padding: 13px 28px;
-  border-radius: 100px;
-  cursor: pointer;
-  transition: border-color var(--transition), color var(--transition);
-}
-.ps-landing .ps-programas-more button:hover {
-  border-color: rgb(var(--accent));
-  color: rgb(var(--accent));
-}
-.ps-landing .ps-programas-note {
-  font-size: 0.95rem;
-  line-height: 1.72;
-  color: rgb(var(--text-secondary));
-  max-width: 580px;
-  margin: 0 auto;
+  margin: 0;
+  letter-spacing: -0.01em;
 }
 
 /* ============================================================
@@ -1169,8 +1154,8 @@
 }
 .ps-landing .ps-tcard {
   background: rgb(var(--bg-card));
-  border: 1.5px solid rgb(var(--border));
-  border-radius: 18px;
+  border: 1px solid rgb(var(--border));
+  border-radius: 0;
   padding: 36px 32px;
   position: relative;
   display: flex; flex-direction: column;
@@ -1222,12 +1207,12 @@
   border-top: 1px solid rgb(var(--border));
 }
 .ps-landing .ps-tcard-avatar {
-  width: 42px; height: 42px;
-  border-radius: 50%;
-  background: rgb(var(--accent-pale));
-  color: rgb(var(--accent));
+  width: 36px; height: 36px;
+  border-radius: 0;
+  background: rgb(var(--heading));
+  color: rgb(var(--bg-base));
   font-family: var(--font-display);
-  font-weight: 800; font-size: 1rem;
+  font-weight: 800; font-size: 0.95rem;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
@@ -1246,12 +1231,12 @@
   display: inline-block;
   font-family: var(--font-label);
   font-size: 0.62rem; font-weight: 700;
-  letter-spacing: 0.12em; text-transform: uppercase;
+  letter-spacing: 0.14em; text-transform: uppercase;
   color: rgb(var(--accent));
-  background: rgb(var(--accent-pale));
-  padding: 3px 9px;
-  border-radius: 100px;
-  margin-top: 10px;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  margin-top: 12px;
 }
 
 .ps-landing .ps-tcar-controls {
@@ -1276,17 +1261,17 @@
 }
 .ps-landing .ps-tcar-arrow {
   width: 44px; height: 44px;
-  border-radius: 50%;
-  background: rgb(var(--bg-card));
-  border: 1.5px solid rgb(var(--border));
+  border-radius: 0;
+  background: transparent;
+  border: 1px solid rgb(var(--heading));
   color: rgb(var(--heading));
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  transition: border-color var(--transition), color var(--transition);
+  transition: border-color var(--transition), color var(--transition), background var(--transition);
 }
 .ps-landing .ps-tcar-arrow:hover {
-  border-color: rgb(var(--accent));
-  color: rgb(var(--accent));
+  background: rgb(var(--heading));
+  color: rgb(var(--bg-base));
 }
 .ps-landing .ps-tcar-arrow:disabled {
   opacity: 0.4; cursor: not-allowed;
@@ -1310,12 +1295,14 @@
   margin-top: 40px;
 }
 .ps-landing .ps-faq-item {
-  background: rgb(var(--bg-card));
-  border: 1.5px solid rgb(var(--border));
-  border-radius: 14px;
+  background: transparent;
+  border: none;
+  border-top: 1px solid rgb(var(--border));
+  border-radius: 0;
   overflow: hidden;
   transition: border-color var(--transition);
 }
+.ps-landing .ps-faq-item:last-child { border-bottom: 1px solid rgb(var(--border)); }
 .ps-landing .ps-faq-item.is-open { border-color: rgb(var(--accent)); }
 .ps-landing .ps-faq-q {
   width: 100%;
@@ -1336,18 +1323,17 @@
 }
 .ps-landing .ps-faq-q .ps-faq-icon {
   flex-shrink: 0;
-  width: 30px; height: 30px;
-  border-radius: 50%;
-  background: rgb(var(--accent-pale));
-  color: rgb(var(--accent));
+  width: auto; height: auto;
+  border-radius: 0;
+  background: transparent;
+  color: rgb(var(--heading));
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem; font-weight: 600;
-  transition: transform var(--transition), background var(--transition), color var(--transition);
+  font-size: 1.4rem; font-weight: 300;
+  transition: transform var(--transition), color var(--transition);
 }
 .ps-landing .ps-faq-item.is-open .ps-faq-icon {
   transform: rotate(45deg);
-  background: rgb(var(--accent));
-  color: rgb(var(--accent-contrast));
+  color: rgb(var(--accent));
 }
 .ps-landing .ps-faq-a {
   max-height: 0;
@@ -1362,10 +1348,10 @@
 }
 .ps-landing .ps-faq-cta {
   margin-top: 40px;
-  padding: 24px 28px;
-  background: rgb(var(--bg-card));
-  border: 1.5px solid rgb(var(--border));
-  border-radius: 14px;
+  padding: 28px 0;
+  background: transparent;
+  border: none;
+  border-top: 1px solid rgb(var(--heading));
   display: flex; align-items: center; justify-content: space-between; gap: 18px;
   flex-wrap: wrap;
 }
@@ -1386,24 +1372,7 @@
   background: rgb(var(--bg-dark));
   color: rgb(var(--bg-base));
   position: relative; z-index: 1;
-  overflow: hidden;
   text-align: center;
-}
-.ps-landing .ps-cta::before {
-  content: '';
-  position: absolute; top: -40%; right: -10%;
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgb(var(--accent) / 0.35), transparent 60%);
-  filter: blur(80px);
-  pointer-events: none;
-}
-.ps-landing .ps-cta::after {
-  content: '';
-  position: absolute; bottom: -40%; left: -10%;
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, rgb(var(--accent-2) / 0.25), transparent 60%);
-  filter: blur(80px);
-  pointer-events: none;
 }
 .ps-landing .ps-cta-inner {
   position: relative;
@@ -1567,13 +1536,13 @@
    ============================================================ */
 .ps-landing .ps-scroll-progress {
   position: fixed; top: 0; left: 0; right: 0;
-  height: 2px; z-index: 200;
+  height: 1px; z-index: 200;
   background: transparent;
   pointer-events: none;
 }
 .ps-landing .ps-scroll-progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, rgb(var(--accent)), rgb(var(--accent-light)));
+  background: rgb(var(--accent));
   transform-origin: left center;
   transform: scaleX(0);
   will-change: transform;

@@ -319,47 +319,8 @@ export function ProdutosForm({ value, onChange }: SectionFormProps<ProdutosConte
       <Field label="Subtítulo">
         <TextArea value={value.sub} onChange={(sub) => onChange({ ...value, sub })} />
       </Field>
-      <div>
-        <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-text-muted">
-          Filtros
-        </span>
-        <div className="space-y-2">
-          {value.filters.map((f, i) => (
-            <div key={i} className="grid grid-cols-[1fr_2fr_auto] gap-2 items-end">
-              <Field label="ID">
-                <TextInput
-                  value={f.id}
-                  onChange={(id) =>
-                    onChange({
-                      ...value,
-                      filters: value.filters.map((x, j) => (j === i ? { ...x, id } : x)),
-                    })
-                  }
-                />
-              </Field>
-              <Field label="Rótulo">
-                <TextInput
-                  value={f.label}
-                  onChange={(label) =>
-                    onChange({
-                      ...value,
-                      filters: value.filters.map((x, j) => (j === i ? { ...x, label } : x)),
-                    })
-                  }
-                />
-              </Field>
-              <RemoveButton
-                onClick={() =>
-                  onChange({ ...value, filters: value.filters.filter((_, j) => j !== i) })
-                }
-              />
-            </div>
-          ))}
-          <AddButton
-            label="+ Adicionar filtro"
-            onClick={() => onChange({ ...value, filters: [...value.filters, { id: "", label: "" }] })}
-          />
-        </div>
+      <div className="rounded-lg border border-border bg-bg-elevated/40 px-4 py-3 text-xs text-text-muted">
+        Catálogo fixo: até <strong className="text-text-primary">3 programas</strong>. Filtros foram removidos para uma leitura mais limpa.
       </div>
       <div>
         <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-text-muted">
@@ -514,36 +475,32 @@ export function ProdutosForm({ value, onChange }: SectionFormProps<ProdutosConte
               </label>
             </Card>
           ))}
-          <AddButton
-            label="+ Adicionar produto"
-            onClick={() =>
-              onChange({
-                ...value,
-                cards: [
-                  ...value.cards,
-                  {
-                    id: `p${value.cards.length + 1}`,
-                    category: "vendas",
-                    categoryLabel: "Programa",
-                    title: "",
-                    desc: "",
-                    idealFor: "",
-                    buttonLabel: "Conhecer",
-                    href: "#programas",
-                  },
-                ],
-              })
-            }
-          />
+          {value.cards.length < 3 && (
+            <AddButton
+              label="+ Adicionar produto"
+              onClick={() =>
+                onChange({
+                  ...value,
+                  cards: [
+                    ...value.cards,
+                    {
+                      id: `p${value.cards.length + 1}`,
+                      category: "vendas",
+                      categoryLabel: "Programa",
+                      title: "",
+                      desc: "",
+                      idealFor: "",
+                      buttonLabel: "Conhecer",
+                      href: "#programas",
+                    },
+                  ],
+                })
+              }
+            />
+          )}
         </div>
       </div>
-      <Field label="Nota do catálogo (aparece ao expandir)">
-        <TextArea
-          value={value.catalogNote}
-          onChange={(catalogNote) => onChange({ ...value, catalogNote })}
-        />
-      </Field>
-      <Field label="CTA (ver todos)">
+      <Field label="CTA (rodapé)">
         <LinkFields
           value={value.allCta}
           onChange={(allCta) => onChange({ ...value, allCta })}

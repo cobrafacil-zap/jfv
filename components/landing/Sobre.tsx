@@ -36,7 +36,6 @@ export function Sobre({ content }: { content: SobreContent }) {
               height={520}
             />
           </figure>
-          <span className="ps-sobre-accent" aria-hidden />
         </div>
 
         <div className="ps-sobre-text">

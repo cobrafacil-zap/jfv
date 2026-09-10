@@ -21,11 +21,6 @@ export default async function Home() {
 
   return (
     <main className="ps-landing">
-      {/* Decoração: blobs + grão + barra de progresso */}
-      <div className="ps-mesh-blob b1" aria-hidden />
-      <div className="ps-mesh-blob b2" aria-hidden />
-      <div className="ps-mesh-blob b3" aria-hidden />
-      <div className="ps-grain" aria-hidden />
       <ScrollProgress />
 
       <Navbar content={c.nav} />
