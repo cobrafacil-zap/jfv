@@ -10,18 +10,18 @@ import { supabaseAdmin } from "@/lib/supabase";
 export type ThemeColors = { primary: string; secondary: string };
 
 export const DEFAULT_THEME_COLORS: ThemeColors = {
-  primary: "#6D28D9",
-  secondary: "#8B5CF6",
+  primary: "#C44E23",
+  secondary: "#DC763C",
 };
 
 export const THEME_PRESETS: { name: string; colors: ThemeColors }[] = [
-  { name: "Violeta", colors: { primary: "#6D28D9", secondary: "#8B5CF6" } },
-  { name: "Roxo real", colors: { primary: "#7C3AED", secondary: "#A78BFA" } },
-  { name: "Índigo", colors: { primary: "#4F46E5", secondary: "#818CF8" } },
-  { name: "Roxo escuro", colors: { primary: "#581C87", secondary: "#A855F7" } },
-  { name: "Azul", colors: { primary: "#2563EB", secondary: "#38BDF8" } },
+  { name: "Terracota", colors: { primary: "#C44E23", secondary: "#DC763C" } },
+  { name: "Terracota claro", colors: { primary: "#D8693E", secondary: "#E89370" } },
+  { name: "Cobre", colors: { primary: "#A0522D", secondary: "#C97B4E" } },
+  { name: "Âmbar", colors: { primary: "#D97706", secondary: "#F59E0B" } },
   { name: "Esmeralda", colors: { primary: "#10B981", secondary: "#14B8A6" } },
-  { name: "Âmbar", colors: { primary: "#F59E0B", secondary: "#F97316" } },
+  { name: "Índigo", colors: { primary: "#4F46E5", secondary: "#818CF8" } },
+  { name: "Grafite", colors: { primary: "#1F1B16", secondary: "#3B332B" } },
 ];
 
 /* ---------- matemática de cor ---------- */
@@ -65,6 +65,7 @@ export interface ThemeScale {
   accent: string;
   accentLight: string;
   accentDeep: string;
+  accentSoft: string;
   accentPaleLight: string;
   accentPaleDark: string;
   accent2: string;
@@ -78,6 +79,7 @@ export function buildScale(colors: ThemeColors): ThemeScale {
     accent: triplet(p),
     accentLight: triplet(lighten(p, 0.24)),
     accentDeep: triplet(darken(p, 0.22)),
+    accentSoft: triplet(lighten(p, 0.32)),
     accentPaleLight: triplet(mix(p, WHITE, 0.9)),
     accentPaleDark: triplet(darken(p, 0.82)),
     accent2: triplet(s),
@@ -93,6 +95,7 @@ export function buildThemeCss(colors: ThemeColors): string {
   --accent: ${s.accent} !important;
   --accent-light: ${s.accentLight} !important;
   --accent-deep: ${s.accentDeep} !important;
+  --accent-soft: ${s.accentSoft} !important;
   --accent-pale: ${s.accentPaleLight} !important;
   --accent-2: ${s.accent2} !important;
   --accent-3: ${s.accent3} !important;
