@@ -3,7 +3,6 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
 import { Positioning } from "@/components/landing/Positioning";
 import { Sobre } from "@/components/landing/Sobre";
-import { Conceptual } from "@/components/landing/Conceptual";
 import { Produtos } from "@/components/landing/Produtos";
 import { Metodo } from "@/components/landing/Metodo";
 import { Resultados } from "@/components/landing/Resultados";
@@ -27,7 +26,6 @@ export default async function Home() {
       <Hero content={c.hero} />
       <Positioning content={c.positioning} />
       <Sobre content={c.sobre} />
-      <Conceptual content={c.conceptual} />
       <Produtos content={c.produtos} />
       <Metodo content={c.metodo} />
       <Resultados content={c.resultados} />
