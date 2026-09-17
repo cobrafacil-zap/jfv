@@ -1,79 +1,37 @@
 import type { FooterContent } from "@/lib/landing-content";
 
+/**
+ * Footer — versão minimalista personal-brand.
+ * Marca + método + tagline + socials + copyright. Sem colunas.
+ */
 export function Footer({ content }: { content: FooterContent }) {
   const isExternal = (href: string) => href.startsWith("http");
   return (
     <footer className="ps-footer">
       <div className="ps-footer-inner">
         <div className="ps-footer-brand-block">
-          <div className="ps-footer-brand">
-            {content.brand.split(" ").map((w, i, arr) =>
-              i === arr.length - 1 ? (
-                <span key={i}> {w}</span>
-              ) : (
-                <span key={i}>{i === 0 ? w : ` ${w}`}</span>
-              )
-            )}
-          </div>
+          <div className="ps-footer-brand">{content.brand}</div>
           <div className="ps-footer-method">{content.method}</div>
           <p className="ps-footer-tagline">{content.tagline}</p>
-
-          <ul className="ps-footer-socials" aria-label="Redes sociais">
-            {content.socials.map((s) => (
-              <li key={s.label}>
-                <a
-                  className="ps-footer-social"
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={s.label}
-                >
-                  {s.label.charAt(0)}
-                </a>
-              </li>
-            ))}
-          </ul>
         </div>
 
-        {content.columns.map((col) => (
-          <div className="ps-footer-col" key={col.title}>
-            <h4>{col.title}</h4>
-            <ul>
-              {col.links.map((l) => (
-                <li key={l.label}>
-                  <a
-                    href={l.href}
-                    target={isExternal(l.href) ? "_blank" : undefined}
-                    rel={isExternal(l.href) ? "noopener noreferrer" : undefined}
-                  >
-                    {l.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-
-        <div className="ps-footer-col ps-footer-col--last">
-          <h4>Legal</h4>
-          <ul>
-            {content.legal.map((l) => (
-              <li key={l}>
-                <a href="#">{l}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div className="ps-footer-bottom">
-        <span className="ps-footer-copy">{content.copyright}</span>
-        <div className="ps-footer-legal">
-          {content.legal.map((l) => (
-            <a key={l} href="#">
-              {l}
-            </a>
+        <ul className="ps-footer-socials" aria-label="Redes sociais">
+          {content.socials.map((s) => (
+            <li key={s.label}>
+              <a
+                href={s.href}
+                target={isExternal(s.href) ? "_blank" : undefined}
+                rel={isExternal(s.href) ? "noopener noreferrer" : undefined}
+                className="ps-footer-social"
+              >
+                {s.label}
+              </a>
+            </li>
           ))}
+        </ul>
+
+        <div className="ps-footer-bottom">
+          <p className="ps-footer-copy">{content.copyright}</p>
         </div>
       </div>
     </footer>

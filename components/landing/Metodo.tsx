@@ -1,35 +1,59 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import type { MetodoContent } from "@/lib/landing-content";
-import { MethodStep } from "@/components/ui/MethodStep";
 
 /**
- * Metodo — sticky title lateral (desktop) + etapas verticais com linha de progresso.
- * Mobile vira timeline vertical.
+ * Método JFV — quatro passos em fluxo horizontal.
+ * Posicionar → Atrair → Vender → Escalar.
  */
 export function Metodo({ content }: { content: MetodoContent }) {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const root = sectionRef.current;
+    if (!root) return;
+    const items = Array.from(root.querySelectorAll<HTMLElement>(".ps-mstep"));
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.add("is-visible");
+            io.unobserve(e.target);
+          }
+        }
+      },
+      { threshold: 0.2 }
+    );
+    items.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <section className="ps-metodo" id="metodo">
+    <section className="ps-metodo" ref={sectionRef} id="metodo">
       <div className="ps-metodo-inner">
-        <aside className="ps-metodo-aside">
-          <div className="ps-sh">
-            <div className="ps-sh-eyebrow">{content.eyebrow}</div>
-            <h2 className="ps-sh-title">{content.stickyTitle}</h2>
-            <p className="ps-metodo-aside-text">{content.stickySub}</p>
-          </div>
+        <header className="ps-sh ps-sh--center fade-up">
+          <div className="ps-sh-eyebrow">{content.eyebrow}</div>
+          <h2 className="ps-sh-title">{content.title}</h2>
+          <p className="ps-sh-sub">{content.sub}</p>
+        </header>
 
-          <div className="ps-metodo-aside-meta">
-            <span className="ps-metodo-aside-tag">Sistema proprietário</span>
-            <span className="ps-metodo-aside-line" aria-hidden />
-            <span className="ps-metodo-aside-step">{content.steps.length} movimentos</span>
-          </div>
-        </aside>
-
-        <div className="ps-metodo-timeline">
-          {content.steps.map((s, i) => (
-            <MethodStep key={s.num} step={s} index={i} total={content.steps.length} />
+        <ol className="ps-metodo-flow">
+          {content.steps.map((step, i) => (
+            <li key={i} className="ps-mstep">
+              <div className="ps-mstep-head">
+                <span className="ps-mstep-num">{step.num}</span>
+                <h3 className="ps-mstep-name">{step.name}</h3>
+              </div>
+              <p className="ps-mstep-desc">{step.desc}</p>
+              {i < content.steps.length - 1 && (
+                <span className="ps-mstep-arrow" aria-hidden>
+                  →
+                </span>
+              )}
+            </li>
           ))}
-        </div>
+        </ol>
       </div>
     </section>
   );

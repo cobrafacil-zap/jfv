@@ -4,7 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase";
    Conteúdo dinâmico da landing pública.
    Cada seção é armazenada como JSON no Supabase (landing_content)
    e editável em /admin/conteudo. Tudo aqui tem default embutido
-   (cópia + fotos da referência) — a home funciona mesmo sem salvar nada.
+   — a home funciona mesmo sem salvar nada.
    ============================================================ */
 
 export type NavLink = { label: string; href: string };
@@ -16,25 +16,23 @@ export type NavContent = {
   cta: CTA;
 };
 
-export type HeroContent = {
-  eyebrow: string;
-  headline: string[];          // linhas da headline principal
-  headlineEm: string[];        // linhas destacadas (mesma cadência)
-  sub: string;
-  primaryCta: CTA;
-  secondaryCta: CTA;
-  photoUrl: string;
-  proof: string[];             // provas curtas exibidas no hero (sem repetir seção)
+/** Apresentação — abertura da página (substitui o antigo Hero editorial). */
+export type ApresentacaoContent = {
+  eyebrow: string;            // ex: "MÉTODO JFV"
+  name: string;               // "Priscila Sinópolis"
+  method: string;             // "Método JFV"
+  tagline: string;            // frase curta de venda
+  sub: string;                // parágrafo de apoio
+  photoUrl: string;           // foto vertical da Priscila
+  stats: { value: string; label: string }[];
+  primaryCta: CTA;            // "Conheça os programas"
+  secondaryCta: CTA;          // social principal
+  instagramHandle: string;    // "@priscila_sinopolis"
 };
 
-export type PositioningContent = {
-  eyebrow: string;
-  title: string[];             // linhas do título grande
-  titleEm: string[];           // parte em destaque
-  paragraphs: string[];
-  chips: string[];             // micro-indicadores visuais (etapas do método)
-  quote: string;
-  quoteSource: string;
+/** Fundo fixo (foto de identidade com overlay escuro). */
+export type FundoFotoContent = {
+  url: string;
 };
 
 export type SobreContent = {
@@ -49,25 +47,9 @@ export type SobreContent = {
   tags: string[];
 };
 
-export type ConceptualCard = { title: string; text: string };
-export type ConceptualContent = {
-  eyebrow: string;
-  title: string;
-  titleEm: string;
-  sub: string;
-  cards: ConceptualCard[];
-  words: string[];             // palavras para a faixa marquee
-  closing: string;
-};
-
-export type ProductFilter = {
-  id: string;
-  label: string;
-};
-
 export type ProductCard = {
   id: string;
-  category: string;            // precisa bater com um filter.id
+  category: string;
   categoryLabel: string;
   title: string;
   desc: string;
@@ -77,6 +59,7 @@ export type ProductCard = {
   buttonLabel: string;
   href: string;
   featured?: boolean;
+  coverUrl?: string;          // NOVO: cover do card (opcional; placeholder se vazio)
 };
 
 export type ProdutosContent = {
@@ -84,28 +67,24 @@ export type ProdutosContent = {
   title: string;
   titleEm: string;
   sub: string;
-  filters: ProductFilter[];
   cards: ProductCard[];
-  catalogNote: string;         // texto exibido ao expandir
-  allCta: { label: string; href: string };
+  allCta: CTA;
 };
 
 export type MetodoStep = {
-  num: string;                 // "01"
+  num: string;
   name: string;
   desc: string;
 };
 export type MetodoContent = {
   eyebrow: string;
-  stickyTitle: string;         // título fixo lateral (desktop)
-  stickySub: string;
   title: string;
   sub: string;
   steps: MetodoStep[];
 };
 
 export type Depoimento = {
-  phrase: string;              // frase principal grande
+  phrase: string;
   text: string;
   name: string;
   role: string;
@@ -132,61 +111,56 @@ export type FaqContent = {
   ctaHref: string;
 };
 
-export type CtaContent = {
+/** Encerramento — foto + headline grande + CTA único (substitui o CTA final). */
+export type ClosingContent = {
   eyebrow: string;
-  title: string[];
-  titleEm: string[];
+  headline: string;
+  headlineEm: string;
   sub: string;
-  primary: CTA;
-  secondary: CTA;
+  primaryCta: CTA;
+  secondaryCta?: CTA;
+  photoUrl: string;
 };
 
-export type FooterColumn = { title: string; links: NavLink[] };
 export type SocialLink = { label: string; href: string };
 export type FooterContent = {
   brand: string;
   method: string;
   tagline: string;
   socials: SocialLink[];
-  columns: FooterColumn[];
-  legal: string[];
   copyright: string;
 };
 
 export type LandingContent = {
   nav: NavContent;
-  hero: HeroContent;
-  positioning: PositioningContent;
-  sobre: SobreContent;
-  conceptual: ConceptualContent;
+  apresentacao: ApresentacaoContent;
+  fundoFoto: FundoFotoContent;
   produtos: ProdutosContent;
+  sobre: SobreContent;
   metodo: MetodoContent;
   resultados: ResultadosContent;
   faq: FaqContent;
-  cta: CtaContent;
+  closing: ClosingContent;
   footer: FooterContent;
 };
 
 export const LANDING_SECTIONS = [
   "nav",
-  "hero",
-  "positioning",
-  "sobre",
-  "conceptual",
+  "apresentacao",
+  "fundoFoto",
   "produtos",
+  "sobre",
   "metodo",
   "resultados",
   "faq",
-  "cta",
+  "closing",
   "footer",
 ] as const;
 
 export type LandingSectionKey = (typeof LANDING_SECTIONS)[number];
 
 /* ============================================================
-   DEFAULTS — refletem o novo tom editorial e a nova hierarquia.
-   Não inventamos números/depoimentos: tudo é estrutural.
-   Depoimentos marcados com isPlaceholder são aguardando conteúdo real.
+   DEFAULTS — nova estrutura personal-brand (bio-link premium).
    ============================================================ */
 
 export const defaultContent: LandingContent = {
@@ -200,97 +174,31 @@ export const defaultContent: LandingContent = {
     ],
     cta: { label: "Conheça os programas", href: "#programas" },
   },
-  hero: {
+  apresentacao: {
     eyebrow: "MÉTODO JFV · VENDAS SEM COMPLICAÇÃO",
-    headline: ["Vender não precisa", "ser complicado."],
-    headlineEm: [],
+    name: "Priscila Sinópolis",
+    method: "Método JFV",
+    tagline: "Vender não precisa ser complicado.",
     sub: "Eu transformei anos de experiência comercial em um método simples para quem precisa vender mais — seja um produto, um serviço ou uma empresa inteira.",
-    primaryCta: { label: "Conheça o Método JFV", href: "#metodo" },
-    secondaryCta: { label: "Ver programas", href: "#programas" },
     photoUrl: "/priscila/hero.jpg",
-    proof: [
-      "+7 anos de experiência",
-      "+500 clientes atendidos",
-      "Atuação nacional e internacional",
-      "Método próprio de vendas",
-    ],
-  },
-  positioning: {
-    eyebrow: "POSICIONAMENTO",
-    title: ["Vendas não são talento.", "São processo."],
-    titleEm: ["São processo."],
-    paragraphs: [
-      "Você não precisa nascer vendedor.",
-      "Precisa entender quem abordar, como criar interesse, como apresentar valor, como conduzir a decisão e como continuar vendendo depois do primeiro “não”.",
-      "É exatamente isso que o Método JFV organiza.",
-    ],
-    chips: ["Mentalidade", "Prospecção", "Relacionamento", "Oferta", "Follow-up", "Escala"],
-    quote: "Vendas é a arte de fazer a coisa certa chegar à pessoa certa, no momento certo.",
-    quoteSource: "Priscila Sinópolis",
-  },
-  sobre: {
-    eyebrow: "QUEM É",
-    title: "Eu ensino vendas",
-    highlight: "porque vivo vendas.",
-    paragraphs: [
-      "Priscila Sinópolis é empresária, mentora e estrategista comercial, com mais de 7 anos de experiência construindo estratégias de aquisição, vendas e crescimento para profissionais e empresas.",
-      "Ao longo dessa trajetória, transformou a experiência prática em uma metodologia própria: o JFV — Jeito Fácil de Vender.",
-      "Um método criado para tirar vendas do campo da improvisação e transformar o comercial em um processo simples, replicável e escalável.",
-    ],
-    photoMain: "/priscila/sobre-main.jpg",
-    photoSm1: "/priscila/sobre-1.jpg",
-    photoSm2: "/priscila/sobre-2.jpg",
     stats: [
       { value: "+7", label: "anos em vendas" },
       { value: "+500", label: "clientes atendidos" },
       { value: "JFV", label: "método próprio" },
+      { value: "BR +", label: "atuação internacional" },
     ],
-    tags: ["Vendas", "Estratégia Comercial", "Gestão", "Mentoria", "Empresas"],
+    primaryCta: { label: "Conheça os programas", href: "#programas" },
+    secondaryCta: { label: "Falar no WhatsApp", href: "https://wa.me/5543996820296" },
+    instagramHandle: "@priscila_sinopolis",
   },
-  conceptual: {
-    eyebrow: "A LÓGICA",
-    title: "O produto muda.",
-    titleEm: "A lógica da venda não.",
-    sub: "De um serviço de R$ 100 a uma negociação de milhares de reais, toda venda passa por pessoas, percepção de valor, confiança e decisão.",
-    cards: [
-      {
-        title: "Pessoas compram de pessoas",
-        text: "Antes do produto, o cliente decide se confia em quem está vendendo. Autoridade e clareza vencem argumento.",
-      },
-      {
-        title: "Valor é percepção, não preço",
-        text: "O que define a decisão raramente é o menor valor. É o quanto a solução faz sentido para aquele cenário.",
-      },
-      {
-        title: "Decisão tem tempo",
-        text: "Vender é conduzir a decisão no ritmo certo — sem pressionar, sem sumir. Esse equilíbrio é processo.",
-      },
-      {
-        title: "Confiança se constrói",
-        text: "Não existe venda consistente sem construção de confiança ao longo do tempo. Cada interação soma ou subtrai.",
-      },
-    ],
-    words: [
-      "SERVIÇOS",
-      "VAREJO",
-      "IMÓVEIS",
-      "CONSULTORIA",
-      "INFOPRODUTOS",
-      "B2B",
-      "ALIMENTAÇÃO",
-      "TECNOLOGIA",
-      "MODA",
-    ],
-    closing: "Se existe alguém comprando, existe um processo de vendas que pode ser melhorado.",
+  fundoFoto: {
+    url: "/priscila/hero.jpg",
   },
   produtos: {
     eyebrow: "PROGRAMAS",
-    title: "Três caminhos",
-    titleEm: "para destravar suas vendas.",
-    sub: "Comece pelo que faz sentido agora. O próximo passo aparece quando você estiver pronto para ele.",
-    filters: [
-      { id: "all", label: "Todos" },
-    ],
+    title: "O que eu criei",
+    titleEm: "para você vender mais.",
+    sub: "Quatro caminhos diferentes para o mesmo objetivo: tirar vendas do improviso e transformar em processo.",
     cards: [
       {
         id: "jfv-assinatura",
@@ -312,7 +220,20 @@ export const defaultContent: LandingContent = {
         title: "Do Zero aos 10k",
         desc: "Programa individual para estruturar um negócio do zero e alcançar os primeiros R$ 10 mil por mês.",
         idealFor: "Para quem quer acompanhamento próximo.",
+        price: "R$ 10k",
+        priceSuffix: "/meta mensal",
         buttonLabel: "Aplicar para a mentoria",
+        href: "https://forms.gle/rEyppDKmzZypoSd76",
+      },
+      {
+        id: "mentoria-individual",
+        category: "mentorias",
+        categoryLabel: "Mentoria Premium",
+        title: "Mentoria Individual",
+        desc: "Acompanhamento 1:1 com a Priscila para construir uma estratégia comercial sob medida, com plano de ação, revisões e suporte direto.",
+        idealFor: "Para quem quer acompanhamento próximo e personalizado.",
+        price: "Sob consulta",
+        buttonLabel: "Quero aplicar",
         href: "https://forms.gle/rEyppDKmzZypoSd76",
       },
       {
@@ -322,49 +243,56 @@ export const defaultContent: LandingContent = {
         title: "Aceleração Comercial",
         desc: "Consultoria estratégica para empresas que querem aumentar faturamento e estruturar equipes de vendas.",
         idealFor: "Para empresas com operação comercial ativa.",
+        price: "Sob consulta",
         buttonLabel: "Solicitar diagnóstico",
         href: "https://forms.gle/sWTZ5FmFDRutLZfH7",
       },
     ],
-    catalogNote: "",
     allCta: { label: "Falar com a equipe", href: "https://wa.me/5543996820296" },
+  },
+  sobre: {
+    eyebrow: "QUEM É",
+    title: "Eu ensino vendas",
+    highlight: "porque vivo vendas.",
+    paragraphs: [
+      "Priscila Sinópolis é empresária, mentora e estrategista comercial, com mais de 7 anos de experiência construindo estratégias de aquisição, vendas e crescimento para profissionais e empresas.",
+      "Ao longo dessa trajetória, transformou a experiência prática em uma metodologia própria: o JFV — Jeito Fácil de Vender.",
+      "Um método criado para tirar vendas do campo da improvisação e transformar o comercial em um processo simples, replicável e escalável.",
+    ],
+    photoMain: "/priscila/sobre-main.jpg",
+    photoSm1: "/priscila/sobre-1.jpg",
+    photoSm2: "/priscila/sobre-2.jpg",
+    stats: [
+      { value: "+7", label: "anos em vendas" },
+      { value: "+500", label: "clientes atendidos" },
+      { value: "JFV", label: "método próprio" },
+    ],
+    tags: ["Vendas", "Estratégia Comercial", "Gestão", "Mentoria", "Empresas"],
   },
   metodo: {
     eyebrow: "MÉTODO JFV",
-    stickyTitle: "Método JFV",
-    stickySub: "Um processo. Seis movimentos. Um sistema de vendas.",
-    title: "Um método.",
-    sub: "Seis movimentos para construir um processo de vendas completo.",
+    title: "Quatro movimentos",
+    sub: "Posicionar, atrair, vender, escalar. Um processo para construir vendas consistentes — sem improvisar.",
     steps: [
       {
         num: "01",
-        name: "Mentalidade",
-        desc: "Venda começa antes da abordagem. Posicionamento, confiança e clareza comercial.",
+        name: "Posicionar",
+        desc: "Marca clara, mensagem certa, público certo. Antes de vender, você precisa ser encontrado pelas pessoas certas.",
       },
       {
         num: "02",
-        name: "Prospecção",
-        desc: "Pare de falar com todo mundo. Encontre quem realmente tem potencial para comprar.",
+        name: "Atrair",
+        desc: "Conteúdo, relacionamento e prospecção que geram demanda todos os dias — sem depender de anúncio.",
       },
       {
         num: "03",
-        name: "Relacionamento",
-        desc: "Venda começa na confiança. Aprenda a criar conexão antes de tentar convencer.",
+        name: "Vender",
+        desc: "Conduzir a decisão com método: abordagem, apresentação, contorno de objeções e fechamento.",
       },
       {
         num: "04",
-        name: "Oferta",
-        desc: "Não apresente características. Construa percepção de valor.",
-      },
-      {
-        num: "05",
-        name: "Follow-up",
-        desc: "A maioria das vendas não acontece na primeira conversa. Aprenda a continuar sem ser inconveniente.",
-      },
-      {
-        num: "06",
-        name: "Escala",
-        desc: "O que funciona uma vez precisa funcionar novamente. Transforme vendas em processo.",
+        name: "Escalar",
+        desc: "O que funciona uma vez vira processo. Padronize, treine, meça e faça o comercial crescer com previsibilidade.",
       },
     ],
   },
@@ -463,13 +391,14 @@ export const defaultContent: LandingContent = {
     ctaLabel: "Fale com a nossa equipe",
     ctaHref: "https://wa.me/5543996820296",
   },
-  cta: {
+  closing: {
     eyebrow: "PRÓXIMO PASSO",
-    title: ["Você não precisa vender", "do jeito difícil."],
-    titleEm: [],
+    headline: "Vender não precisa",
+    headlineEm: "ser complicado.",
     sub: "Escolha o programa que mais combina com o seu momento e comece a construir um processo comercial mais simples, previsível e consistente.",
-    primary: { label: "Encontrar meu programa", href: "#programas" },
-    secondary: { label: "Falar com a equipe", href: "https://wa.me/5543996820296" },
+    primaryCta: { label: "Encontrar meu programa", href: "#programas" },
+    secondaryCta: { label: "Falar com a equipe", href: "https://wa.me/5543996820296" },
+    photoUrl: "/priscila/sobre-main.jpg",
   },
   footer: {
     brand: "Priscila Sinópolis",
@@ -480,27 +409,6 @@ export const defaultContent: LandingContent = {
       { label: "LinkedIn", href: "https://www.linkedin.com/in/priscila-sin%C3%B3polis/" },
       { label: "WhatsApp", href: "https://wa.me/5543996820296" },
     ],
-    columns: [
-      {
-        title: "Navegação",
-        links: [
-          { label: "Sobre", href: "#sobre" },
-          { label: "Método JFV", href: "#metodo" },
-          { label: "Programas", href: "#programas" },
-          { label: "Resultados", href: "#resultados" },
-          { label: "Contato", href: "https://wa.me/5543996820296" },
-        ],
-      },
-      {
-        title: "Programas",
-        links: [
-          { label: "Assinatura JFV", href: "#programas" },
-          { label: "Mentoria Particular", href: "https://forms.gle/rEyppDKmzZypoSd76" },
-          { label: "Aceleração Empresarial", href: "https://forms.gle/sWTZ5FmFDRutLZfH7" },
-        ],
-      },
-    ],
-    legal: ["Termos de uso", "Política de privacidade"],
     copyright: "© 2026 Priscila Sinópolis. Todos os direitos reservados.",
   },
 };
@@ -536,15 +444,14 @@ export async function getLandingContent(): Promise<LandingContent> {
 
     return {
       nav: mergeSection("nav", map.get("nav")),
-      hero: mergeSection("hero", map.get("hero")),
-      positioning: mergeSection("positioning", map.get("positioning")),
-      sobre: mergeSection("sobre", map.get("sobre")),
-      conceptual: mergeSection("conceptual", map.get("conceptual")),
+      apresentacao: mergeSection("apresentacao", map.get("apresentacao")),
+      fundoFoto: mergeSection("fundoFoto", map.get("fundoFoto")),
       produtos: mergeSection("produtos", map.get("produtos")),
+      sobre: mergeSection("sobre", map.get("sobre")),
       metodo: mergeSection("metodo", map.get("metodo")),
       resultados: mergeSection("resultados", map.get("resultados")),
       faq: mergeSection("faq", map.get("faq")),
-      cta: mergeSection("cta", map.get("cta")),
+      closing: mergeSection("closing", map.get("closing")),
       footer: mergeSection("footer", map.get("footer")),
     };
   } catch {

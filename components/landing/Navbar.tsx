@@ -5,7 +5,8 @@ import type { NavContent } from "@/lib/landing-content";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 /**
- * Navbar — header premium, sticky, com blur ao rolar.
+ * Navbar — header minimalista.
+ * Transparente no topo, com blur ao rolar.
  */
 export function Navbar({ content }: { content: NavContent }) {
   const [scrolled, setScrolled] = useState(false);
@@ -23,7 +24,7 @@ export function Navbar({ content }: { content: NavContent }) {
   return (
     <header className={`ps-nav${scrolled ? " is-scrolled" : ""}`}>
       <div className="ps-nav-inner">
-        <a href="#hero" className="ps-nav-logo" aria-label="Priscila Sinópolis">
+        <a href="#apresentacao" className="ps-nav-logo" aria-label={content.brand}>
           {content.brand}
         </a>
 

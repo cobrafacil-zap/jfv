@@ -2,7 +2,7 @@ import type { SobreContent } from "@/lib/landing-content";
 
 /**
  * Sobre — composição editorial/assimétrica.
- * Imagem principal deslocada, fotos menores como apoio. Sem tilt 3D infantil.
+ * Stats integradas no texto in-line (não mais grid de cards isolados).
  */
 export function Sobre({ content }: { content: SobreContent }) {
   return (
@@ -51,14 +51,15 @@ export function Sobre({ content }: { content: SobreContent }) {
             ))}
           </div>
 
-          <dl className="ps-sobre-stats">
-            {content.stats.map((s) => (
-              <div className="ps-sobre-stat" key={s.label}>
-                <dt>{s.value}</dt>
-                <dd>{s.label}</dd>
-              </div>
+          {/* Stats integradas in-line com destaque terracota */}
+          <ul className="ps-sobre-stats" aria-label="Números">
+            {content.stats.map((s, i) => (
+              <li key={i} className="ps-sobre-stat">
+                <span className="ps-sobre-stat-value">{s.value}</span>
+                <span className="ps-sobre-stat-label">{s.label}</span>
+              </li>
             ))}
-          </dl>
+          </ul>
 
           <ul className="ps-sobre-tags" aria-label="Áreas de atuação">
             {content.tags.map((t) => (

@@ -25,8 +25,15 @@ const grotesk = Space_Grotesk({
 });
 
 // Script que roda antes da pintura para evitar flash do tema errado (FOUC).
-// Lê a preferência salva (ou do sistema) e seta data-theme no <html>.
-const themeScript = `(function(){try{var s=localStorage.getItem('theme');var t=s?s:(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme='light';}})();`;
+// Landing pública (`/`) usa tema escuro como padrão; admin segue a preferência do usuário.
+const themeScript = `(function(){try{
+  var path = location.pathname;
+  var isLanding = path === '/' || path === '/index.html';
+  var saved = localStorage.getItem('theme');
+  var sys = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  var t = saved || (isLanding ? 'dark' : sys);
+  document.documentElement.dataset.theme = t;
+}catch(e){document.documentElement.dataset.theme='dark';}})();`;
 
 export const metadata: Metadata = {
   title: "Priscila Sinópolis — Método JFV | Jeito Fácil de Vender",

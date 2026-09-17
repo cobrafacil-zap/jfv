@@ -2,15 +2,14 @@
 
 import type {
   NavContent,
-  HeroContent,
-  PositioningContent,
-  SobreContent,
-  ConceptualContent,
+  ApresentacaoContent,
+  FundoFotoContent,
   ProdutosContent,
+  SobreContent,
   MetodoContent,
   ResultadosContent,
   FaqContent,
-  CtaContent,
+  ClosingContent,
   FooterContent,
 } from "@/lib/landing-content";
 import {
@@ -30,15 +29,14 @@ const selectCls =
 
 type AnySection =
   | NavContent
-  | HeroContent
-  | PositioningContent
-  | SobreContent
-  | ConceptualContent
+  | ApresentacaoContent
+  | FundoFotoContent
   | ProdutosContent
+  | SobreContent
   | MetodoContent
   | ResultadosContent
   | FaqContent
-  | CtaContent
+  | ClosingContent
   | FooterContent;
 
 export type SectionFormProps<T extends AnySection> = {
@@ -94,22 +92,32 @@ export function NavForm({ value, onChange }: SectionFormProps<NavContent>) {
   );
 }
 
-/* ------------------------------- HERO ------------------------------ */
-export function HeroForm({ value, onChange }: SectionFormProps<HeroContent>) {
+/* --------------------------- APRESENTAÇÃO -------------------------- */
+export function ApresentacaoForm({ value, onChange }: SectionFormProps<ApresentacaoContent>) {
   return (
-    <Card title="Hero (topo)">
-      <Field label="Eyebrow (acima do título)">
+    <Card title="Apresentação (topo da página)">
+      <Field label="Eyebrow (acima do nome)">
         <TextInput value={value.eyebrow} onChange={(eyebrow) => onChange({ ...value, eyebrow })} />
       </Field>
-      <Field label="Headline (linhas)" hint="Cada linha em um item.">
-        <StringList
-          values={value.headline}
-          onChange={(headline) => onChange({ ...value, headline })}
-          itemLabel="Linha"
-        />
+      <Field label="Nome (exibido em destaque)">
+        <TextInput value={value.name} onChange={(name) => onChange({ ...value, name })} />
       </Field>
-      <Field label="Subtítulo">
+      <Field label="Método (rótulo curto)">
+        <TextInput value={value.method} onChange={(method) => onChange({ ...value, method })} />
+      </Field>
+      <Field label="Tagline (frase principal)">
+        <TextInput value={value.tagline} onChange={(tagline) => onChange({ ...value, tagline })} />
+      </Field>
+      <Field label="Parágrafo de apoio">
         <TextArea value={value.sub} onChange={(sub) => onChange({ ...value, sub })} />
+      </Field>
+      <ImageField label="Foto da Priscila (hero)" value={value.photoUrl} onChange={(photoUrl) => onChange({ ...value, photoUrl })} />
+      <Field label="@ do Instagram">
+        <TextInput
+          value={value.instagramHandle}
+          placeholder="@priscila_sinopolis"
+          onChange={(instagramHandle) => onChange({ ...value, instagramHandle })}
+        />
       </Field>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Botão primário">
@@ -119,36 +127,65 @@ export function HeroForm({ value, onChange }: SectionFormProps<HeroContent>) {
           <LinkFields value={value.secondaryCta} onChange={(secondaryCta) => onChange({ ...value, secondaryCta })} />
         </Field>
       </div>
-      <ImageField label="Foto do hero" value={value.photoUrl} onChange={(photoUrl) => onChange({ ...value, photoUrl })} />
-      <Field label="Provas (lista curta — máximo ~4)">
-        <StringList values={value.proof} onChange={(proof) => onChange({ ...value, proof })} itemLabel="Prova" />
-      </Field>
+      <div>
+        <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-text-muted">
+          Indicadores (valor + rótulo)
+        </span>
+        <div className="space-y-2">
+          {value.stats.map((s, i) => (
+            <div key={i} className="grid grid-cols-[1fr_2fr_auto] gap-2 items-end">
+              <Field label="Valor">
+                <TextInput
+                  value={s.value}
+                  onChange={(val) =>
+                    onChange({
+                      ...value,
+                      stats: value.stats.map((x, j) => (j === i ? { ...x, value: val } : x)),
+                    })
+                  }
+                />
+              </Field>
+              <Field label="Rótulo">
+                <TextInput
+                  value={s.label}
+                  onChange={(val) =>
+                    onChange({
+                      ...value,
+                      stats: value.stats.map((x, j) => (j === i ? { ...x, label: val } : x)),
+                    })
+                  }
+                />
+              </Field>
+              <RemoveButton
+                onClick={() =>
+                  onChange({ ...value, stats: value.stats.filter((_, j) => j !== i) })
+                }
+              />
+            </div>
+          ))}
+          <AddButton
+            label="+ Adicionar indicador"
+            onClick={() => onChange({ ...value, stats: [...value.stats, { value: "", label: "" }] })}
+          />
+        </div>
+      </div>
     </Card>
   );
 }
 
-/* ----------------------------- POSICIONAMENTO ----------------------- */
-export function PositioningForm({ value, onChange }: SectionFormProps<PositioningContent>) {
+/* ----------------------------- FUNDO ----------------------------- */
+export function FundoFotoForm({ value, onChange }: SectionFormProps<FundoFotoContent>) {
   return (
-    <Card title="Posicionamento (Vendas não são talento. São processo.)">
-      <Field label="Eyebrow">
-        <TextInput value={value.eyebrow} onChange={(eyebrow) => onChange({ ...value, eyebrow })} />
-      </Field>
-      <Field label="Título (linhas)">
-        <StringList values={value.title} onChange={(title) => onChange({ ...value, title })} itemLabel="Linha" />
-      </Field>
-      <Field label="Parágrafos">
-        <StringList values={value.paragraphs} onChange={(paragraphs) => onChange({ ...value, paragraphs })} itemLabel="Parágrafo" />
-      </Field>
-      <Field label="Chips (etapas do método)">
-        <StringList values={value.chips} onChange={(chips) => onChange({ ...value, chips })} itemLabel="Chip" />
-      </Field>
-      <Field label="Frase de destaque (quote)">
-        <TextArea value={value.quote} onChange={(quote) => onChange({ ...value, quote })} />
-      </Field>
-      <Field label="Autor da frase">
-        <TextInput value={value.quoteSource} onChange={(quoteSource) => onChange({ ...value, quoteSource })} />
-      </Field>
+    <Card title="Fundo fixo (foto de identidade)">
+      <p className="rounded-lg border border-border bg-bg-elevated/40 px-4 py-3 text-xs text-text-muted">
+        Foto full-bleed que fica fixa atrás de toda a página, com overlay escuro.
+        Use a mesma foto do hero para reforçar a identidade.
+      </p>
+      <ImageField
+        label="Imagem de fundo"
+        value={value.url}
+        onChange={(url) => onChange({ ...value, url })}
+      />
     </Card>
   );
 }
@@ -164,7 +201,7 @@ export function SobreForm({ value, onChange }: SectionFormProps<SobreContent>) {
         <Field label="Título (frase principal)">
           <TextInput value={value.title} onChange={(title) => onChange({ ...value, title })} />
         </Field>
-        <Field label="Destaque (em itálico roxo)">
+        <Field label="Destaque (em itálico)">
           <TextInput value={value.highlight} onChange={(highlight) => onChange({ ...value, highlight })} />
         </Field>
       </div>
@@ -225,86 +262,10 @@ export function SobreForm({ value, onChange }: SectionFormProps<SobreContent>) {
   );
 }
 
-/* --------------------------- CONCEITUAL --------------------------- */
-export function ConceptualForm({ value, onChange }: SectionFormProps<ConceptualContent>) {
-  return (
-    <Card title="Conceitual (O produto muda. A lógica da venda não.)">
-      <Field label="Eyebrow">
-        <TextInput value={value.eyebrow} onChange={(eyebrow) => onChange({ ...value, eyebrow })} />
-      </Field>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Título">
-          <TextInput value={value.title} onChange={(title) => onChange({ ...value, title })} />
-        </Field>
-        <Field label="Destaque">
-          <TextInput value={value.titleEm} onChange={(titleEm) => onChange({ ...value, titleEm })} />
-        </Field>
-      </div>
-      <Field label="Subtítulo">
-        <TextArea value={value.sub} onChange={(sub) => onChange({ ...value, sub })} />
-      </Field>
-      <div>
-        <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-text-muted">
-          Cards conceituais
-        </span>
-        <div className="space-y-3">
-          {value.cards.map((c, i) => (
-            <div key={i} className="rounded-lg border border-border bg-bg-elevated p-3">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-xs font-semibold text-text-muted">Card {i + 1}</span>
-                <RemoveButton
-                  onClick={() =>
-                    onChange({ ...value, cards: value.cards.filter((_, idx) => idx !== i) })
-                  }
-                />
-              </div>
-              <Field label="Título">
-                <TextInput
-                  value={c.title}
-                  onChange={(title) => {
-                    const cards = [...value.cards];
-                    cards[i] = { ...cards[i], title };
-                    onChange({ ...value, cards });
-                  }}
-                />
-              </Field>
-              <Field label="Texto">
-                <TextArea
-                  value={c.text}
-                  onChange={(text) => {
-                    const cards = [...value.cards];
-                    cards[i] = { ...cards[i], text };
-                    onChange({ ...value, cards });
-                  }}
-                />
-              </Field>
-            </div>
-          ))}
-          <AddButton
-            label="Adicionar card"
-            onClick={() =>
-              onChange({
-                ...value,
-                cards: [...value.cards, { title: "", text: "" }],
-              })
-            }
-          />
-        </div>
-      </div>
-      <Field label="Palavras (faixa marquee)">
-        <StringList values={value.words} onChange={(words) => onChange({ ...value, words })} itemLabel="Palavra" />
-      </Field>
-      <Field label="Frase de fechamento">
-        <TextArea value={value.closing} onChange={(closing) => onChange({ ...value, closing })} />
-      </Field>
-    </Card>
-  );
-}
-
 /* ----------------------------- PRODUTOS ---------------------------- */
 export function ProdutosForm({ value, onChange }: SectionFormProps<ProdutosContent>) {
   return (
-    <Card title="Programas">
+    <Card title="Programas (showcase)">
       <Field label="Eyebrow">
         <TextInput value={value.eyebrow} onChange={(eyebrow) => onChange({ ...value, eyebrow })} />
       </Field>
@@ -320,7 +281,7 @@ export function ProdutosForm({ value, onChange }: SectionFormProps<ProdutosConte
         <TextArea value={value.sub} onChange={(sub) => onChange({ ...value, sub })} />
       </Field>
       <div className="rounded-lg border border-border bg-bg-elevated/40 px-4 py-3 text-xs text-text-muted">
-        Catálogo fixo: até <strong className="text-text-primary">3 programas</strong>. Filtros foram removidos para uma leitura mais limpa.
+        Showcase visual: até <strong className="text-text-primary">4 produtos</strong>. Cada card tem cover (opcional — placeholder se vazio) + título + descrição + CTA.
       </div>
       <div>
         <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-text-muted">
@@ -351,7 +312,7 @@ export function ProdutosForm({ value, onChange }: SectionFormProps<ProdutosConte
                     }
                   />
                 </Field>
-                <Field label="Categoria (id do filtro)">
+                <Field label="Categoria">
                   <TextInput
                     value={card.category}
                     onChange={(category) =>
@@ -433,6 +394,16 @@ export function ProdutosForm({ value, onChange }: SectionFormProps<ProdutosConte
                   />
                 </Field>
               </div>
+              <ImageField
+                label="Cover do card (opcional — placeholder elegante se vazio)"
+                value={card.coverUrl ?? ""}
+                onChange={(coverUrl) =>
+                  onChange({
+                    ...value,
+                    cards: value.cards.map((x, j) => (j === i ? { ...x, coverUrl } : x)),
+                  })
+                }
+              />
               <div className="grid gap-4 sm:grid-cols-[1fr_2fr]">
                 <Field label="Botão (texto)">
                   <TextInput
@@ -475,7 +446,7 @@ export function ProdutosForm({ value, onChange }: SectionFormProps<ProdutosConte
               </label>
             </Card>
           ))}
-          {value.cards.length < 3 && (
+          {value.cards.length < 4 && (
             <AddButton
               label="+ Adicionar produto"
               onClick={() =>
@@ -513,15 +484,9 @@ export function ProdutosForm({ value, onChange }: SectionFormProps<ProdutosConte
 /* ----------------------------- MÉTODO ------------------------------ */
 export function MetodoForm({ value, onChange }: SectionFormProps<MetodoContent>) {
   return (
-    <Card title="Método JFV (passos)">
+    <Card title="Método JFV (4 passos)">
       <Field label="Eyebrow">
         <TextInput value={value.eyebrow} onChange={(eyebrow) => onChange({ ...value, eyebrow })} />
-      </Field>
-      <Field label="Título sticky (lateral desktop)">
-        <TextInput value={value.stickyTitle} onChange={(stickyTitle) => onChange({ ...value, stickyTitle })} />
-      </Field>
-      <Field label="Subtítulo sticky">
-        <TextArea value={value.stickySub} onChange={(stickySub) => onChange({ ...value, stickySub })} />
       </Field>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Título do bloco">
@@ -600,7 +565,7 @@ export function ResultadosForm({ value, onChange }: SectionFormProps<ResultadosC
         <Field label="Título">
           <TextInput value={value.title} onChange={(title) => onChange({ ...value, title })} />
         </Field>
-        <Field label="Destaque">
+        <Field label="Destaque (itálico)">
           <TextInput value={value.titleEm} onChange={(titleEm) => onChange({ ...value, titleEm })} />
         </Field>
       </div>
@@ -827,33 +792,43 @@ export function FaqForm({ value, onChange }: SectionFormProps<FaqContent>) {
   );
 }
 
-/* ------------------------------- CTA ------------------------------- */
-export function CtaForm({ value, onChange }: SectionFormProps<CtaContent>) {
+/* ----------------------------- CLOSING ----------------------------- */
+export function ClosingForm({ value, onChange }: SectionFormProps<ClosingContent>) {
   return (
-    <Card title="CTA final">
+    <Card title="Encerramento (CTA final)">
       <Field label="Eyebrow">
         <TextInput value={value.eyebrow} onChange={(eyebrow) => onChange({ ...value, eyebrow })} />
       </Field>
-      <Field label="Título (linhas)" hint="Cada linha em um item.">
-        <StringList values={value.title} onChange={(title) => onChange({ ...value, title })} itemLabel="Linha" />
-      </Field>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Headline (primeira parte)">
+          <TextInput value={value.headline} onChange={(headline) => onChange({ ...value, headline })} />
+        </Field>
+        <Field label="Headline destaque (itálico)">
+          <TextInput value={value.headlineEm} onChange={(headlineEm) => onChange({ ...value, headlineEm })} />
+        </Field>
+      </div>
       <Field label="Subtítulo">
         <TextArea value={value.sub} onChange={(sub) => onChange({ ...value, sub })} />
       </Field>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Botão primário">
           <LinkFields
-            value={value.primary}
-            onChange={(primary) => onChange({ ...value, primary })}
+            value={value.primaryCta}
+            onChange={(primaryCta) => onChange({ ...value, primaryCta })}
           />
         </Field>
-        <Field label="Botão secundário">
+        <Field label="Botão secundário (opcional)">
           <LinkFields
-            value={value.secondary}
-            onChange={(secondary) => onChange({ ...value, secondary })}
+            value={value.secondaryCta ?? { label: "", href: "" }}
+            onChange={(secondaryCta) => onChange({ ...value, secondaryCta })}
           />
         </Field>
       </div>
+      <ImageField
+        label="Foto de fundo do encerramento"
+        value={value.photoUrl}
+        onChange={(photoUrl) => onChange({ ...value, photoUrl })}
+      />
     </Card>
   );
 }
@@ -915,99 +890,9 @@ export function FooterForm({ value, onChange }: SectionFormProps<FooterContent>)
           />
         </div>
       </div>
-      <div>
-        <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-text-muted">
-          Colunas de links
-        </span>
-        <div className="space-y-4">
-          {value.columns.map((col, i) => (
-            <Card
-              key={i}
-              title={col.title || `Coluna ${i + 1}`}
-              actions={
-                <RemoveButton
-                  onClick={() =>
-                    onChange({ ...value, columns: value.columns.filter((_, j) => j !== i) })
-                  }
-                />
-              }
-            >
-              <Field label="Título da coluna">
-                <TextInput
-                  value={col.title}
-                  onChange={(title) =>
-                    onChange({
-                      ...value,
-                      columns: value.columns.map((x, j) => (j === i ? { ...x, title } : x)),
-                    })
-                  }
-                />
-              </Field>
-              <div className="space-y-2">
-                {col.links.map((l, j) => (
-                  <div key={j} className="flex items-end gap-2">
-                    <LinkFields
-                      value={l}
-                      onChange={(nl) =>
-                        onChange({
-                          ...value,
-                          columns: value.columns.map((x, k) =>
-                            k === i
-                              ? { ...x, links: x.links.map((y, m) => (m === j ? nl : y)) }
-                              : x
-                          ),
-                        })
-                      }
-                    />
-                    <RemoveButton
-                      onClick={() =>
-                        onChange({
-                          ...value,
-                          columns: value.columns.map((x, k) =>
-                            k === i
-                              ? { ...x, links: x.links.filter((_, m) => m !== j) }
-                              : x
-                          ),
-                        })
-                      }
-                    />
-                  </div>
-                ))}
-                <AddButton
-                  label="+ Adicionar link"
-                  onClick={() =>
-                    onChange({
-                      ...value,
-                      columns: value.columns.map((x, k) =>
-                        k === i ? { ...x, links: [...x.links, { label: "", href: "#" }] } : x
-                      ),
-                    })
-                  }
-                />
-              </div>
-            </Card>
-          ))}
-          <AddButton
-            label="+ Adicionar coluna"
-            onClick={() => onChange({ ...value, columns: [...value.columns, { title: "", links: [] }] })}
-          />
-        </div>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Copyright">
-          <TextInput value={value.copyright} onChange={(copyright) => onChange({ ...value, copyright })} />
-        </Field>
-      </div>
-      <div>
-        <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-text-muted">
-          Legal
-        </span>
-        <StringList
-          values={value.legal}
-          onChange={(legal) => onChange({ ...value, legal })}
-          itemLabel="Item"
-        />
-      </div>
+      <Field label="Copyright">
+        <TextInput value={value.copyright} onChange={(copyright) => onChange({ ...value, copyright })} />
+      </Field>
     </Card>
   );
 }

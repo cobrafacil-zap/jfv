@@ -8,29 +8,27 @@ import type {
 } from "@/lib/landing-content";
 import {
   NavForm,
-  HeroForm,
-  PositioningForm,
-  SobreForm,
-  ConceptualForm,
+  ApresentacaoForm,
+  FundoFotoForm,
   ProdutosForm,
+  SobreForm,
   MetodoForm,
   ResultadosForm,
   FaqForm,
-  CtaForm,
+  ClosingForm,
   FooterForm,
 } from "./sections";
 
 const TABS: { key: LandingSectionKey; label: string }[] = [
   { key: "nav", label: "Menu" },
-  { key: "hero", label: "Hero" },
-  { key: "positioning", label: "Posicionamento" },
-  { key: "sobre", label: "Sobre" },
-  { key: "conceptual", label: "Conceitual" },
+  { key: "apresentacao", label: "Apresentação" },
+  { key: "fundoFoto", label: "Fundo (foto)" },
   { key: "produtos", label: "Programas" },
+  { key: "sobre", label: "Sobre" },
   { key: "metodo", label: "Método JFV" },
   { key: "resultados", label: "Resultados" },
   { key: "faq", label: "FAQ" },
-  { key: "cta", label: "CTA final" },
+  { key: "closing", label: "Encerramento" },
   { key: "footer", label: "Rodapé" },
 ];
 
@@ -40,7 +38,7 @@ function clone<T>(v: T): T {
 
 export function LandingEditor({ initial }: { initial: LandingContent }) {
   const [content, setContent] = useState<LandingContent>(() => clone(initial));
-  const [active, setActive] = useState<LandingSectionKey>("hero");
+  const [active, setActive] = useState<LandingSectionKey>("apresentacao");
   const [dirty, setDirty] = useState<Set<LandingSectionKey>>(new Set());
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<
@@ -91,14 +89,12 @@ export function LandingEditor({ initial }: { initial: LandingContent }) {
     switch (active) {
       case "nav":
         return <NavForm value={content.nav} onChange={(v) => update("nav", v)} />;
-      case "hero":
-        return <HeroForm value={content.hero} onChange={(v) => update("hero", v)} />;
-      case "positioning":
-        return <PositioningForm value={content.positioning} onChange={(v) => update("positioning", v)} />;
+      case "apresentacao":
+        return <ApresentacaoForm value={content.apresentacao} onChange={(v) => update("apresentacao", v)} />;
+      case "fundoFoto":
+        return <FundoFotoForm value={content.fundoFoto} onChange={(v) => update("fundoFoto", v)} />;
       case "sobre":
         return <SobreForm value={content.sobre} onChange={(v) => update("sobre", v)} />;
-      case "conceptual":
-        return <ConceptualForm value={content.conceptual} onChange={(v) => update("conceptual", v)} />;
       case "produtos":
         return <ProdutosForm value={content.produtos} onChange={(v) => update("produtos", v)} />;
       case "metodo":
@@ -107,8 +103,8 @@ export function LandingEditor({ initial }: { initial: LandingContent }) {
         return <ResultadosForm value={content.resultados} onChange={(v) => update("resultados", v)} />;
       case "faq":
         return <FaqForm value={content.faq} onChange={(v) => update("faq", v)} />;
-      case "cta":
-        return <CtaForm value={content.cta} onChange={(v) => update("cta", v)} />;
+      case "closing":
+        return <ClosingForm value={content.closing} onChange={(v) => update("closing", v)} />;
       case "footer":
         return <FooterForm value={content.footer} onChange={(v) => update("footer", v)} />;
     }
