@@ -3,7 +3,6 @@
 import type {
   NavContent,
   ApresentacaoContent,
-  FundoFotoContent,
   ProdutosContent,
   SobreContent,
   ResultadosContent,
@@ -29,7 +28,6 @@ const selectCls =
 type AnySection =
   | NavContent
   | ApresentacaoContent
-  | FundoFotoContent
   | ProdutosContent
   | SobreContent
   | ResultadosContent
@@ -167,23 +165,6 @@ export function ApresentacaoForm({ value, onChange }: SectionFormProps<Apresenta
           />
         </div>
       </div>
-    </Card>
-  );
-}
-
-/* ----------------------------- FUNDO ----------------------------- */
-export function FundoFotoForm({ value, onChange }: SectionFormProps<FundoFotoContent>) {
-  return (
-    <Card title="Fundo fixo (foto de identidade)">
-      <p className="rounded-lg border border-border bg-bg-elevated/40 px-4 py-3 text-xs text-text-muted">
-        Foto full-bleed que fica fixa atrás de toda a página, com overlay escuro.
-        Use a mesma foto do hero para reforçar a identidade.
-      </p>
-      <ImageField
-        label="Imagem de fundo"
-        value={value.url}
-        onChange={(url) => onChange({ ...value, url })}
-      />
     </Card>
   );
 }

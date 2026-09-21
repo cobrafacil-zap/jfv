@@ -9,7 +9,6 @@ import type {
 import {
   NavForm,
   ApresentacaoForm,
-  FundoFotoForm,
   ProdutosForm,
   SobreForm,
   ResultadosForm,
@@ -21,7 +20,6 @@ import {
 const TABS: { key: LandingSectionKey; label: string }[] = [
   { key: "nav", label: "Menu" },
   { key: "apresentacao", label: "Apresentação" },
-  { key: "fundoFoto", label: "Fundo (foto)" },
   { key: "produtos", label: "Programas" },
   { key: "sobre", label: "Sobre" },
   { key: "resultados", label: "Resultados" },
@@ -89,8 +87,6 @@ export function LandingEditor({ initial }: { initial: LandingContent }) {
         return <NavForm value={content.nav} onChange={(v) => update("nav", v)} />;
       case "apresentacao":
         return <ApresentacaoForm value={content.apresentacao} onChange={(v) => update("apresentacao", v)} />;
-      case "fundoFoto":
-        return <FundoFotoForm value={content.fundoFoto} onChange={(v) => update("fundoFoto", v)} />;
       case "sobre":
         return <SobreForm value={content.sobre} onChange={(v) => update("sobre", v)} />;
       case "produtos":

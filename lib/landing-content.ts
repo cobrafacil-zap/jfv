@@ -30,11 +30,6 @@ export type ApresentacaoContent = {
   instagramHandle: string;    // "@priscila_sinopolis"
 };
 
-/** Fundo fixo (foto de identidade com overlay escuro). */
-export type FundoFotoContent = {
-  url: string;
-};
-
 export type SobreContent = {
   eyebrow: string;
   title: string;
@@ -122,7 +117,6 @@ export type FooterContent = {
 export type LandingContent = {
   nav: NavContent;
   apresentacao: ApresentacaoContent;
-  fundoFoto: FundoFotoContent;
   produtos: ProdutosContent;
   sobre: SobreContent;
   resultados: ResultadosContent;
@@ -134,7 +128,6 @@ export type LandingContent = {
 export const LANDING_SECTIONS = [
   "nav",
   "apresentacao",
-  "fundoFoto",
   "produtos",
   "sobre",
   "resultados",
@@ -175,9 +168,6 @@ export const defaultContent: LandingContent = {
     primaryCta: { label: "Conheça os programas", href: "#programas" },
     secondaryCta: { label: "Falar no WhatsApp", href: "https://wa.me/5543996820296" },
     instagramHandle: "@priscila_sinopolis",
-  },
-  fundoFoto: {
-    url: "/priscila/hero.jpg",
   },
   produtos: {
     eyebrow: "PROGRAMAS",
@@ -403,7 +393,6 @@ export async function getLandingContent(): Promise<LandingContent> {
     return {
       nav: mergeSection("nav", map.get("nav")),
       apresentacao: mergeSection("apresentacao", map.get("apresentacao")),
-      fundoFoto: mergeSection("fundoFoto", map.get("fundoFoto")),
       produtos: mergeSection("produtos", map.get("produtos")),
       sobre: mergeSection("sobre", map.get("sobre")),
       resultados: mergeSection("resultados", map.get("resultados")),

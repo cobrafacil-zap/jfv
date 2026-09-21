@@ -45,7 +45,7 @@
 
     --font-display: var(--font-playfair), Georgia, serif;
     --font-body: var(--font-inter), system-ui, sans-serif;
-    --font-label: var(--font-grotesk), var(--font-inter), system-ui, sans-serif;
+    --font-label: var(--font-plex), ui-monospace, "SFMono-Regular", Menlo, monospace;
     --accent-2: 218 152 102;         /* cobre claro */
     --accent-3: 130 102 80;          /* taupe */
     --max-w: 1180px;
@@ -159,15 +159,15 @@
    LANDING — Priscila Sinópolis
    Visual: preto/grafite/off-white + terracota queimado como acento.
    Bordas arredondadas 14-32px, fotos grandes, cards visuais,
-   fundo fixo (foto + overlay escuro). Tema escuro como padrão.
-   Estrutura: fundo (fixed) → nav → apresentacao → produtos →
-   sobre → resultados → faq → closing → footer.
+   fundo sólido marrom profundo. Tema escuro como padrão.
+   Estrutura: nav → apresentacao → produtos → sobre → resultados →
+   faq → closing → footer.
    ============================================================ */
 
 .ps-landing {
   font-family: var(--font-body);
   color: rgb(var(--body));
-  background: transparent;
+  background-color: rgb(var(--bg-dark));
   position: relative;
   isolation: isolate;
   --section-pad-y: clamp(72px, 8vw, 120px);
@@ -179,29 +179,28 @@
   box-sizing: border-box;
 }
 
-/* ---------- FUNDO FIXO (foto + overlay) ---------- */
-.ps-fundo {
+/* ---------- FUNDO SÓLIDO INSTITUCIONAL ---------- */
+/* Gradiente vertical sutil no body da landing para dar profundidade
+   sem usar fotos. Mais limpo e corporativo que foto pessoal. */
+.ps-landing::before {
+  content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  pointer-events: none;
-}
-.ps-fundo::after {
-  content: "";
-  position: absolute;
-  inset: 0;
   background:
+    radial-gradient(
+      ellipse at top,
+      rgba(var(--accent) / 0.08) 0%,
+      transparent 55%
+    ),
     linear-gradient(
       180deg,
-      rgba(14, 10, 6, 0.78) 0%,
-      rgba(14, 10, 6, 0.82) 60%,
-      rgba(14, 10, 6, 0.92) 100%
+      rgb(var(--bg-dark)) 0%,
+      rgb(var(--bg-dark-2)) 100%
     );
+  pointer-events: none;
 }
-/* seções escuras pesadas ficam acima do fundo — o body precisa ser escuro */
+/* seções escuras pesadas ficam acima do fundo */
 body {
   background-color: rgb(14 10 6);
   color: rgb(248 244 236);
@@ -248,7 +247,6 @@ body {
 }
 .ps-landing .ps-nav-logo .ps-nav-mark {
   color: rgb(var(--accent));
-  font-style: italic;
   font-weight: 800;
 }
 .ps-landing .ps-nav-logo .ps-nav-tag {
@@ -431,10 +429,9 @@ body {
 .ps-landing .ps-apresentacao-text { position: relative; z-index: 2; }
 .ps-landing .ps-apresentacao-name {
   font-family: var(--font-display);
-  font-weight: 800;
-  font-style: italic;
-  letter-spacing: -0.028em;
-  line-height: 1.02;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.04;
   color: rgb(248 244 236);
   font-size: clamp(2.6rem, 5.6vw, 4.6rem);
   margin: 6px 0 14px;
@@ -453,9 +450,8 @@ body {
 }
 .ps-landing .ps-apresentacao-tagline {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-style: italic;
-  letter-spacing: -0.018em;
+  font-weight: 600;
+  letter-spacing: -0.015em;
   font-size: clamp(1.5rem, 2.6vw, 2.05rem);
   line-height: 1.22;
   color: rgb(248 244 236);
@@ -628,7 +624,7 @@ body {
 }
 .ps-landing .ps-pcard-placeholder-mark {
   font-family: var(--font-display);
-  font-weight: 800; font-style: italic;
+  font-weight: 700;
   font-size: 2.6rem;
   color: rgba(248, 244, 236, 0.92);
   letter-spacing: -0.02em;
@@ -1187,10 +1183,9 @@ body {
 }
 .ps-landing .ps-footer-brand {
   font-family: var(--font-display);
-  font-size: 1.6rem; font-weight: 800;
+  font-size: 1.6rem; font-weight: 700;
   color: rgb(248 244 236);
   letter-spacing: -0.02em;
-  font-style: italic;
 }
 .ps-landing .ps-footer-method {
   font-family: var(--font-label);

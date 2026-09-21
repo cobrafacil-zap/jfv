@@ -1,7 +1,6 @@
 import { getLandingContent } from "@/lib/landing-content";
 import { Navbar } from "@/components/landing/Navbar";
 import { Apresentacao } from "@/components/landing/Apresentacao";
-import { FundoIdentidade } from "@/components/landing/FundoIdentidade";
 import { ProdutosShowcase } from "@/components/landing/ProdutosShowcase";
 import { Sobre } from "@/components/landing/Sobre";
 import { Resultados } from "@/components/landing/Resultados";
@@ -18,21 +17,18 @@ export default async function Home() {
   const c = await getLandingContent();
 
   return (
-    <>
-      <FundoIdentidade content={c.fundoFoto} />
-      <main className="ps-landing">
-        <ScrollProgress />
+    <main className="ps-landing">
+      <ScrollProgress />
 
-        <Navbar content={c.nav} />
-        <Apresentacao content={c.apresentacao} />
-        <ProdutosShowcase content={c.produtos} />
-        <Sobre content={c.sobre} />
-        <Resultados content={c.resultados} />
-        <FAQ content={c.faq} />
-        <Closing content={c.closing} />
-        <Footer content={c.footer} />
-        <LandingScripts />
-      </main>
-    </>
+      <Navbar content={c.nav} />
+      <Apresentacao content={c.apresentacao} />
+      <ProdutosShowcase content={c.produtos} />
+      <Sobre content={c.sobre} />
+      <Resultados content={c.resultados} />
+      <FAQ content={c.faq} />
+      <Closing content={c.closing} />
+      <Footer content={c.footer} />
+      <LandingScripts />
+    </main>
   );
 }

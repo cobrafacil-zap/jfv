@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display, Space_Grotesk } from "next/font/google";
+import { Inter, Playfair_Display, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { getThemeColors, buildThemeCss } from "@/lib/theme-colors";
@@ -14,14 +14,14 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair",
   display: "swap",
-  weight: ["400", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
-const grotesk = Space_Grotesk({
+const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
-  variable: "--font-grotesk",
+  variable: "--font-plex",
   display: "swap",
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
 });
 
 // Script que roda antes da pintura para evitar flash do tema errado (FOUC).
@@ -75,7 +75,7 @@ export default async function RootLayout({
     <html
       lang="pt-BR"
       suppressHydrationWarning
-      className={`${inter.variable} ${playfair.variable} ${grotesk.variable}`}
+      className={`${inter.variable} ${playfair.variable} ${plexMono.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
