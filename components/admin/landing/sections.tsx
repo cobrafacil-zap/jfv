@@ -6,7 +6,6 @@ import type {
   FundoFotoContent,
   ProdutosContent,
   SobreContent,
-  MetodoContent,
   ResultadosContent,
   FaqContent,
   ClosingContent,
@@ -33,7 +32,6 @@ type AnySection =
   | FundoFotoContent
   | ProdutosContent
   | SobreContent
-  | MetodoContent
   | ResultadosContent
   | FaqContent
   | ClosingContent
@@ -477,79 +475,6 @@ export function ProdutosForm({ value, onChange }: SectionFormProps<ProdutosConte
           onChange={(allCta) => onChange({ ...value, allCta })}
         />
       </Field>
-    </Card>
-  );
-}
-
-/* ----------------------------- MÉTODO ------------------------------ */
-export function MetodoForm({ value, onChange }: SectionFormProps<MetodoContent>) {
-  return (
-    <Card title="Método JFV (4 passos)">
-      <Field label="Eyebrow">
-        <TextInput value={value.eyebrow} onChange={(eyebrow) => onChange({ ...value, eyebrow })} />
-      </Field>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Título do bloco">
-          <TextInput value={value.title} onChange={(title) => onChange({ ...value, title })} />
-        </Field>
-        <Field label="Subtítulo do bloco">
-          <TextInput value={value.sub} onChange={(sub) => onChange({ ...value, sub })} />
-        </Field>
-      </div>
-      <div className="space-y-4">
-        {value.steps.map((s, i) => (
-          <Card
-            key={i}
-            title={s.name || `Passo ${i + 1}`}
-            actions={
-              <RemoveButton
-                onClick={() => onChange({ ...value, steps: value.steps.filter((_, j) => j !== i) })}
-              />
-            }
-          >
-            <div className="grid gap-4 sm:grid-cols-[1fr_3fr]">
-              <Field label="Número">
-                <TextInput
-                  value={s.num}
-                  placeholder="01"
-                  onChange={(num) =>
-                    onChange({
-                      ...value,
-                      steps: value.steps.map((x, j) => (j === i ? { ...x, num } : x)),
-                    })
-                  }
-                />
-              </Field>
-              <Field label="Nome">
-                <TextInput
-                  value={s.name}
-                  onChange={(name) =>
-                    onChange({
-                      ...value,
-                      steps: value.steps.map((x, j) => (j === i ? { ...x, name } : x)),
-                    })
-                  }
-                />
-              </Field>
-            </div>
-            <Field label="Descrição">
-              <TextArea
-                value={s.desc}
-                onChange={(desc) =>
-                  onChange({
-                    ...value,
-                    steps: value.steps.map((x, j) => (j === i ? { ...x, desc } : x)),
-                  })
-                }
-              />
-            </Field>
-          </Card>
-        ))}
-        <AddButton
-          label="+ Adicionar passo"
-          onClick={() => onChange({ ...value, steps: [...value.steps, { num: "", name: "", desc: "" }] })}
-        />
-      </div>
     </Card>
   );
 }

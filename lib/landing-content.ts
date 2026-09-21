@@ -71,18 +71,6 @@ export type ProdutosContent = {
   allCta: CTA;
 };
 
-export type MetodoStep = {
-  num: string;
-  name: string;
-  desc: string;
-};
-export type MetodoContent = {
-  eyebrow: string;
-  title: string;
-  sub: string;
-  steps: MetodoStep[];
-};
-
 export type Depoimento = {
   phrase: string;
   text: string;
@@ -137,7 +125,6 @@ export type LandingContent = {
   fundoFoto: FundoFotoContent;
   produtos: ProdutosContent;
   sobre: SobreContent;
-  metodo: MetodoContent;
   resultados: ResultadosContent;
   faq: FaqContent;
   closing: ClosingContent;
@@ -150,7 +137,6 @@ export const LANDING_SECTIONS = [
   "fundoFoto",
   "produtos",
   "sobre",
-  "metodo",
   "resultados",
   "faq",
   "closing",
@@ -168,7 +154,6 @@ export const defaultContent: LandingContent = {
     brand: "Priscila Sinópolis",
     links: [
       { label: "Sobre", href: "#sobre" },
-      { label: "Método JFV", href: "#metodo" },
       { label: "Programas", href: "#programas" },
       { label: "Resultados", href: "#resultados" },
     ],
@@ -268,33 +253,6 @@ export const defaultContent: LandingContent = {
       { value: "JFV", label: "método próprio" },
     ],
     tags: ["Vendas", "Estratégia Comercial", "Gestão", "Mentoria", "Empresas"],
-  },
-  metodo: {
-    eyebrow: "MÉTODO JFV",
-    title: "Quatro movimentos",
-    sub: "Posicionar, atrair, vender, escalar. Um processo para construir vendas consistentes — sem improvisar.",
-    steps: [
-      {
-        num: "01",
-        name: "Posicionar",
-        desc: "Marca clara, mensagem certa, público certo. Antes de vender, você precisa ser encontrado pelas pessoas certas.",
-      },
-      {
-        num: "02",
-        name: "Atrair",
-        desc: "Conteúdo, relacionamento e prospecção que geram demanda todos os dias — sem depender de anúncio.",
-      },
-      {
-        num: "03",
-        name: "Vender",
-        desc: "Conduzir a decisão com método: abordagem, apresentação, contorno de objeções e fechamento.",
-      },
-      {
-        num: "04",
-        name: "Escalar",
-        desc: "O que funciona uma vez vira processo. Padronize, treine, meça e faça o comercial crescer com previsibilidade.",
-      },
-    ],
   },
   resultados: {
     eyebrow: "RESULTADOS",
@@ -448,7 +406,6 @@ export async function getLandingContent(): Promise<LandingContent> {
       fundoFoto: mergeSection("fundoFoto", map.get("fundoFoto")),
       produtos: mergeSection("produtos", map.get("produtos")),
       sobre: mergeSection("sobre", map.get("sobre")),
-      metodo: mergeSection("metodo", map.get("metodo")),
       resultados: mergeSection("resultados", map.get("resultados")),
       faq: mergeSection("faq", map.get("faq")),
       closing: mergeSection("closing", map.get("closing")),

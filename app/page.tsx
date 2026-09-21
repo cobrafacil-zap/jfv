@@ -4,7 +4,6 @@ import { Apresentacao } from "@/components/landing/Apresentacao";
 import { FundoIdentidade } from "@/components/landing/FundoIdentidade";
 import { ProdutosShowcase } from "@/components/landing/ProdutosShowcase";
 import { Sobre } from "@/components/landing/Sobre";
-import { Metodo } from "@/components/landing/Metodo";
 import { Resultados } from "@/components/landing/Resultados";
 import { FAQ } from "@/components/landing/FAQ";
 import { Closing } from "@/components/landing/Closing";
@@ -28,7 +27,6 @@ export default async function Home() {
         <Apresentacao content={c.apresentacao} />
         <ProdutosShowcase content={c.produtos} />
         <Sobre content={c.sobre} />
-        <Metodo content={c.metodo} />
         <Resultados content={c.resultados} />
         <FAQ content={c.faq} />
         <Closing content={c.closing} />

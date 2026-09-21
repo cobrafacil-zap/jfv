@@ -161,7 +161,7 @@
    Bordas arredondadas 14-32px, fotos grandes, cards visuais,
    fundo fixo (foto + overlay escuro). Tema escuro como padrão.
    Estrutura: fundo (fixed) → nav → apresentacao → produtos →
-   sobre → metodo → resultados → faq → closing → footer.
+   sobre → resultados → faq → closing → footer.
    ============================================================ */
 
 .ps-landing {
@@ -867,89 +867,6 @@ body {
 }
 
 /* ============================================================
-   MÉTODO JFV — fluxo horizontal 4 passos
-   ============================================================ */
-.ps-landing .ps-metodo {
-  padding: var(--section-pad-y) 24px;
-  position: relative; z-index: 1;
-}
-.ps-landing .ps-metodo-inner {
-  max-width: var(--max-w);
-  margin: 0 auto;
-}
-.ps-landing .ps-metodo-flow {
-  list-style: none; margin: 0; padding: 0;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0;
-  position: relative;
-  margin-top: 8px;
-}
-.ps-landing .ps-metodo-flow::before {
-  content: '';
-  position: absolute;
-  top: 38px;
-  left: 8%;
-  right: 8%;
-  height: 1px;
-  background: rgba(248, 244, 236, 0.18);
-  z-index: 0;
-}
-.ps-landing .ps-mstep {
-  position: relative;
-  padding: 0 18px;
-  text-align: center;
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.7s var(--ease-out-expo), transform 0.7s var(--ease-out-expo);
-  z-index: 1;
-}
-.ps-landing .ps-mstep.is-visible { opacity: 1; transform: translateY(0); }
-.ps-landing .ps-mstep-head {
-  display: flex; flex-direction: column; align-items: center; gap: 14px;
-  margin-bottom: 18px;
-}
-.ps-landing .ps-mstep-num {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 800;
-  font-size: 1.4rem;
-  color: rgb(14 10 6);
-  background: rgb(var(--accent));
-  width: 76px; height: 76px;
-  border-radius: 999px;
-  display: flex; align-items: center; justify-content: center;
-  letter-spacing: -0.02em;
-  position: relative;
-  z-index: 2;
-  box-shadow: 0 0 0 6px rgb(14 10 6);
-}
-.ps-landing .ps-mstep-name {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 1.18rem;
-  color: rgb(248 244 236);
-  margin: 0;
-  letter-spacing: -0.015em;
-}
-.ps-landing .ps-mstep-desc {
-  font-size: 0.9rem;
-  line-height: 1.7;
-  color: rgba(248, 244, 236, 0.7);
-  margin: 0;
-  max-width: 240px;
-  margin-left: auto; margin-right: auto;
-}
-.ps-landing .ps-mstep-arrow {
-  position: absolute;
-  top: 38px; right: -10px;
-  transform: translateY(-50%);
-  font-size: 1rem;
-  color: rgb(var(--accent));
-  z-index: 3;
-}
-
-/* ============================================================
    RESULTADOS / TESTIMONIALS
    ============================================================ */
 .ps-landing .ps-resultados {
@@ -1358,8 +1275,6 @@ body {
   .ps-landing .ps-apresentacao-visual { order: -1; }
   .ps-landing .ps-apresentacao-frame { max-width: 400px; }
   .ps-landing .ps-sobre-inner { grid-template-columns: 1fr; gap: 48px; }
-  .ps-landing .ps-metodo-flow { grid-template-columns: repeat(2, 1fr); gap: 40px 24px; }
-  .ps-landing .ps-metodo-flow::before { display: none; }
   .ps-landing .ps-tcar-slide { grid-template-columns: 1fr; }
 }
 
@@ -1387,8 +1302,6 @@ body {
   .ps-landing .ps-pcard-body { padding: 24px 22px; }
   .ps-landing .ps-pcard-cover { aspect-ratio: 16 / 9; }
   .ps-landing .ps-produtos-foot { flex-direction: column; align-items: flex-start; }
-  .ps-landing .ps-metodo-flow { grid-template-columns: 1fr; }
-  .ps-landing .ps-mstep-arrow { display: none; }
   .ps-landing .ps-sobre-stats { gap: 18px; }
   .ps-landing .ps-tcar-controls { flex-direction: column-reverse; gap: 18px; }
   .ps-landing .ps-tcar-nav { width: 100%; justify-content: space-between; }
@@ -1400,7 +1313,6 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .ps-landing .fade-up,
-  .ps-landing .ps-mstep,
   .ps-landing .ps-tcar-viewport {
     opacity: 1 !important;
     transform: none !important;

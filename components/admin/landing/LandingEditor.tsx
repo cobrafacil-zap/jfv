@@ -12,7 +12,6 @@ import {
   FundoFotoForm,
   ProdutosForm,
   SobreForm,
-  MetodoForm,
   ResultadosForm,
   FaqForm,
   ClosingForm,
@@ -25,7 +24,6 @@ const TABS: { key: LandingSectionKey; label: string }[] = [
   { key: "fundoFoto", label: "Fundo (foto)" },
   { key: "produtos", label: "Programas" },
   { key: "sobre", label: "Sobre" },
-  { key: "metodo", label: "Método JFV" },
   { key: "resultados", label: "Resultados" },
   { key: "faq", label: "FAQ" },
   { key: "closing", label: "Encerramento" },
@@ -97,8 +95,6 @@ export function LandingEditor({ initial }: { initial: LandingContent }) {
         return <SobreForm value={content.sobre} onChange={(v) => update("sobre", v)} />;
       case "produtos":
         return <ProdutosForm value={content.produtos} onChange={(v) => update("produtos", v)} />;
-      case "metodo":
-        return <MetodoForm value={content.metodo} onChange={(v) => update("metodo", v)} />;
       case "resultados":
         return <ResultadosForm value={content.resultados} onChange={(v) => update("resultados", v)} />;
       case "faq":
