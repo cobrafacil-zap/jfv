@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
-import { mpClient } from "@/lib/mercadopago";
 import { supabaseAdmin } from "@/lib/supabase";
 import { getWebhookUrl } from "@/lib/urls";
-import { getCPFForMP } from "@/lib/cpf";
+import { isValidAttemptId, isRetriable, upstreamMessage } from "@/lib/upstream";
+import { createPayment } from "@/lib/mercadopago";
 
-const IS_TEST_MODE =
-  (process.env.MERCADOPAGO_ACCESS_TOKEN || "").startsWith("TEST-");
+// Cobrança + gravações no Supabase, com retentativa. O limite da função
+// precisa caber 2 x 8s de tentativa mais o backoff, senão a Vercel mata a
+// requisição com o cartão já cobrado do lado do MP.
+export const maxDuration = 30;
 
 export async function POST(req: Request) {
   try {
@@ -18,7 +20,19 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { studentId, card, payer, installments, amount } = body;
+    const { studentId, card, payer, installments, amount, attemptId } = body;
+
+    // Sem chave de idempotência, a retentativa pode cobrar o cartão duas
+    // vezes. É o pior erro possível aqui, então recusamos o pedido.
+    if (!isValidAttemptId(attemptId)) {
+      return NextResponse.json(
+        {
+          status: "rejected",
+          message: "Sessão do checkout expirada. Recarregue a página.",
+        },
+        { status: 400 }
+      );
+    }
 
     if (!studentId || !card || !payer || !amount) {
       return NextResponse.json(
@@ -58,21 +72,6 @@ export async function POST(req: Request) {
       );
     }
 
-    let paymentClient;
-    try {
-      const { Payment } = await import("mercadopago");
-      paymentClient = new Payment(mpClient);
-    } catch (sdkErr: any) {
-      console.error("Falha ao instanciar SDK do MP:", sdkErr);
-      return NextResponse.json(
-        {
-          status: "rejected",
-          message: "Serviço de pagamento temporariamente indisponível.",
-        },
-        { status: 503 }
-      );
-    }
-
     const paymentData: any = {
       transaction_amount: Number(amount),
       token: card.token,
@@ -90,10 +89,7 @@ export async function POST(req: Request) {
       notification_url: getWebhookUrl(),
     };
 
-    const result = await paymentClient.create({ body: paymentData }).catch((err) => {
-      console.error("MercadoPago card error (raw):", err);
-      throw err;
-    });
+    const result = await createPayment({ body: paymentData, attemptId });
 
     console.log("Card payment result:", {
       id: result.id,
@@ -101,20 +97,32 @@ export async function POST(req: Request) {
       status_detail: result.status_detail,
     });
 
-    // Salva pagamento no Supabase
+    // Salva pagamento no Supabase.
+    //
+    // Este `insert` pode rodar mais de uma vez para o mesmo pagamento: a
+    // retentativa do servidor devolve o mesmo resultado (idempotência), e o
+    // webhook também grava. `23505` aqui significa "já estava salvo", que é
+    // o estado desejado — não um erro.
     if (
       result.status === "approved" ||
       result.status === "pending" ||
       result.status === "in_process"
     ) {
-      await supabaseAdmin.from("payments").insert({
-        student_id: studentId,
-        mercadopago_payment_id: String(result.id),
-        amount: result.transaction_amount || Number(amount),
-        status: result.status,
-        payment_method: result.payment_method_id,
-        paid_at: result.status === "approved" ? new Date().toISOString() : null,
-      });
+      const { error: paymentError } = await supabaseAdmin
+        .from("payments")
+        .insert({
+          student_id: studentId,
+          mercadopago_payment_id: String(result.id),
+          amount: result.transaction_amount || Number(amount),
+          status: result.status,
+          payment_method: result.payment_method_id,
+          paid_at: result.status === "approved" ? new Date().toISOString() : null,
+        })
+        .select();
+
+      if (paymentError && paymentError.code !== "23505") {
+        console.error("Supabase payments error:", paymentError);
+      }
 
       if (result.status === "approved") {
         await supabaseAdmin
@@ -161,41 +169,36 @@ export async function POST(req: Request) {
     );
   } catch (error: any) {
     console.error("Process card error:", error);
-    // Tenta extrair a mensagem real do erro do MP para o usuário
-    let userMessage = "Erro ao processar pagamento. Tente novamente.";
 
-    // Diferentes formatos que o SDK/MP podem retornar
-    const apiError =
-      error?.cause?.[0]?.error ||
-      error?.cause ||
-      error?.error ||
-      error;
-    const mpMessage =
-      apiError?.message ||
-      apiError?.error?.message ||
-      apiError?.description;
-    const statusDetail =
-      apiError?.status_detail ||
-      apiError?.cause?.[0]?.status_detail;
+    // Distingue "recusou o cartão" de "o serviço caiu". A diferença importa:
+    // no primeiro caso insistir não adianta e a culpa é dos dados; no segundo
+    // o cliente precisa só esperar alguns segundos.
+    const retriable = isRetriable(error);
+    const statusDetail = error?.status_detail || error?.cause?.[0]?.status_detail;
+
+    let userMessage: string;
 
     if (statusDetail === "cc_rejected_other_reason") {
       userMessage = "Pagamento rejeitado. Verifique os dados do cartão.";
-    } else if (mpMessage && typeof mpMessage === "string") {
-      userMessage = `Pagamento recusado: ${mpMessage}`;
+    } else if (retriable) {
+      userMessage =
+        "O serviço de pagamento não respondeu agora. Seu cartão não foi cobrado — tente de novo em alguns segundos.";
+    } else {
+      // Mensagem legível do MP, sem o payload cru.
+      const mpMessage = upstreamMessage(error);
+      userMessage = mpMessage
+        ? `Pagamento recusado: ${mpMessage}`
+        : "Pagamento rejeitado. Verifique os dados do cartão.";
     }
 
+    // 503 + Retry-After para falha transitória: orienta tanto o app quanto o
+    // proxy, e impede que o cliente trate isso como recusa definitiva do
+    // cartão.
     return NextResponse.json(
-      {
-        status: "rejected",
-        message: userMessage,
-        debug: {
-          mpMessage,
-          statusDetail,
-          errorMessage: error?.message,
-          cause: error?.cause?.[0] ?? null,
-        },
-      },
-      { status: 500 }
+      { status: "rejected", message: userMessage },
+      retriable
+        ? { status: 503, headers: { "Retry-After": "5" } }
+        : { status: 200 }
     );
   }
 }

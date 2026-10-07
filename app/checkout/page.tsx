@@ -5,6 +5,7 @@ import { ShieldCheck, Lock, ArrowLeft, Loader2, Copy, Check, Mail, AlertCircle }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatPrice } from "@/lib/utils";
+import { newAttemptId } from "@/lib/upstream";
 
 const PRICE = 4.99;
 const PRICE_ORIGINAL = 19.90;
@@ -52,6 +53,15 @@ export default function CheckoutPage() {
   const [polling, setPolling] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // Id da tentativa de pagamento. Nasce aqui, no navegador, e vai para o
+  // servidor como chave de idempotência.
+  //
+  // É gerado uma vez por tentativa e **não** muda quando o servidor responde
+  // 503: o cliente pode repetir a chamada com o mesmo id e o MP reconhece a
+  // repetição, devolvendo o pagamento original em vez de criar outro. Só
+  // geramos um novo quando a tentativa anterior foi de fato recusada.
+  const [attemptId, setAttemptId] = useState<string>(newAttemptId);
+
   // Cartão
   const [card, setCard] = useState<CardData>({
     number: "",
@@ -89,12 +99,24 @@ export default function CheckoutPage() {
       const response = await fetch("/api/checkout/create-preference", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, attemptId }),
       });
 
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
+        // 503 = o serviço do MP estava indisponível. A tentativa continua
+        // válida, então mantemos o mesmo `attemptId` para o retry não
+        // duplicar nada.
+        if (response.status === 503) {
+          throw new Error(
+            data.error || "O serviço está lento. Tente novamente em alguns segundos."
+          );
+        }
+
+        // Recusou de vez (dados inválidos, e-mail duplicado): aqui a tentativa
+        // acabou. Um id novo evita que a próximareuse o resultado antigo.
+        setAttemptId(newAttemptId());
         throw new Error(data.error || "Erro ao processar. Tente novamente.");
       }
 
@@ -131,12 +153,16 @@ export default function CheckoutPage() {
           lastName: form.fullName.split(" ").slice(1).join(" "),
           cpf: cpfClean,
           amount: PRICE,
+          attemptId,
         }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
+        // Mesma regra do cartão: 503 mantém a tentativa, recusa definitiva
+        // invalida o id.
+        if (response.status !== 503) setAttemptId(newAttemptId());
         throw new Error(data.error || "Erro ao gerar Pix.");
       }
 
@@ -160,7 +186,7 @@ export default function CheckoutPage() {
         const response = await fetch(
           `/api/checkout/check-payment/${pixPaymentId}`
         );
-        const data = await response.json();
+        const data = await response.json().catch(() => ({}));
 
         if (data.status === "approved") {
           setPolling(false);
@@ -172,6 +198,9 @@ export default function CheckoutPage() {
           setPixQrCode(null);
           setPixQrCodeBase64(null);
         }
+        // Sem `else`: um 503 aqui (MP indisponível) não significa recusa.
+        // O `catch` e o `response.ok` falso apenas deixam o polling seguir,
+        // em vez de apagar um QR Code que ainda pode ser pago.
       } catch (err) {
         console.error("Polling error:", err);
       }
@@ -246,16 +275,24 @@ export default function CheckoutPage() {
           },
           installments: card.installments,
           amount: PRICE,
+          attemptId,
         }),
       });
 
-      const result = await response.json();
+      const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
+        // 503 = o MP não respondeu a tempo e nada foi cobrado. A tentativa
+        // continua de pé, então preservamos o id: repetir não duplica a
+        // cobrança.
+        if (response.status !== 503) setAttemptId(newAttemptId());
         throw new Error(result.message || "Erro ao processar pagamento.");
       }
 
       if (result.status === "rejected") {
+        // Recusa definitiva do cartão: nova tentativa = novo id, senão o MP
+        // devolveria em cache a recusa anterior mesmo com outro cartão.
+        setAttemptId(newAttemptId());
         throw new Error(result.message || "Pagamento rejeitado.");
       }
 

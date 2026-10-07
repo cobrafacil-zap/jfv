@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
-import { Payment } from "mercadopago";
-import { mpClient } from "@/lib/mercadopago";
+import { getPayment } from "@/lib/mercadopago";
+
+// Consulta usada pelo polling do Pix. Leitura pura, então pode repetir sem
+// risco.
+export const maxDuration = 15;
 
 export async function GET(
   req: Request,
@@ -16,8 +19,7 @@ export async function GET(
       );
     }
 
-    const paymentClient = new Payment(mpClient);
-    const result = await paymentClient.get({ id: paymentId });
+    const result = await getPayment(paymentId);
 
     return NextResponse.json({
       id: result.id,
@@ -26,9 +28,14 @@ export async function GET(
     });
   } catch (error: any) {
     console.error("Check payment error:", error);
+
+    // O polling chama isto a cada 3s. Responder erro definitivo aqui faz o
+    // front tratar uma falha temporária do MP como pagamento rejeitado e
+    // limpar o QR Code — que ainda estava válido. Então 503, e o front segue
+    // aguardando.
     return NextResponse.json(
-      { error: "Erro ao verificar pagamento." },
-      { status: 500 }
+      { error: "Não foi possível consultar o pagamento. Tentando de novo." },
+      { status: 503, headers: { "Retry-After": "3" } }
     );
   }
 }

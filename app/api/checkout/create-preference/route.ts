@@ -2,8 +2,14 @@ import { NextResponse } from "next/server";
 import { createPaymentPreference } from "@/lib/mercadopago";
 import { supabaseAdmin } from "@/lib/supabase";
 import { isValidCPF, getCPFForMP } from "@/lib/cpf";
+import { isRetriable, isValidAttemptId, statusOf } from "@/lib/upstream";
 
 const PRICE = 4.99;
+
+// Preferência + insert no Supabase. Em 2 tentativas de 8s o pior caso passa
+// de 15s, então a função precisa de tempo para não ser cortada com o
+// pagamento já criado do lado do MP.
+export const maxDuration = 30;
 
 // Detecta se estamos em modo de teste do MP
 const IS_TEST_MODE =
@@ -24,7 +30,16 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { fullName, email, phone, cpf } = body;
+    const { fullName, email, phone, cpf, attemptId } = body;
+
+    // Sem attemptId não dá para ser idempotente: o SDK geraria uma chave
+    // aleatória por chamada e um retry poderia criar duas preferências.
+    if (!isValidAttemptId(attemptId)) {
+      return NextResponse.json(
+        { error: "Sessão do checkout expirada. Recarregue a página." },
+        { status: 400 }
+      );
+    }
 
     // Validação
     if (!fullName || !email || !cpf) {
@@ -114,18 +129,40 @@ export async function POST(req: Request) {
           },
         },
         external_reference: student.id,
+        attemptId,
       });
     } catch (mpError: any) {
       console.error("MercadoPago error:", mpError);
-      // Remove o aluno pending já que o pagamento falhou
-      await supabaseAdmin.from("students").delete().eq("id", student.id);
+      const retriable = isRetriable(mpError);
+
+      // Só apagamos o aluno quando temos certeza de que o MP recusou a
+      // criação. Em timeout/5xx a requisição pode ter chegado e a resposta
+      // apenas se perdeu — nesse caso a preferência existe lá, com
+      // `external_reference` apontando para um aluno que não existe mais. O
+      // webhook aprovaria o pagamento e não atualizaria ninguém: cliente
+      // pagou e não recebeu o curso.
+      //
+      // Na dúvida, preservamos o registro. Ele fica `pending` e o webhook
+      // consegue liberá-lo se o pagamento for aprovado depois.
+      if (retriable) {
+        console.warn(
+          `[create-preference] falha transitória do MP (status ${statusOf(
+            mpError
+          )}); aluno ${student.id} preservado como pending`
+        );
+      } else {
+        await supabaseAdmin.from("students").delete().eq("id", student.id);
+      }
 
       return NextResponse.json(
         {
-          error:
-            "Não foi possível iniciar o pagamento. Verifique os dados e tente novamente.",
+          error: retriable
+            ? "O pagamento demorou para responder. Tente novamente em alguns segundos."
+            : "Não foi possível iniciar o pagamento. Verifique os dados e tente novamente.",
         },
-        { status: 502 }
+        retriable
+          ? { status: 503, headers: { "Retry-After": "5" } }
+          : { status: 502 }
       );
     }
 
