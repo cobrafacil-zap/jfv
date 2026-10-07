@@ -319,6 +319,19 @@ export default function CheckoutPage() {
     }
   };
 
+  /**
+   * Atualiza um campo do formulário.
+   *
+   * Também renova o `attemptId`: os dados que vão para o pagamento mudaram,
+   * então a tentativa anterior deixou de valer. Sem isso, quem corrigisse o
+   * CPF depois de um erro receberia do MP a preferência antiga — com o CPF
+   * digitado errado — em vez de uma nova.
+   */
+  const updateForm = (field: keyof CheckoutForm, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    setAttemptId(newAttemptId());
+  };
+
   const handleMask = (field: keyof CheckoutForm, value: string) => {
     let masked = value;
     if (field === "cpf") {
@@ -335,7 +348,7 @@ export default function CheckoutPage() {
         .replace(/(\d{2})(\d)/, "($1) $2")
         .replace(/(\d{5})(\d)/, "$1-$2");
     }
-    setForm({ ...form, [field]: masked });
+    updateForm(field, masked);
   };
 
   const maskCardNumber = (value: string) => {
@@ -453,7 +466,7 @@ export default function CheckoutPage() {
                         placeholder="Maria Silva"
                         value={form.fullName}
                         onChange={(e) =>
-                          setForm({ ...form, fullName: e.target.value })
+                          updateForm("fullName", e.target.value)
                         }
                       />
                     </div>
@@ -472,7 +485,7 @@ export default function CheckoutPage() {
                         placeholder="seuemail@exemplo.com"
                         value={form.email}
                         onChange={(e) =>
-                          setForm({ ...form, email: e.target.value })
+                          updateForm("email", e.target.value)
                         }
                       />
                       <p className="mt-1 text-xs text-text-muted">
