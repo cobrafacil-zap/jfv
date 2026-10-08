@@ -1,7 +1,65 @@
 import { NextResponse } from "next/server";
+// `supabase-js` reexporta o tipo do Auth como `AuthUser` (não existe um
+// export chamado `User`).
+import type { AuthUser } from "@supabase/supabase-js";
 import { supabaseAdmin } from "@/lib/supabase";
 import { Resend } from "resend";
 import { getSiteUrl } from "@/lib/urls";
+
+/** Usuários por página na listagem do Auth. O limite do GoTrue é 1000. */
+const PER_PAGE = 1000;
+
+/**
+ * Teto de páginas na varredura. 20 páginas x 1000 = 20 000 usuários.
+ * Existe só para o laço não ser infinito se a API devolver uma página
+ * vazia sem erro — nesse caso paramos no próprio `users.length === 0`.
+ */
+const MAX_PAGES = 20;
+
+/** E-mails são comparados sem caixa e sem espaço nas pontas. */
+const normalizeEmail = (email: string) => email.trim().toLowerCase();
+
+/**
+ * Procura um usuário do Auth por e-mail, varrendo **todas** as páginas.
+ *
+ * `listUsers()` sem argumentos devolve só a primeira página (50 usuários).
+ * A partir do 51º aluno o `.find()` numa página só não achava mais ninguém,
+ * e o resultado silencioso dessa falha era pior que o erro.
+ */
+async function findAuthUserByEmail(email: string): Promise<AuthUser | null> {
+  const target = normalizeEmail(email);
+
+  for (let page = 1; page <= MAX_PAGES; page++) {
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers({
+      page,
+      perPage: PER_PAGE,
+    });
+
+    if (error) {
+      console.error(
+        `[create-student-user] falha ao listar usuários (página ${page}):`,
+        error
+      );
+      return null;
+    }
+
+    const users = data?.users ?? [];
+
+    const found = users.find(
+      (user) => user.email && normalizeEmail(user.email) === target
+    );
+
+    if (found) return found;
+
+    // Página vazia (ou parcial) significa que não há mais o que ver.
+    if (users.length < PER_PAGE) return null;
+  }
+
+  console.error(
+    `[create-student-user] ${email} não encontrado em ${MAX_PAGES} páginas`
+  );
+  return null;
+}
 
 // Chamado pelo webhook do Mercado Pago quando um pagamento é aprovado.
 // Cria o user em auth.users (se não existir), vincula ao student,
@@ -40,29 +98,50 @@ export async function POST(req: Request) {
       });
     }
 
-    // 3) Verificar se já existe user com esse email
-    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
-    const existingUser = existingUsers?.users?.find(
-      (u) => u.email === student.email
-    );
-
+    // 3) Garante que exista um usuário no Auth para este e-mail.
+    //
+    // A ordem importa: tentamos CRIAR primeiro e só procuramos se a criação
+    // for recusada. Para a maioria dos alunos (conta nova) isso é uma única
+    // chamada. A busca paginada só roda no caminho raro de quem já tinha
+    // conta — e é exatamente o caminho onde a busca antiga quebrava.
+    //
+    // Por que a criação vem primeiro: o Supabase recusa e-mail já
+    // cadastrado com 422 `email_exists`. A versão anterior fazia o inverso —
+    // procurava numa única página de 50 usuários, não achava e caía no
+    // createUser, que retornava 422. O aluno pagava e ficava sem acesso
+    // nenhum, sem nenhuma pista do motivo.
     let authUserId: string;
+    let userCreated = false;
 
-    if (existingUser) {
-      authUserId = existingUser.id;
+    const { data: newUser, error: createError } =
+      await supabaseAdmin.auth.admin.createUser({
+        email: student.email,
+        email_confirm: true,
+        user_metadata: {
+          full_name: student.full_name,
+          student_id: student.id,
+        },
+      });
+
+    if (!createError && newUser?.user) {
+      authUserId = newUser.user.id;
+      userCreated = true;
     } else {
-      // 4) Criar novo user em auth.users (já confirmado, sem verificação)
-      const { data: newUser, error: createError } =
-        await supabaseAdmin.auth.admin.createUser({
-          email: student.email,
-          email_confirm: true,
-          user_metadata: {
-            full_name: student.full_name,
-            student_id: student.id,
-          },
-        });
+      const reason = [
+        createError?.code,
+        createError?.message,
+        createError?.msg,
+      ]
+        .filter(Boolean)
+        .join(" ");
 
-      if (createError || !newUser.user) {
+      // Só tratamos como "e-mail já existe" quando o erro realmente fala
+      // disso. Qualquer outra falha é infraestrutura e precisa de 500.
+      const emailTaken = /already|exists|registered|duplicate|taken/i.test(
+        reason
+      );
+
+      if (!emailTaken) {
         console.error("Erro ao criar user:", createError);
         return NextResponse.json(
           { error: "Erro ao criar usuário de acesso." },
@@ -70,8 +149,37 @@ export async function POST(req: Request) {
         );
       }
 
-      authUserId = newUser.user.id;
+      console.log(
+        `[create-student-user] ${student.email} já existe no Auth; buscando id`
+      );
+
+      const existingUser = await findAuthUserByEmail(student.email);
+
+      if (!existingUser) {
+        // A conta existe, mas não achamos em nenhuma página. Isso significa
+        // e-mail duplicado no Auth ou um volume acima do limite de varredura.
+        // Vinculamos um id errado seria pior que falhar: o aluno ficaria
+        // apontando para a conta de outra pessoa.
+        console.error(
+          `[create-student-user] e-mail ${student.email} consta como cadastrado mas não foi encontrado na varredura`
+        );
+        return NextResponse.json(
+          {
+            error:
+              "Conta de e-mail duplicada no banco de autenticação. Contate o suporte.",
+          },
+          { status: 409 }
+        );
+      }
+
+      authUserId = existingUser.id;
     }
+
+    console.log(
+      `[create-student-user] aluno ${student.id} -> auth user ${authUserId} (${
+        userCreated ? "criado" : "já existente"
+      })`
+    );
 
     // 5) Vincular auth_user_id ao student
     const { error: updateError } = await supabaseAdmin
