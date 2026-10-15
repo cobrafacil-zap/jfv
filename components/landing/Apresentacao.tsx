@@ -1,9 +1,9 @@
 import type { ApresentacaoContent } from "@/lib/landing-content";
 
 /**
- * Apresentação — abertura personal-brand.
- * Foto vertical + nome + método + tagline + stats inline + CTAs + socials.
- * Não usa background-image (a foto fica visível e o fundo fixo fica atrás).
+ * Hero — composição compacta, foco na mensagem (badge, nome, frase, botões, provas).
+ * Sem card de foto grande; avatar pequeno integrado ao nome.
+ * Decoração 3D discreta (gráfico translúcido, esferas, cards de métrica, linhas).
  */
 export function Apresentacao({ content }: { content: ApresentacaoContent }) {
   const isExternal = (href: string) => /^https?:\/\//.test(href);
@@ -14,23 +14,75 @@ export function Apresentacao({ content }: { content: ApresentacaoContent }) {
 
   return (
     <section className="ps-apresentacao" id="apresentacao">
+      {/* Camada decorativa 3D */}
+      <div className="ps-3d" aria-hidden>
+        <svg
+          className="ps-3d-chart"
+          viewBox="0 0 320 180"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <linearGradient id="psChartFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="rgb(196 78 35 / 0.28)" />
+              <stop offset="1" stopColor="rgb(196 78 35 / 0)" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M8 160 L70 128 L128 138 L186 84 L246 96 L312 28 L312 172 L8 172 Z"
+            fill="url(#psChartFill)"
+          />
+          <path
+            d="M8 160 L70 128 L128 138 L186 84 L246 96 L312 28"
+            stroke="rgb(232 142 88 / 0.9)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx="312" cy="28" r="5" fill="rgb(232 142 88)" />
+        </svg>
+
+        <div className="ps-3d-sphere ps-3d-sphere--a" />
+        <div className="ps-3d-sphere ps-3d-sphere--b" />
+        <div className="ps-3d-sphere ps-3d-sphere--c" />
+        <div className="ps-3d-line ps-3d-line--a" />
+        <div className="ps-3d-line ps-3d-line--b" />
+
+        <div className="ps-3d-card ps-3d-card--a">
+          <span>Conversão</span>
+          <strong>+32%</strong>
+        </div>
+        <div className="ps-3d-card ps-3d-card--b">
+          <span>Pipeline ativo</span>
+          <strong>1.4k leads</strong>
+        </div>
+      </div>
+
       <div className="ps-apresentacao-inner">
         <div className="ps-apresentacao-text fade-up">
           <div className="ps-sh-eyebrow">{content.eyebrow}</div>
 
-          <h1 className="ps-apresentacao-name">
-            {content.name}
-          </h1>
-
-          <div className="ps-apresentacao-method">{content.method}</div>
+          <div className="ps-apresentacao-name-row">
+            {content.photoUrl && (
+              <img
+                src={content.photoUrl}
+                alt={`Foto de ${content.name}`}
+                className="ps-apresentacao-avatar"
+                width={88}
+                height={88}
+              />
+            )}
+            <div>
+              <h1 className="ps-apresentacao-name">{content.name}</h1>
+              <span className="ps-apresentacao-method">{content.method}</span>
+            </div>
+          </div>
 
           <p className="ps-apresentacao-tagline">
-            {content.tagline}
+            {content.tagline.replace(/\.$/, "")}<em>.</em>
           </p>
 
-          <p className="ps-apresentacao-sub">
-            {content.sub}
-          </p>
+          <p className="ps-apresentacao-sub">{content.sub}</p>
 
           <div className="ps-apresentacao-buttons">
             <a
@@ -73,19 +125,6 @@ export function Apresentacao({ content }: { content: ApresentacaoContent }) {
               <span>{igHandle}</span>
             </a>
           )}
-        </div>
-
-        <div className="ps-apresentacao-visual fade-up">
-          <figure className="ps-apresentacao-frame">
-            <img
-              src={content.photoUrl}
-              alt="Priscila Sinópolis"
-              loading="eager"
-              width={780}
-              height={1040}
-            />
-            <span className="ps-apresentacao-frame-tag">JFV</span>
-          </figure>
         </div>
       </div>
     </section>

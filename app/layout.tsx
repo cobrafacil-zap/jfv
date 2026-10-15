@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display, IBM_Plex_Mono } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { getThemeColors, buildThemeCss } from "@/lib/theme-colors";
@@ -10,11 +10,11 @@ const inter = Inter({
   display: "swap",
 });
 
-const playfair = Playfair_Display({
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-playfair",
+  variable: "--font-jakarta",
   display: "swap",
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const plexMono = IBM_Plex_Mono({
@@ -75,7 +75,7 @@ export default async function RootLayout({
     <html
       lang="pt-BR"
       suppressHydrationWarning
-      className={`${inter.variable} ${playfair.variable} ${plexMono.variable}`}
+      className={`${inter.variable} ${jakarta.variable} ${plexMono.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />

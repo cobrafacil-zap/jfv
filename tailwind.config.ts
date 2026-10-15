@@ -37,7 +37,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["var(--font-playfair)", "Georgia", "serif"],
+        display: ["var(--font-jakarta)", "Inter", "system-ui", "sans-serif"],
         body: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
       backgroundImage: {

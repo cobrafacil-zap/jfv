@@ -43,7 +43,7 @@
     --bg-primary: 252 250 246;
     --bg-secondary: 245 240 232;
 
-    --font-display: var(--font-playfair), Georgia, serif;
+    --font-display: var(--font-jakarta), "Inter", system-ui, sans-serif;
     --font-body: var(--font-inter), system-ui, sans-serif;
     --font-label: var(--font-plex), ui-monospace, "SFMono-Regular", Menlo, monospace;
     --accent-2: 218 152 102;         /* cobre claro */
@@ -179,9 +179,10 @@
   box-sizing: border-box;
 }
 
-/* ---------- FUNDO PALESTRA (foto de plateia em sala escura) ---------- */
-/* Foto de plateia em sala escura assistindo palestra. Tom escuro
-   profissional, foco no público. Atribuição: Kevin Gonzalez (Unsplash).
+/* ---------- FUNDO PALESTRA (foto de plateia assistindo palestra) ---------- */
+/* Foto de plateia assistindo palestra masculina/feminina em palco.
+   Ambiente escuro, palestra ao fundo, plateia levemente desfocada.
+   Foco na atmosfera de evento ao vivo. Atribuição: foto ajustada para tema.
    Overlay escuro garante legibilidade do texto sobre a foto. */
 .ps-landing::before {
   content: "";
@@ -190,6 +191,7 @@
   z-index: -2;
   background-color: rgb(14 10 6);
   background-image:
+    url("https://images.unsplash.com/photo-1581091042054-ab6a08835f0f?fm=jpg&q=70&w=2400&auto=format&fit=crop"),
     url("https://images.unsplash.com/photo-1627931539006-d5c4677e05ea?fm=jpg&q=70&w=2400&auto=format&fit=crop");
   background-size: cover;
   background-position: center;
@@ -207,9 +209,11 @@
     /* Vinheta radial para concentrar legibilidade no centro */
     radial-gradient(
       ellipse at center,
-      rgba(14, 10, 6, 0.55) 0%,
-      rgba(14, 10, 6, 0.85) 100%
-    );
+      rgba(14, 10, 6, 0.72) 0%,
+      rgba(14, 10, 6, 0.92) 100%
+    ),
+    /* Esmaece a base para texto confortável à esquerda */
+    linear-gradient(90deg, rgba(10,7,4,0.82) 0%, rgba(10,7,4,0.35) 55%, rgba(10,7,4,0.55) 100%);
   pointer-events: none;
 }
 /* seções escuras pesadas ficam acima do fundo */
@@ -242,16 +246,16 @@
 .ps-landing .ps-nav-inner {
   max-width: var(--max-w);
   margin: 0 auto;
-  padding: 14px 24px;
+  padding: 9px 24px;
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
 }
 .ps-landing .ps-nav-logo {
   display: flex; align-items: baseline; gap: 8px;
   font-family: var(--font-display);
-  font-size: 1.18rem; font-weight: 700;
+  font-size: 1rem; font-weight: 700;
   color: rgb(248 244 236);
   text-decoration: none;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
 }
 .ps-landing .ps-nav-logo .ps-nav-mark {
   color: rgb(var(--accent));
@@ -265,10 +269,10 @@
   margin-left: 4px;
 }
 .ps-landing .ps-nav-links {
-  display: flex; gap: 30px; align-items: center; list-style: none; margin: 0; padding: 0;
+  display: flex; gap: 22px; align-items: center; list-style: none; margin: 0; padding: 0;
 }
 .ps-landing .ps-nav-links a {
-  font-size: 0.82rem; font-weight: 500;
+  font-size: 0.76rem; font-weight: 500;
   color: rgba(248, 244, 236, 0.78);
   text-decoration: none;
   letter-spacing: 0.04em;
@@ -288,10 +292,10 @@
 .ps-landing .ps-nav-cta {
   background: rgb(var(--accent));
   color: rgb(var(--accent-contrast));
-  padding: 11px 20px;
+  padding: 8px 14px;
   border-radius: var(--radius-pill);
   font-weight: 600;
-  font-size: 0.74rem;
+  font-size: 0.66rem;
   letter-spacing: 0.06em; text-transform: uppercase;
   text-decoration: none;
   transition: background var(--transition), color var(--transition), transform var(--transition);
@@ -304,8 +308,8 @@
 
 .ps-landing .ps-nav-toggle {
   display: none;
-  background: none; border: none; padding: 6px;
-  width: 40px; height: 40px;
+  background: none; border: none; padding: 4px;
+  width: 34px; height: 34px;
   align-items: center; justify-content: center;
   cursor: pointer;
   color: rgb(248 244 236);
@@ -419,149 +423,204 @@
 .ps-landing .ps-sh.tone-center .ps-sh-sub { margin: 0 auto; }
 
 /* ============================================================
-   APRESENTAÇÃO (hero pessoal)
+   APRESENTAÇÃO (hero pessoal — compacta, 1 tela, foco na mensagem)
    ============================================================ */
 .ps-landing .ps-apresentacao {
-  padding: clamp(132px, 16vh, 200px) 24px clamp(72px, 8vw, 110px);
+  padding: clamp(96px, 14vh, 148px) 24px clamp(48px, 7vh, 80px);
   position: relative;
   z-index: 1;
+  min-height: 92svh;
+  display: flex;
+  align-items: center;
 }
 .ps-landing .ps-apresentacao-inner {
   max-width: var(--max-w);
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: clamp(40px, 5vw, 72px);
-  align-items: center;
+  width: 100%;
+  position: relative;
+  z-index: 2;
 }
-.ps-landing .ps-apresentacao-text { position: relative; z-index: 2; }
+.ps-landing .ps-apresentacao-text {
+  position: relative;
+  z-index: 2;
+  max-width: 640px;
+}
+.ps-landing .ps-apresentacao-text .ps-sh-eyebrow {
+  padding: 5px 12px;
+  font-size: 0.66rem;
+  margin-bottom: 18px;
+}
+.ps-landing .ps-apresentacao-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.ps-landing .ps-apresentacao-avatar {
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 1px solid rgba(248, 244, 236, 0.16);
+  box-shadow: 0 8px 24px -10px rgba(0,0,0,0.8);
+}
 .ps-landing .ps-apresentacao-name {
   font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: -0.025em;
-  line-height: 1.04;
+  letter-spacing: -0.012em;
+  line-height: 1.2;
   color: rgb(248 244 236);
-  font-size: clamp(2.6rem, 5.6vw, 4.6rem);
-  margin: 6px 0 14px;
-  text-wrap: balance;
+  font-size: clamp(1.35rem, 1.9vw, 1.7rem);
+  margin: 0;
 }
 .ps-landing .ps-apresentacao-method {
   font-family: var(--font-label);
-  font-size: clamp(1rem, 1.4vw, 1.18rem);
+  font-size: 0.68rem;
   font-weight: 600;
-  letter-spacing: 0.22em; text-transform: uppercase;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
   color: rgb(var(--accent));
   display: inline-block;
-  padding-bottom: 6px;
-  margin-bottom: 28px;
+  padding-bottom: 4px;
+  margin-top: 2px;
   border-bottom: 1.5px solid rgb(var(--accent));
 }
 .ps-landing .ps-apresentacao-tagline {
   font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  font-size: clamp(1.5rem, 2.6vw, 2.05rem);
-  line-height: 1.22;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+  line-height: 1.14;
   color: rgb(248 244 236);
-  margin: 0 0 22px;
-  max-width: 520px;
+  margin: 18px 0 16px;
+  max-width: 560px;
   text-wrap: balance;
 }
+.ps-landing .ps-apresentacao-tagline em { font-style: normal; color: rgb(var(--accent)); }
 .ps-landing .ps-apresentacao-sub {
-  font-size: 1.04rem;
-  line-height: 1.72;
+  font-size: 0.98rem;
+  line-height: 1.65;
   color: rgba(248, 244, 236, 0.74);
-  margin: 0 0 32px;
+  margin: 0 0 26px;
   max-width: 500px;
 }
 .ps-landing .ps-apresentacao-buttons {
-  display: flex; gap: 14px; flex-wrap: wrap;
-  margin-bottom: 36px;
+  display: flex; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+.ps-landing .ps-apresentacao-buttons .ps-btn {
+  padding: 13px 22px;
+  font-size: 0.76rem;
 }
 .ps-landing .ps-apresentacao-stats {
-  list-style: none; margin: 0 0 28px; padding: 0;
+  list-style: none; margin: 0; padding: 16px 0 0;
   display: flex; flex-wrap: wrap;
-  gap: 26px;
+  gap: 22px;
   border-top: 1px solid rgba(248, 244, 236, 0.12);
-  border-bottom: 1px solid rgba(248, 244, 236, 0.12);
-  padding: 18px 0;
 }
 .ps-landing .ps-apresentacao-stats li {
-  display: flex; flex-direction: column; gap: 4px;
-  padding-left: 14px;
+  display: flex; flex-direction: column; gap: 3px;
+  padding-left: 12px;
   border-left: 2px solid rgb(var(--accent));
 }
 .ps-landing .ps-apresentacao-stat-value {
   font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 1.5rem;
+  font-weight: 700;
+  font-size: 1.2rem;
   color: rgb(248 244 236);
-  letter-spacing: -0.015em;
+  letter-spacing: -0.012em;
   line-height: 1;
 }
 .ps-landing .ps-apresentacao-stat-label {
   font-family: var(--font-label);
-  font-size: 0.7rem;
+  font-size: 0.64rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(248, 244, 236, 0.58);
+}
+.ps-landing .ps-apresentacao-social {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-label);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(248, 244, 236, 0.8);
+  text-decoration: none;
+  transition: color var(--transition);
+  margin-top: 22px;
+}
+.ps-landing .ps-apresentacao-social:hover { color: rgb(var(--accent)); }
+.ps-landing .ps-apresentacao-social svg { color: rgb(var(--accent)); width: 16px; height: 16px; }
+
+/* ---------- Elementos 3D discretos (fundo e laterais) ---------- */
+.ps-landing .ps-3d {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+.ps-landing .ps-3d-chart {
+  position: absolute;
+  right: 4%;
+  top: 16%;
+  width: min(340px, 30vw);
+  opacity: 0.7;
+  filter: drop-shadow(0 18px 40px rgba(0,0,0,0.5));
+}
+.ps-landing .ps-3d-sphere {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 30%, rgba(232,142,88,0.5), rgba(196,78,35,0.14) 55%, rgba(196,78,35,0.04) 75%);
+  border: 1px solid rgba(232, 142, 88, 0.22);
+  box-shadow: inset -8px -12px 24px rgba(14,10,6,0.6), 0 20px 40px -18px rgba(0,0,0,0.7);
+}
+.ps-landing .ps-3d-sphere--a { width: 64px; height: 64px; right: 24%; bottom: 18%; }
+.ps-landing .ps-3d-sphere--b { width: 30px; height: 30px; right: 10%; top: 58%; }
+.ps-landing .ps-3d-sphere--c { width: 18px; height: 18px; left: 44%; top: 20%; opacity: 0.7; }
+.ps-landing .ps-3d-line {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232,142,88,0.5), transparent);
+}
+.ps-landing .ps-3d-line--a { width: 34vw; left: 0; top: 24%; }
+.ps-landing .ps-3d-line--b { width: 26vw; right: 0; bottom: 22%; }
+.ps-landing .ps-3d-card {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: rgba(24, 19, 14, 0.42);
+  border: 1px solid rgba(248, 244, 236, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 18px 44px -20px rgba(0,0,0,0.7);
+}
+.ps-landing .ps-3d-card span {
+  font-family: var(--font-label);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(248, 244, 236, 0.6);
 }
-.ps-landing .ps-apresentacao-social {
-  display: inline-flex; align-items: center; gap: 10px;
-  font-family: var(--font-label);
-  font-size: 0.86rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: rgba(248, 244, 236, 0.85);
-  text-decoration: none;
-  transition: color var(--transition);
-}
-.ps-landing .ps-apresentacao-social:hover { color: rgb(var(--accent)); }
-.ps-landing .ps-apresentacao-social svg { color: rgb(var(--accent)); }
-
-/* Apresentação — visual (foto) */
-.ps-landing .ps-apresentacao-visual {
-  position: relative;
-  display: flex; justify-content: center;
-  z-index: 1;
-}
-.ps-landing .ps-apresentacao-frame {
-  position: relative;
-  width: 100%;
-  max-width: 460px;
-  aspect-ratio: 4 / 5;
-  border-radius: 28px;
-  overflow: hidden;
-  background: rgb(28 22 16);
-  box-shadow:
-    0 30px 80px -32px rgb(0 0 0 / 0.7),
-    0 0 0 1px rgba(248, 244, 236, 0.06);
-}
-.ps-landing .ps-apresentacao-frame img {
-  width: 100%; height: 100%;
-  object-fit: cover; object-position: center 18%;
-  display: block;
-  filter: saturate(1.05);
-}
-.ps-landing .ps-apresentacao-frame::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, transparent 60%, rgba(14, 10, 6, 0.5) 100%);
-  pointer-events: none;
-}
-.ps-landing .ps-apresentacao-frame-tag {
-  position: absolute;
-  bottom: 18px; left: 18px;
-  z-index: 2;
-  background: rgba(14, 10, 6, 0.85);
+.ps-landing .ps-3d-card strong {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
   color: rgb(var(--accent));
-  font-family: var(--font-label);
-  font-weight: 800;
-  font-size: 0.72rem;
-  letter-spacing: 0.18em;
-  padding: 7px 14px;
-  border-radius: var(--radius-pill);
+  letter-spacing: -0.01em;
+}
+.ps-landing .ps-3d-card--a { right: 6%; top: 12%; }
+.ps-landing .ps-3d-card--b { right: 16%; bottom: 12%; }
+
+@media (max-width: 900px) {
+  .ps-landing .ps-3d-chart,
+  .ps-landing .ps-3d-card,
+  .ps-landing .ps-3d-sphere { display: none; }
+  .ps-landing .ps-apresentacao { min-height: auto; align-items: flex-start; }
 }
 
 /* ============================================================
@@ -1274,9 +1333,6 @@
    RESPONSIVO
    ============================================================ */
 @media (max-width: 1024px) {
-  .ps-landing .ps-apresentacao-inner { grid-template-columns: 1fr; gap: 48px; }
-  .ps-landing .ps-apresentacao-visual { order: -1; }
-  .ps-landing .ps-apresentacao-frame { max-width: 400px; }
   .ps-landing .ps-sobre-inner { grid-template-columns: 1fr; gap: 48px; }
   .ps-landing .ps-tcar-slide { grid-template-columns: 1fr; }
 }
@@ -1286,10 +1342,10 @@
   .ps-landing .ps-nav-toggle { display: flex; }
   .ps-landing .ps-nav-links.is-open {
     display: flex; flex-direction: column;
-    position: fixed; top: 68px; left: 0; right: 0;
+    position: fixed; top: 52px; left: 0; right: 0;
     background: rgb(14, 10, 6);
-    padding: 28px 24px;
-    gap: 18px;
+    padding: 24px 24px;
+    gap: 16px;
     border-bottom: 1px solid rgba(248, 244, 236, 0.1);
   }
   .ps-landing .ps-nav-links.is-open a { font-size: 1rem; }
