@@ -56,6 +56,8 @@ export type ProductCard = {
   featured?: boolean;
   coverUrl?: string;          // NOVO: cover do card (opcional; placeholder se vazio)
   coverPosition?: string;     // ex: "50% 20%" — enquadramento da foto no cover
+  coverAspect?: string;       // ex: "1 / 1" — proporção do cover (padrão 16 / 8)
+  coverFilter?: string;       // ex: "none" — sobrescreve o grade de cor padrão
 };
 
 export type ProdutosContent = {
@@ -187,8 +189,10 @@ export const defaultContent: LandingContent = {
         priceSuffix: "/mês",
         buttonLabel: "Assinar agora",
         href: "https://pay.kiwify.com.br/3X8I06c",
-        coverUrl: "/priscila/assinatura-comunidade.jpg",
-        coverPosition: "50% 0%",
+        coverUrl: "/priscila/jfv-assinatura.jpg",
+        coverPosition: "50% 50%",
+        coverAspect: "5 / 4",
+        coverFilter: "none",
         featured: true,
       },
       {
