@@ -47,15 +47,6 @@ export function Apresentacao({ content }: { content: ApresentacaoContent }) {
         <div className="ps-3d-sphere ps-3d-sphere--c" />
         <div className="ps-3d-line ps-3d-line--a" />
         <div className="ps-3d-line ps-3d-line--b" />
-
-        <div className="ps-3d-card ps-3d-card--a">
-          <span>Conversão</span>
-          <strong>+32%</strong>
-        </div>
-        <div className="ps-3d-card ps-3d-card--b">
-          <span>Pipeline ativo</span>
-          <strong>1.4k leads</strong>
-        </div>
       </div>
 
       <div className="ps-apresentacao-inner">
@@ -125,6 +116,35 @@ export function Apresentacao({ content }: { content: ApresentacaoContent }) {
               <span>{igHandle}</span>
             </a>
           )}
+        </div>
+
+        <div className="ps-apresentacao-visual fade-up" aria-hidden>
+          <div className="ps-hero-glow" />
+
+          <figure className="ps-hero-photo-card">
+            {content.photoUrl && (
+              <img
+                src={content.photoUrl}
+                alt=""
+                className="ps-hero-photo"
+                width={400}
+                height={500}
+              />
+            )}
+            <figcaption className="ps-hero-photo-caption">
+              <span className="ps-hero-chip">{content.method}</span>
+              <span className="ps-hero-photo-name">{content.name}</span>
+            </figcaption>
+          </figure>
+
+          <div className="ps-3d-card ps-3d-card--a">
+            <span>Conversão</span>
+            <strong>+32%</strong>
+          </div>
+          <div className="ps-3d-card ps-3d-card--b">
+            <span>Pipeline ativo</span>
+            <strong>1.4k leads</strong>
+          </div>
         </div>
       </div>
     </section>
