@@ -55,6 +55,7 @@ export type ProductCard = {
   href: string;
   featured?: boolean;
   coverUrl?: string;          // NOVO: cover do card (opcional; placeholder se vazio)
+  coverPosition?: string;     // ex: "50% 20%" — enquadramento da foto no cover
 };
 
 export type ProdutosContent = {
@@ -186,7 +187,8 @@ export const defaultContent: LandingContent = {
         priceSuffix: "/mês",
         buttonLabel: "Assinar agora",
         href: "https://pay.kiwify.com.br/3X8I06c",
-        coverUrl: "/priscila/jfv-assinatura-capa.svg",
+        coverUrl: "/priscila/assinatura-comunidade.jpg",
+        coverPosition: "50% 0%",
         featured: true,
       },
       {
@@ -200,6 +202,7 @@ export const defaultContent: LandingContent = {
         priceSuffix: "/meta mensal",
         buttonLabel: "Aplicar para a mentoria",
         href: "https://forms.gle/rEyppDKmzZypoSd76",
+        coverUrl: "/priscila/mentoria-zero-10k.jpg",
       },
       {
         id: "empresas-aceleracao",
@@ -211,6 +214,7 @@ export const defaultContent: LandingContent = {
         price: "Sob consulta",
         buttonLabel: "Solicitar diagnóstico",
         href: "https://forms.gle/sWTZ5FmFDRutLZfH7",
+        coverUrl: "/priscila/empresas-aceleracao.jpg",
       },
     ],
     allCta: { label: "Falar com a equipe", href: "https://wa.me/5543996820296" },

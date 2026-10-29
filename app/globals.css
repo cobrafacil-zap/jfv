@@ -782,14 +782,26 @@
 }
 .ps-landing .ps-pcard-cover {
   position: relative;
-  aspect-ratio: 16 / 7;
+  aspect-ratio: 16 / 8;
   overflow: hidden;
   background: linear-gradient(135deg, rgb(40 30 22) 0%, rgb(20 14 10) 100%);
 }
 .ps-landing .ps-pcard-cover img {
   width: 100%; height: 100%;
   object-fit: cover; display: block;
+  object-position: 50% 42%;
+  filter: sepia(0.14) saturate(1.18) contrast(1.03);
   transition: transform 0.7s var(--ease-out-expo);
+}
+/* Vinheta suave para a foto encaixar no card escuro */
+.ps-landing .ps-pcard-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(14, 10, 6, 0.06) 0%, rgba(14, 10, 6, 0) 38%, rgba(20, 14, 10, 0.62) 100%),
+    radial-gradient(120% 100% at 0% 0%, rgba(14, 10, 6, 0.3), transparent 58%);
+  pointer-events: none;
 }
 .ps-landing .ps-pcard:hover .ps-pcard-cover img { transform: scale(1.04); }
 

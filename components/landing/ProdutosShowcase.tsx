@@ -50,7 +50,12 @@ function ShowcaseCard({ card, index }: { card: ProductCard; index: number }) {
     >
       <div className="ps-pcard-cover" aria-hidden={!card.coverUrl}>
         {card.coverUrl ? (
-          <img src={card.coverUrl} alt="" loading="lazy" />
+          <img
+            src={card.coverUrl}
+            alt=""
+            loading="lazy"
+            style={card.coverPosition ? { objectPosition: card.coverPosition } : undefined}
+          />
         ) : (
           <PlaceholderArt title={card.title} category={card.categoryLabel} />
         )}
