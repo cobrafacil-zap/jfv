@@ -173,7 +173,7 @@ export const defaultContent: LandingContent = {
     eyebrow: "PROGRAMAS",
     title: "O que eu criei",
     titleEm: "para você vender mais.",
-    sub: "Quatro caminhos diferentes para o mesmo objetivo: tirar vendas do improviso e transformar em processo.",
+    sub: "Três caminhos diferentes para o mesmo objetivo: tirar vendas do improviso e transformar em processo.",
     cards: [
       {
         id: "jfv-assinatura",
@@ -186,6 +186,7 @@ export const defaultContent: LandingContent = {
         priceSuffix: "/mês",
         buttonLabel: "Assinar agora",
         href: "https://pay.kiwify.com.br/3X8I06c",
+        coverUrl: "/priscila/jfv-assinatura-capa.svg",
         featured: true,
       },
       {
@@ -198,17 +199,6 @@ export const defaultContent: LandingContent = {
         price: "R$ 10k",
         priceSuffix: "/meta mensal",
         buttonLabel: "Aplicar para a mentoria",
-        href: "https://forms.gle/rEyppDKmzZypoSd76",
-      },
-      {
-        id: "mentoria-individual",
-        category: "mentorias",
-        categoryLabel: "Mentoria Premium",
-        title: "Mentoria Individual",
-        desc: "Acompanhamento 1:1 com a Priscila para construir uma estratégia comercial sob medida, com plano de ação, revisões e suporte direto.",
-        idealFor: "Para quem quer acompanhamento próximo e personalizado.",
-        price: "Sob consulta",
-        buttonLabel: "Quero aplicar",
         href: "https://forms.gle/rEyppDKmzZypoSd76",
       },
       {

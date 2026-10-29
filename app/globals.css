@@ -293,11 +293,11 @@
 .ps-landing .ps-nav-cta {
   background: rgb(var(--accent));
   color: rgb(var(--accent-contrast));
-  padding: 8px 14px;
+  padding: 6px 12px;
   border-radius: var(--radius-pill);
   font-weight: 600;
-  font-size: 0.66rem;
-  letter-spacing: 0.06em; text-transform: uppercase;
+  font-size: 0.6rem;
+  letter-spacing: 0.05em; text-transform: uppercase;
   text-decoration: none;
   transition: background var(--transition), color var(--transition), transform var(--transition);
 }
@@ -902,8 +902,10 @@
   color: rgb(var(--accent));
 }
 .ps-landing .ps-pcard-cta {
-  font-size: 0.78rem;
-  padding: 13px 22px;
+  font-size: 0.66rem;
+  padding: 8px 14px;
+  gap: 6px;
+  letter-spacing: 0.03em;
 }
 .ps-landing .ps-produtos-foot {
   margin-top: 48px;
