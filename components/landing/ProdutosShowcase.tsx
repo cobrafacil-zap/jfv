@@ -48,11 +48,7 @@ function ShowcaseCard({ card, index }: { card: ProductCard; index: number }) {
       className={`ps-pcard${card.featured ? " is-featured" : ""} fade-up`}
       data-index={index}
     >
-      <div
-        className="ps-pcard-cover"
-        aria-hidden={!card.coverUrl}
-        style={card.coverAspect ? { aspectRatio: card.coverAspect } : undefined}
-      >
+      <div className="ps-pcard-cover" aria-hidden={!card.coverUrl}>
         {card.coverUrl ? (
           <img
             src={card.coverUrl}

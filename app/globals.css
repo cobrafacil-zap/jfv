@@ -766,10 +766,12 @@
   border: 1px solid rgba(248, 244, 236, 0.08);
   border-radius: 28px;
   overflow: hidden;
-  display: flex; flex-direction: column;
-  transition: transform 0.4s var(--ease-out-expo),
+  display: grid;
+  grid-template-columns: minmax(200px, 288px) minmax(0, 1fr);
+  align-items: stretch;
+  transition: transform 0.5s var(--ease-out-expo),
               border-color var(--transition),
-              box-shadow var(--transition);
+              box-shadow 0.5s var(--ease-out-expo);
   box-shadow: 0 18px 60px -32px rgb(0 0 0 / 0.6);
 }
 .ps-landing .ps-pcard:hover {
@@ -785,7 +787,8 @@
 }
 .ps-landing .ps-pcard-cover {
   position: relative;
-  aspect-ratio: 16 / 8;
+  height: 100%;
+  min-height: 240px;
   overflow: hidden;
   background: linear-gradient(135deg, rgb(40 30 22) 0%, rgb(20 14 10) 100%);
 }
@@ -820,8 +823,8 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(14, 10, 6, 0.06) 0%, rgba(14, 10, 6, 0) 38%, rgba(20, 14, 10, 0.62) 100%),
-    radial-gradient(120% 100% at 0% 0%, rgba(14, 10, 6, 0.3), transparent 58%);
+    linear-gradient(90deg, rgba(14, 10, 6, 0) 52%, rgba(20, 14, 10, 0.6) 100%),
+    linear-gradient(180deg, rgba(14, 10, 6, 0.08) 0%, rgba(14, 10, 6, 0) 40%, rgba(20, 14, 10, 0.4) 100%);
   pointer-events: none;
 }
 .ps-landing .ps-pcard:hover .ps-pcard-cover img { transform: scale(1.04); }
@@ -852,9 +855,10 @@
 }
 
 .ps-landing .ps-pcard-body {
-  padding: 26px 28px 22px;
+  padding: 28px 32px;
   display: flex; flex-direction: column;
   flex-grow: 1;
+  min-width: 0;
 }
 .ps-landing .ps-pcard-top {
   display: flex; align-items: center; justify-content: space-between;
@@ -888,10 +892,11 @@
   line-height: 1.18;
 }
 .ps-landing .ps-pcard-desc {
-  font-size: 0.96rem;
+  font-size: 1rem;
   line-height: 1.7;
-  color: rgba(248, 244, 236, 0.74);
-  margin: 0 0 16px;
+  color: rgba(248, 244, 236, 0.82);
+  margin: 0 0 18px;
+  max-width: 62ch;
 }
 .ps-landing .ps-pcard-ideal {
   font-family: var(--font-label);
@@ -917,7 +922,7 @@
 .ps-landing .ps-pcard-price-value {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(1.6rem, 2.3vw, 2.05rem);
+  font-size: clamp(1.9rem, 2.6vw, 2.35rem);
   line-height: 1;
   color: rgb(var(--accent-light));
   letter-spacing: -0.02em;
@@ -1512,6 +1517,16 @@
   .ps-landing .ps-apresentacao-text { max-width: 100%; }
 }
 
+@media (max-width: 860px) {
+  .ps-landing .ps-pcard { grid-template-columns: 1fr; }
+  .ps-landing .ps-pcard-cover { height: 200px; min-height: 0; }
+  .ps-landing .ps-pcard-cover::after {
+    background:
+      linear-gradient(180deg, rgba(14, 10, 6, 0.06) 0%, rgba(14, 10, 6, 0) 40%, rgba(20, 14, 10, 0.55) 100%),
+      radial-gradient(120% 100% at 0% 0%, rgba(14, 10, 6, 0.28), transparent 58%);
+  }
+}
+
 @media (max-width: 900px) {
   .ps-landing .ps-nav-links { display: none; }
   .ps-landing .ps-nav-toggle { display: flex; }
@@ -1534,7 +1549,6 @@
   .ps-landing .ps-apresentacao-stats { gap: 18px; }
   .ps-landing .ps-produtos-list { gap: 20px; }
   .ps-landing .ps-pcard-body { padding: 24px 22px; }
-  .ps-landing .ps-pcard-cover { aspect-ratio: 16 / 9; }
   .ps-landing .ps-produtos-foot { flex-direction: column; align-items: flex-start; }
   .ps-landing .ps-sobre-stats { gap: 18px; }
   .ps-landing .ps-tcar-controls { flex-direction: column-reverse; gap: 18px; }
