@@ -206,7 +206,9 @@ export const defaultContent: LandingContent = {
         priceSuffix: "/meta mensal",
         buttonLabel: "Aplicar para a mentoria",
         href: "https://forms.gle/rEyppDKmzZypoSd76",
-        coverUrl: "/priscila/mentoria-zero-10k.jpg",
+        coverUrl: "/priscila/zero-10k.jpg",
+        coverPosition: "50% 50%",
+        coverFilter: "none",
       },
       {
         id: "empresas-aceleracao",

@@ -773,9 +773,12 @@
   box-shadow: 0 18px 60px -32px rgb(0 0 0 / 0.6);
 }
 .ps-landing .ps-pcard:hover {
-  transform: translateY(-4px);
-  border-color: rgba(196, 78, 35, 0.5);
-  box-shadow: 0 30px 80px -30px rgb(0 0 0 / 0.8), 0 0 0 1px rgba(196, 78, 35, 0.18);
+  transform: translateY(-6px);
+  border-color: rgba(232, 142, 88, 0.55);
+  box-shadow:
+    0 34px 90px -30px rgb(0 0 0 / 0.85),
+    0 0 0 1px rgba(232, 142, 88, 0.22),
+    0 0 70px -22px rgba(196, 78, 35, 0.45);
 }
 .ps-landing .ps-pcard.is-featured {
   border-color: rgba(196, 78, 35, 0.4);
@@ -793,6 +796,24 @@
   filter: sepia(0.14) saturate(1.18) contrast(1.03);
   transition: transform 0.7s var(--ease-out-expo);
 }
+/* Brilho que atravessa a foto no hover */
+.ps-landing .ps-pcard-cover::before {
+  content: "";
+  position: absolute;
+  inset: -20% -40%;
+  z-index: 2;
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    rgba(248, 244, 236, 0.16) 50%,
+    transparent 62%
+  );
+  transform: translateX(-115%);
+  transition: transform 0.9s var(--ease-out-expo);
+  pointer-events: none;
+}
+.ps-landing .ps-pcard:hover .ps-pcard-cover::before { transform: translateX(115%); }
+
 /* Vinheta suave para a foto encaixar no card escuro */
 .ps-landing .ps-pcard-cover::after {
   content: "";
@@ -831,7 +852,7 @@
 }
 
 .ps-landing .ps-pcard-body {
-  padding: 30px 30px 28px;
+  padding: 26px 28px 22px;
   display: flex; flex-direction: column;
   flex-grow: 1;
 }
@@ -874,44 +895,53 @@
 }
 .ps-landing .ps-pcard-ideal {
   font-family: var(--font-label);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 500;
   color: rgba(248, 244, 236, 0.65);
-  margin: 0 0 22px;
-  padding: 12px 16px;
+  margin: 0 0 16px;
+  padding: 8px 12px;
   background: rgba(248, 244, 236, 0.05);
-  border-radius: 14px;
+  border-radius: 12px;
   line-height: 1.5;
 }
 .ps-landing .ps-pcard-foot {
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding-top: 20px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding-top: 14px;
   border-top: 1px solid rgba(248, 244, 236, 0.08);
   margin-top: auto;
   flex-wrap: wrap;
 }
 .ps-landing .ps-pcard-price {
-  display: flex; align-items: baseline; gap: 4px;
+  display: flex; align-items: baseline; gap: 6px;
 }
 .ps-landing .ps-pcard-price-value {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1.32rem;
-  color: rgb(248 244 236);
-  letter-spacing: -0.015em;
+  font-size: clamp(1.6rem, 2.3vw, 2.05rem);
+  line-height: 1;
+  color: rgb(var(--accent-light));
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 26px rgba(232, 142, 88, 0.28);
+  transition: text-shadow var(--transition);
+}
+.ps-landing .ps-pcard:hover .ps-pcard-price-value {
+  text-shadow: 0 0 34px rgba(232, 142, 88, 0.55);
 }
 .ps-landing .ps-pcard-price-suffix {
   font-family: var(--font-label);
-  font-size: 0.74rem; font-weight: 600;
-  color: rgba(248, 244, 236, 0.55);
+  font-size: 0.64rem; font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(248, 244, 236, 0.6);
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  background: rgba(248, 244, 236, 0.06);
 }
 .ps-landing .ps-pcard-price-consult {
-  font-family: var(--font-label);
-  font-size: 0.86rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgb(var(--accent));
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: rgb(var(--accent-light));
 }
 .ps-landing .ps-pcard-cta {
   font-size: 0.66rem;
@@ -919,6 +949,11 @@
   gap: 6px;
   letter-spacing: 0.03em;
 }
+.ps-landing .ps-pcard-cta span {
+  display: inline-block;
+  transition: transform 0.35s var(--ease-out-expo);
+}
+.ps-landing .ps-pcard:hover .ps-pcard-cta span { transform: translateX(4px); }
 .ps-landing .ps-produtos-foot {
   margin-top: 48px;
   padding: 26px 30px;
@@ -1455,12 +1490,12 @@
    ============================================================ */
 .ps-landing .fade-up {
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.7s var(--ease-out-expo), transform 0.7s var(--ease-out-expo);
+  transform: translateY(28px) scale(0.985);
+  transition: opacity 0.85s var(--ease-out-expo), transform 0.85s var(--ease-out-expo);
 }
 .ps-landing .fade-up.is-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
 }
 
 /* ============================================================
