@@ -130,7 +130,6 @@ export async function POST(req: Request) {
       const reason = [
         createError?.code,
         createError?.message,
-        createError?.msg,
       ]
         .filter(Boolean)
         .join(" ");
