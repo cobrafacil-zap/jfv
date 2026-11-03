@@ -204,7 +204,7 @@ export const defaultContent: LandingContent = {
         idealFor: "Para quem quer acompanhamento próximo.",
         hidePrice: true,
         buttonLabel: "Aplicar para a mentoria",
-        href: "https://forms.gle/rEyppDKmzZypoSd76",
+        href: "/aplicacao",
         coverUrl: "/priscila/zero-10k.jpg",
         coverPosition: "50% 50%",
         coverFilter: "none",
