@@ -9,18 +9,26 @@ create table if not exists public.leads (
   nome text not null,
   email text not null,
   whatsapp text not null,
-  negocio text,
-  momento text,
-  meta_faturamento text,
+  agencia text,
+  tempo_mercado text,
+  faturamento text,
+  tamanho_time text,
   desafio text,
-  estrutura text[] not null default '{}',
-  tempo_disponivel text,
+  canais_aquisicao text[] not null default '{}',
+  meta_faturamento text,
   faixa_investimento text,
   prazo text,
   origem text,
   payload jsonb,
   created_at timestamptz not null default now()
 );
+
+-- Mantém instalações antigas compatíveis com o novo formulário.
+alter table public.leads add column if not exists agencia text;
+alter table public.leads add column if not exists tempo_mercado text;
+alter table public.leads add column if not exists faturamento text;
+alter table public.leads add column if not exists tamanho_time text;
+alter table public.leads add column if not exists canais_aquisicao text[] not null default '{}';
 
 create index if not exists leads_created_at_idx on public.leads (created_at desc);
 

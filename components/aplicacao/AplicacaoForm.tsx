@@ -6,17 +6,18 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
    Configuração
    ============================================================ */
 const WHATSAPP_NUMERO = "5543996820296";
-const CHAVE_RASCUNHO = "jfv_aplicacao_rascunho_v1";
+const CHAVE_RASCUNHO = "jfv_aplicacao_rascunho_v2";
 const TOTAL_ETAPAS = 5;
 
 type FormState = {
   nome: string;
-  negocio: string;
-  momento: string;
-  meta: string;
+  agencia: string;
+  tempoMercado: string;
+  faturamento: string;
+  time: string;
   desafio: string;
-  estrutura: string[];
-  tempo: string;
+  canais: string[];
+  meta: string;
   investimento: string;
   prazo: string;
   email: string;
@@ -26,12 +27,13 @@ type FormState = {
 
 const ESTADO_INICIAL: FormState = {
   nome: "",
-  negocio: "",
-  momento: "",
-  meta: "",
+  agencia: "",
+  tempoMercado: "",
+  faturamento: "",
+  time: "",
   desafio: "",
-  estrutura: [],
-  tempo: "",
+  canais: [],
+  meta: "",
   investimento: "",
   prazo: "",
   email: "",
@@ -225,71 +227,71 @@ function Icone({ nome, tamanho = 22 }: { nome: IconeNome; tamanho?: number }) {
    ============================================================ */
 type Opcao = { valor: string; titulo: string; detalhe?: string; icone: IconeNome };
 
-const MOMENTOS: Opcao[] = [
+const TEMPOS_MERCADO: Opcao[] = [
+  { valor: "Menos de 1 ano", titulo: "Menos de 1 ano", icone: "seed" },
+  { valor: "De 1 a 2 anos", titulo: "De 1 a 2 anos", icone: "clock" },
+  { valor: "De 2 a 5 anos", titulo: "De 2 a 5 anos", icone: "chart" },
+  { valor: "Mais de 5 anos", titulo: "Mais de 5 anos", icone: "spark" },
+];
+
+const FATURAMENTOS: Opcao[] = [
+  { valor: "Até R$ 10 mil", titulo: "Até R$ 10 mil por mês", icone: "wallet" },
+  { valor: "De R$ 10 mil a R$ 30 mil", titulo: "De R$ 10 mil a R$ 30 mil", icone: "wallet" },
+  { valor: "De R$ 30 mil a R$ 60 mil", titulo: "De R$ 30 mil a R$ 60 mil", icone: "chart" },
+  { valor: "De R$ 60 mil a R$ 100 mil", titulo: "De R$ 60 mil a R$ 100 mil", icone: "chart" },
+  { valor: "Acima de R$ 100 mil", titulo: "Acima de R$ 100 mil", icone: "rocket" },
   {
-    valor: "Ainda não comecei",
-    titulo: "Ainda não comecei",
-    detalhe: "Tenho a ideia, mas nada estruturado",
-    icone: "seed",
-  },
-  {
-    valor: "Estou começando",
-    titulo: "Estou começando",
-    detalhe: "Já fiz as primeiras vendas",
-    icone: "rocket",
-  },
-  {
-    valor: "Vendo de forma irregular",
-    titulo: "Vendo de forma irregular",
-    detalhe: "Tem mês bom, tem mês ruim",
-    icone: "wave",
-  },
-  {
-    valor: "Já vendo todo mês",
-    titulo: "Já vendo todo mês",
-    detalhe: "Quero chegar aos R$ 10 mil",
-    icone: "chart",
+    valor: "Prefiro não informar",
+    titulo: "Prefiro não informar",
+    detalhe: "Falamos disso na conversa",
+    icone: "compass",
   },
 ];
 
-const METAS: Opcao[] = [
-  { valor: "Até R$ 3 mil por mês", titulo: "Até R$ 3 mil por mês", icone: "target" },
-  { valor: "De R$ 3 mil a R$ 5 mil por mês", titulo: "De R$ 3 mil a R$ 5 mil por mês", icone: "target" },
-  { valor: "De R$ 5 mil a R$ 10 mil por mês", titulo: "De R$ 5 mil a R$ 10 mil por mês", icone: "target" },
-  { valor: "Acima de R$ 10 mil por mês", titulo: "Acima de R$ 10 mil por mês", icone: "chart" },
-  { valor: "Ainda não defini", titulo: "Ainda não defini", icone: "compass" },
+const TIMES: Opcao[] = [
+  { valor: "Só eu", titulo: "Só eu", detalhe: "Faço tudo na agência", icone: "user" },
+  { valor: "De 2 a 5 pessoas", titulo: "De 2 a 5 pessoas", icone: "users" },
+  { valor: "De 6 a 10 pessoas", titulo: "De 6 a 10 pessoas", icone: "users" },
+  { valor: "De 11 a 20 pessoas", titulo: "De 11 a 20 pessoas", icone: "users" },
+  { valor: "Mais de 20 pessoas", titulo: "Mais de 20 pessoas", icone: "gear" },
 ];
 
 const DESAFIOS: Opcao[] = [
   {
-    valor: "Não sei o que vender",
-    titulo: "Não sei o que vender",
-    detalhe: "Posicionamento e oferta",
-    icone: "compass",
-  },
-  {
-    valor: "Falta de clientes",
-    titulo: "Falta de clientes",
-    detalhe: "Prospecção e demanda",
+    valor: "Falta de clientes novos",
+    titulo: "Falta de clientes novos",
+    detalhe: "O pipeline não enche",
     icone: "users",
   },
   {
-    valor: "Preço e negociação",
-    titulo: "Preço e negociação",
-    detalhe: "Vendo, mas não sobra",
+    valor: "Dependência de indicação",
+    titulo: "Dependência de indicação",
+    detalhe: "Sem previsibilidade de demanda",
+    icone: "repeat",
+  },
+  {
+    valor: "Precificação e margem baixa",
+    titulo: "Precificação e margem baixa",
+    detalhe: "Fatura, mas não sobra",
     icone: "tag",
   },
   {
-    valor: "Processo e organização",
-    titulo: "Processo e organização",
-    detalhe: "Tudo depende de mim",
+    valor: "Time sobrecarregado",
+    titulo: "Time sobrecarregado",
+    detalhe: "Entrega no limite",
     icone: "gear",
   },
   {
-    valor: "Constância",
-    titulo: "Constância",
-    detalhe: "Começo e paro",
-    icone: "repeat",
+    valor: "Dificuldade de escalar a entrega",
+    titulo: "Dificuldade de escalar a entrega",
+    detalhe: "Crescer sem perder qualidade",
+    icone: "chart",
+  },
+  {
+    valor: "Falta de processo comercial",
+    titulo: "Falta de processo comercial",
+    detalhe: "Vendas dependem de mim",
+    icone: "compass",
   },
   {
     valor: "Outro",
@@ -299,26 +301,34 @@ const DESAFIOS: Opcao[] = [
   },
 ];
 
-const ESTRUTURAS: Opcao[] = [
-  { valor: "Produto ou serviço definido", titulo: "Produto ou serviço definido", icone: "tag" },
-  { valor: "Perfil ou página profissional", titulo: "Perfil ou página profissional", icone: "spark" },
-  { valor: "Clientes recorrentes", titulo: "Clientes recorrentes", icone: "users" },
-  { valor: "Processo de vendas organizado", titulo: "Processo de vendas organizado", icone: "gear" },
-  { valor: "Nenhum desses ainda", titulo: "Nenhum desses ainda", icone: "seed" },
+const CANAIS: Opcao[] = [
+  { valor: "Indicação", titulo: "Indicação", icone: "users" },
+  { valor: "Instagram e conteúdo orgânico", titulo: "Instagram e conteúdo orgânico", icone: "spark" },
+  { valor: "Tráfego pago", titulo: "Tráfego pago", icone: "target" },
+  { valor: "Prospecção ativa", titulo: "Prospecção ativa", icone: "phone" },
+  { valor: "Parcerias estratégicas", titulo: "Parcerias estratégicas", icone: "repeat" },
+  {
+    valor: "Nenhum canal definido",
+    titulo: "Nenhum canal definido",
+    detalhe: "Ainda não temos um canal principal",
+    icone: "compass",
+  },
 ];
 
-const TEMPOS: Opcao[] = [
-  { valor: "Até 1 hora por dia", titulo: "Até 1 hora por dia", icone: "clock" },
-  { valor: "De 1 a 3 horas por dia", titulo: "De 1 a 3 horas por dia", icone: "clock" },
-  { valor: "De 3 a 6 horas por dia", titulo: "De 3 a 6 horas por dia", icone: "clock" },
-  { valor: "Período integral", titulo: "Período integral", icone: "clock" },
+const METAS: Opcao[] = [
+  { valor: "Até R$ 10 mil por mês", titulo: "Até R$ 10 mil por mês", icone: "target" },
+  { valor: "De R$ 10 mil a R$ 30 mil por mês", titulo: "De R$ 10 mil a R$ 30 mil", icone: "target" },
+  { valor: "De R$ 30 mil a R$ 60 mil por mês", titulo: "De R$ 30 mil a R$ 60 mil", icone: "target" },
+  { valor: "De R$ 60 mil a R$ 100 mil por mês", titulo: "De R$ 60 mil a R$ 100 mil", icone: "chart" },
+  { valor: "Acima de R$ 100 mil por mês", titulo: "Acima de R$ 100 mil por mês", icone: "rocket" },
+  { valor: "Ainda não defini", titulo: "Ainda não defini", icone: "compass" },
 ];
 
 const INVESTIMENTOS: Opcao[] = [
-  { valor: "Até R$ 500", titulo: "Até R$ 500", icone: "wallet" },
-  { valor: "De R$ 500 a R$ 1.500", titulo: "De R$ 500 a R$ 1.500", icone: "wallet" },
-  { valor: "De R$ 1.500 a R$ 3.000", titulo: "De R$ 1.500 a R$ 3.000", icone: "wallet" },
-  { valor: "Acima de R$ 3.000", titulo: "Acima de R$ 3.000", icone: "wallet" },
+  { valor: "Até R$ 1.000", titulo: "Até R$ 1.000", icone: "wallet" },
+  { valor: "De R$ 1.000 a R$ 3.000", titulo: "De R$ 1.000 a R$ 3.000", icone: "wallet" },
+  { valor: "De R$ 3.000 a R$ 6.000", titulo: "De R$ 3.000 a R$ 6.000", icone: "wallet" },
+  { valor: "Acima de R$ 6.000", titulo: "Acima de R$ 6.000", icone: "wallet" },
   {
     valor: "Quero entender melhor antes",
     titulo: "Quero entender melhor antes",
@@ -338,13 +348,14 @@ const PRAZOS: Opcao[] = [
 /* Etapas do formulário (as telas são agrupadas em 5 etapas) */
 const TELAS = [
   { etapa: 1, tema: "Quem é você" },
-  { etapa: 2, tema: "Momento e meta" },
-  { etapa: 2, tema: "Momento e meta" },
-  { etapa: 3, tema: "Desafio e rotina" },
-  { etapa: 3, tema: "Desafio e rotina" },
-  { etapa: 3, tema: "Desafio e rotina" },
-  { etapa: 4, tema: "Investimento e prazo" },
-  { etapa: 4, tema: "Investimento e prazo" },
+  { etapa: 2, tema: "Sua agência hoje" },
+  { etapa: 2, tema: "Sua agência hoje" },
+  { etapa: 2, tema: "Sua agência hoje" },
+  { etapa: 3, tema: "Desafio e aquisição" },
+  { etapa: 3, tema: "Desafio e aquisição" },
+  { etapa: 4, tema: "Meta e investimento" },
+  { etapa: 4, tema: "Meta e investimento" },
+  { etapa: 4, tema: "Meta e investimento" },
   { etapa: 5, tema: "Como falar com você" },
 ];
 
@@ -509,26 +520,26 @@ export function AplicacaoForm() {
     });
   }
 
-  function alternarEstrutura(valor: string) {
+  function alternarCanais(valor: string) {
     setForm((atual) => {
-      if (valor === "Nenhum desses ainda") {
+      if (valor === "Nenhum canal definido") {
         return {
           ...atual,
-          estrutura: atual.estrutura.includes(valor) ? [] : [valor],
+          canais: atual.canais.includes(valor) ? [] : [valor],
         };
       }
-      const semNenhum = atual.estrutura.filter((v) => v !== "Nenhum desses ainda");
+      const semNenhum = atual.canais.filter((v) => v !== "Nenhum canal definido");
       return {
         ...atual,
-        estrutura: semNenhum.includes(valor)
+        canais: semNenhum.includes(valor)
           ? semNenhum.filter((v) => v !== valor)
           : [...semNenhum, valor],
       };
     });
     setErros((atual) => {
-      if (!("estrutura" in atual)) return atual;
+      if (!("canais" in atual)) return atual;
       const proximo = { ...atual };
-      delete proximo.estrutura;
+      delete proximo.canais;
       return proximo;
     });
   }
@@ -539,30 +550,33 @@ export function AplicacaoForm() {
     switch (indice) {
       case 0:
         if (form.nome.trim().length < 2) e.nome = "Digite seu nome completo.";
-        if (form.negocio.trim().length < 2) e.negocio = "Conte seu negócio ou área de atuação.";
+        if (form.agencia.trim().length < 2) e.agencia = "Digite o nome da sua agência.";
         break;
       case 1:
-        if (!form.momento) e.momento = "Escolha o momento que mais se parece com o seu.";
+        if (!form.tempoMercado) e.tempoMercado = "Escolha há quanto tempo sua agência existe.";
         break;
       case 2:
-        if (!form.meta) e.meta = "Escolha uma meta para os próximos meses.";
+        if (!form.faturamento) e.faturamento = "Escolha a faixa que mais se aproxima do seu faturamento.";
         break;
       case 3:
-        if (!form.desafio) e.desafio = "Escolha o que mais te impede de crescer hoje.";
+        if (!form.time) e.time = "Escolha o tamanho do seu time hoje.";
         break;
       case 4:
-        if (form.estrutura.length === 0) e.estrutura = "Marque pelo menos uma opção.";
+        if (!form.desafio) e.desafio = "Escolha o que mais trava o crescimento da sua agência.";
         break;
       case 5:
-        if (!form.tempo) e.tempo = "Escolha quanto tempo você consegue dedicar.";
+        if (form.canais.length === 0) e.canais = "Marque pelo menos um canal.";
         break;
       case 6:
-        if (!form.investimento) e.investimento = "Escolha uma faixa para direcionar a conversa.";
+        if (!form.meta) e.meta = "Escolha uma meta para os próximos 6 meses.";
         break;
       case 7:
-        if (!form.prazo) e.prazo = "Escolha quando você pretende começar.";
+        if (!form.investimento) e.investimento = "Escolha uma faixa para direcionar a conversa.";
         break;
       case 8:
+        if (!form.prazo) e.prazo = "Escolha quando você pretende começar.";
+        break;
+      default:
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim())) {
           e.email = "Digite um e-mail válido.";
         }
@@ -602,12 +616,13 @@ export function AplicacaoForm() {
 
     const payload = {
       nome: form.nome.trim(),
-      negocio: form.negocio.trim(),
-      momento: form.momento,
-      meta_faturamento: form.meta,
+      agencia: form.agencia.trim(),
+      tempo_mercado: form.tempoMercado,
+      faturamento: form.faturamento,
+      tamanho_time: form.time,
       desafio: form.desafio,
-      estrutura: form.estrutura,
-      tempo_disponivel: form.tempo,
+      canais_aquisicao: form.canais,
+      meta_faturamento: form.meta,
       faixa_investimento: form.investimento,
       prazo: form.prazo,
       email: form.email.trim(),
@@ -652,12 +667,13 @@ export function AplicacaoForm() {
       "Olá, Priscila! Acabei de preencher a aplicação para a mentoria Do Zero aos 10k.",
       "",
       `Nome: ${form.nome}`,
-      `Negócio: ${form.negocio}`,
-      `Momento: ${form.momento}`,
-      `Meta: ${form.meta}`,
+      `Agência: ${form.agencia}`,
+      `Tempo de mercado: ${form.tempoMercado}`,
+      `Faturamento mensal: ${form.faturamento}`,
+      `Time: ${form.time}`,
       `Desafio: ${form.desafio}`,
-      `Já tenho: ${form.estrutura.join(", ") || "-"}`,
-      `Tempo por dia: ${form.tempo}`,
+      `Canais de aquisição: ${form.canais.join(", ") || "-"}`,
+      `Meta em 6 meses: ${form.meta}`,
       `Investimento: ${form.investimento}`,
       `Prazo: ${form.prazo}`,
     ];
@@ -673,7 +689,7 @@ export function AplicacaoForm() {
             <span className="aplic-tag">Etapa 1 · Quem é você</span>
             <h2 className="aplic-question">Vamos começar pelo essencial</h2>
             <p className="aplic-sub">
-              Precisamos só do básico para saber com quem estamos falando.
+              Precisamos saber com quem estamos falando e qual agência você lidera.
             </p>
 
             <div className={`aplic-field${erros.nome ? " is-invalid" : ""}`}>
@@ -692,20 +708,20 @@ export function AplicacaoForm() {
               {erros.nome && <MensagemErro>{erros.nome}</MensagemErro>}
             </div>
 
-            <div className={`aplic-field${erros.negocio ? " is-invalid" : ""}`}>
-              <label htmlFor="aplic-negocio">
-                Seu negócio ou área de atuação <span aria-hidden>*</span>
+            <div className={`aplic-field${erros.agencia ? " is-invalid" : ""}`}>
+              <label htmlFor="aplic-agencia">
+                Nome da sua agência <span aria-hidden>*</span>
               </label>
               <input
-                id="aplic-negocio"
+                id="aplic-agencia"
                 type="text"
-                value={form.negocio}
-                onChange={(e) => atualizar("negocio", e.target.value)}
-                placeholder="Ex.: estética, consultoria, loja de roupas..."
+                value={form.agencia}
+                onChange={(e) => atualizar("agencia", e.target.value)}
+                placeholder="Ex.: Studio Norte Marketing"
                 autoComplete="organization"
-                aria-invalid={Boolean(erros.negocio)}
+                aria-invalid={Boolean(erros.agencia)}
               />
-              {erros.negocio && <MensagemErro>{erros.negocio}</MensagemErro>}
+              {erros.agencia && <MensagemErro>{erros.agencia}</MensagemErro>}
             </div>
 
             {Acoes()}
@@ -715,25 +731,25 @@ export function AplicacaoForm() {
       case 1:
         return (
           <>
-            <span className="aplic-tag">Etapa 2 · Momento e meta</span>
+            <span className="aplic-tag">Etapa 2 · Sua agência hoje</span>
             <fieldset className="aplic-fieldset">
-              <legend className="aplic-question">Qual é o seu momento hoje?</legend>
+              <legend className="aplic-question">Há quanto tempo sua agência existe?</legend>
               <p className="aplic-sub">
-                Escolha a opção que mais se parece com a sua realidade.
+                O tempo de estrada muda completamente o tipo de decisão que faz sentido agora.
               </p>
-              <div className="aplic-options">
-                {MOMENTOS.map((opcao) => (
+              <div className="aplic-options aplic-options--duas">
+                {TEMPOS_MERCADO.map((opcao) => (
                   <CartaoOpcao
                     key={opcao.valor}
                     opcao={opcao}
                     tipo="radio"
-                    nome="momento"
-                    marcado={form.momento === opcao.valor}
-                    onSelect={() => atualizar("momento", opcao.valor)}
+                    nome="tempoMercado"
+                    marcado={form.tempoMercado === opcao.valor}
+                    onSelect={() => atualizar("tempoMercado", opcao.valor)}
                   />
                 ))}
               </div>
-              {erros.momento && <MensagemErro>{erros.momento}</MensagemErro>}
+              {erros.tempoMercado && <MensagemErro>{erros.tempoMercado}</MensagemErro>}
             </fieldset>
             {Acoes()}
           </>
@@ -742,10 +758,124 @@ export function AplicacaoForm() {
       case 2:
         return (
           <>
-            <span className="aplic-tag">Etapa 2 · Momento e meta</span>
+            <span className="aplic-tag">Etapa 2 · Sua agência hoje</span>
             <fieldset className="aplic-fieldset">
               <legend className="aplic-question">
-                Qual é a sua meta de faturamento para os próximos 6 meses?
+                Qual é o faturamento mensal da agência hoje?
+              </legend>
+              <p className="aplic-sub">
+                Uma faixa aproximada já ajuda a entender o seu patamar. Nada é usado para te
+                constranger.
+              </p>
+              <div className="aplic-options aplic-options--duas">
+                {FATURAMENTOS.map((opcao) => (
+                  <CartaoOpcao
+                    key={opcao.valor}
+                    opcao={opcao}
+                    tipo="radio"
+                    nome="faturamento"
+                    marcado={form.faturamento === opcao.valor}
+                    onSelect={() => atualizar("faturamento", opcao.valor)}
+                  />
+                ))}
+              </div>
+              {erros.faturamento && <MensagemErro>{erros.faturamento}</MensagemErro>}
+            </fieldset>
+            {Acoes()}
+          </>
+        );
+
+      case 3:
+        return (
+          <>
+            <span className="aplic-tag">Etapa 2 · Sua agência hoje</span>
+            <fieldset className="aplic-fieldset">
+              <legend className="aplic-question">Qual é o tamanho do seu time hoje?</legend>
+              <p className="aplic-sub">
+                Considere sócio, CLTs, PJs e freelancers fixos.
+              </p>
+              <div className="aplic-options aplic-options--duas">
+                {TIMES.map((opcao) => (
+                  <CartaoOpcao
+                    key={opcao.valor}
+                    opcao={opcao}
+                    tipo="radio"
+                    nome="time"
+                    marcado={form.time === opcao.valor}
+                    onSelect={() => atualizar("time", opcao.valor)}
+                  />
+                ))}
+              </div>
+              {erros.time && <MensagemErro>{erros.time}</MensagemErro>}
+            </fieldset>
+            {Acoes()}
+          </>
+        );
+
+      case 4:
+        return (
+          <>
+            <span className="aplic-tag">Etapa 3 · Desafio e aquisição</span>
+            <fieldset className="aplic-fieldset">
+              <legend className="aplic-question">
+                O que mais trava o crescimento da sua agência hoje?
+              </legend>
+              <p className="aplic-sub">
+                Escolha o que dói mais. É por aqui que a conversa começa.
+              </p>
+              <div className="aplic-options aplic-options--duas">
+                {DESAFIOS.map((opcao) => (
+                  <CartaoOpcao
+                    key={opcao.valor}
+                    opcao={opcao}
+                    tipo="radio"
+                    nome="desafio"
+                    marcado={form.desafio === opcao.valor}
+                    onSelect={() => atualizar("desafio", opcao.valor)}
+                  />
+                ))}
+              </div>
+              {erros.desafio && <MensagemErro>{erros.desafio}</MensagemErro>}
+            </fieldset>
+            {Acoes()}
+          </>
+        );
+
+      case 5:
+        return (
+          <>
+            <span className="aplic-tag">Etapa 3 · Desafio e aquisição</span>
+            <fieldset className="aplic-fieldset">
+              <legend className="aplic-question">
+                De onde vêm os clientes da sua agência hoje?
+              </legend>
+              <p className="aplic-sub">Pode marcar mais de um canal.</p>
+              <div className="aplic-options aplic-options--duas">
+                {CANAIS.map((opcao) => (
+                  <CartaoOpcao
+                    key={opcao.valor}
+                    opcao={opcao}
+                    tipo="checkbox"
+                    nome="canais"
+                    marcado={form.canais.includes(opcao.valor)}
+                    multiplo
+                    onSelect={() => alternarCanais(opcao.valor)}
+                  />
+                ))}
+              </div>
+              {erros.canais && <MensagemErro>{erros.canais}</MensagemErro>}
+            </fieldset>
+            {Acoes()}
+          </>
+        );
+
+      case 6:
+        return (
+          <>
+            <span className="aplic-tag">Etapa 4 · Meta e investimento</span>
+            <fieldset className="aplic-fieldset">
+              <legend className="aplic-question">
+                Onde você quer chegar em 6 meses?
               </legend>
               <p className="aplic-sub">
                 Pode ser uma meta ousada. É ela que vai guiar o nosso plano.
@@ -768,92 +898,10 @@ export function AplicacaoForm() {
           </>
         );
 
-      case 3:
+      case 7:
         return (
           <>
-            <span className="aplic-tag">Etapa 3 · Desafio e rotina</span>
-            <fieldset className="aplic-fieldset">
-              <legend className="aplic-question">O que mais te impede de crescer hoje?</legend>
-              <p className="aplic-sub">
-                Seja honesta(o). É por aqui que a mentoria começa a fazer diferença.
-              </p>
-              <div className="aplic-options aplic-options--duas">
-                {DESAFIOS.map((opcao) => (
-                  <CartaoOpcao
-                    key={opcao.valor}
-                    opcao={opcao}
-                    tipo="radio"
-                    nome="desafio"
-                    marcado={form.desafio === opcao.valor}
-                    onSelect={() => atualizar("desafio", opcao.valor)}
-                  />
-                ))}
-              </div>
-              {erros.desafio && <MensagemErro>{erros.desafio}</MensagemErro>}
-            </fieldset>
-            {Acoes()}
-          </>
-        );
-
-      case 4:
-        return (
-          <>
-            <span className="aplic-tag">Etapa 3 · Desafio e rotina</span>
-            <fieldset className="aplic-fieldset">
-              <legend className="aplic-question">O que você já tem pronto hoje?</legend>
-              <p className="aplic-sub">Pode marcar mais de uma opção.</p>
-              <div className="aplic-options aplic-options--duas">
-                {ESTRUTURAS.map((opcao) => (
-                  <CartaoOpcao
-                    key={opcao.valor}
-                    opcao={opcao}
-                    tipo="checkbox"
-                    nome="estrutura"
-                    marcado={form.estrutura.includes(opcao.valor)}
-                    multiplo
-                    onSelect={() => alternarEstrutura(opcao.valor)}
-                  />
-                ))}
-              </div>
-              {erros.estrutura && <MensagemErro>{erros.estrutura}</MensagemErro>}
-            </fieldset>
-            {Acoes()}
-          </>
-        );
-
-      case 5:
-        return (
-          <>
-            <span className="aplic-tag">Etapa 3 · Desafio e rotina</span>
-            <fieldset className="aplic-fieldset">
-              <legend className="aplic-question">
-                Quanto tempo por dia você consegue dedicar ao negócio?
-              </legend>
-              <p className="aplic-sub">
-                A mentoria se adapta à sua rotina, mas exige constância.
-              </p>
-              <div className="aplic-options aplic-options--duas">
-                {TEMPOS.map((opcao) => (
-                  <CartaoOpcao
-                    key={opcao.valor}
-                    opcao={opcao}
-                    tipo="radio"
-                    nome="tempo"
-                    marcado={form.tempo === opcao.valor}
-                    onSelect={() => atualizar("tempo", opcao.valor)}
-                  />
-                ))}
-              </div>
-              {erros.tempo && <MensagemErro>{erros.tempo}</MensagemErro>}
-            </fieldset>
-            {Acoes()}
-          </>
-        );
-
-      case 6:
-        return (
-          <>
-            <span className="aplic-tag">Etapa 4 · Investimento e prazo</span>
+            <span className="aplic-tag">Etapa 4 · Meta e investimento</span>
             <fieldset className="aplic-fieldset">
               <legend className="aplic-question">
                 Qual faixa de investimento faz sentido para você agora?
@@ -879,10 +927,10 @@ export function AplicacaoForm() {
           </>
         );
 
-      case 7:
+      case 8:
         return (
           <>
-            <span className="aplic-tag">Etapa 4 · Investimento e prazo</span>
+            <span className="aplic-tag">Etapa 4 · Meta e investimento</span>
             <fieldset className="aplic-fieldset">
               <legend className="aplic-question">Quando você quer começar?</legend>
               <p className="aplic-sub">
@@ -1025,12 +1073,13 @@ export function AplicacaoForm() {
     const primeiroNome = form.nome.trim().split(/\s+/)[0] || "";
     const resumo = [
       ["Nome", form.nome],
-      ["Negócio", form.negocio],
-      ["Momento", form.momento],
-      ["Meta", form.meta],
+      ["Agência", form.agencia],
+      ["Tempo de mercado", form.tempoMercado],
+      ["Faturamento", form.faturamento],
+      ["Time", form.time],
       ["Desafio", form.desafio],
-      ["Já tenho", form.estrutura.join(", ")],
-      ["Tempo por dia", form.tempo],
+      ["Canais", form.canais.join(", ")],
+      ["Meta em 6 meses", form.meta],
       ["Investimento", form.investimento],
       ["Prazo", form.prazo],
     ].filter(([, valor]) => valor);
@@ -1112,13 +1161,13 @@ export function AplicacaoForm() {
               Mentoria individual · Do Zero aos 10k
             </p>
             <h1 className="aplic-cover-title">
-              Seu negócio não precisa começar grande. Precisa começar{" "}
-              <em>certo</em>.
+              Sua agência cresceu até aqui. O próximo salto precisa de{" "}
+              <em>outro jeito</em>.
             </h1>
             <p className="aplic-cover-sub">
-              Em cinco etapas, quero entender o seu momento, o seu maior desafio e
-              onde você quer chegar. A partir disso, vejo se a mentoria é o caminho
-              certo — e te retorno pelo WhatsApp.
+              Em cinco etapas, quero entender o momento da sua agência, o que está
+              travando o crescimento e onde você quer chegar. A partir disso, vejo se
+              a mentoria é o caminho certo — e te retorno pelo WhatsApp.
             </p>
 
             <div className="aplic-cover-actions">
