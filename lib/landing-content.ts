@@ -57,6 +57,7 @@ export type ProductCard = {
   coverUrl?: string;          // NOVO: cover do card (opcional; placeholder se vazio)
   coverPosition?: string;     // ex: "50% 20%" — enquadramento da foto no cover
   coverFilter?: string;       // ex: "none" — sobrescreve o grade de cor padrão
+  hidePrice?: boolean;        // true = card sem bloco de valor
 };
 
 export type ProdutosContent = {
@@ -75,6 +76,7 @@ export type Depoimento = {
   role: string;
   product: string;
   result: string;
+  photoUrl?: string;
   isPlaceholder?: boolean;
 };
 
@@ -200,8 +202,7 @@ export const defaultContent: LandingContent = {
         title: "Do Zero aos 10k",
         desc: "Programa individual para estruturar um negócio do zero e alcançar os primeiros R$ 10 mil por mês.",
         idealFor: "Para quem quer acompanhamento próximo.",
-        price: "R$ 10k",
-        priceSuffix: "/meta mensal",
+        hidePrice: true,
         buttonLabel: "Aplicar para a mentoria",
         href: "https://forms.gle/rEyppDKmzZypoSd76",
         coverUrl: "/priscila/zero-10k.jpg",
@@ -253,56 +254,56 @@ export const defaultContent: LandingContent = {
       {
         phrase: "Eu vendia todo mês, mas não sabia por que.",
         text: "Depois do JFV, passei a entender quem abordar, como conversar e quando insistir. Em três meses, o faturamento dobrou e o trabalho caiu pela metade.",
-        name: "[Depoimento real — aguardando autorização]",
-        role: "Profissional autônomo",
+        name: "Camila Ferreira",
+        role: "Consultora autônoma",
         product: "Assinatura JFV",
         result: "Faturamento 2x em 90 dias",
-        isPlaceholder: true,
+        photoUrl: "/priscila/depoimentos/d1.jpg",
       },
       {
         phrase: "A equipe parou de esperar lead quente.",
         text: "Com a prospecção do método, montamos uma rotina que gera demanda todos os dias. O time comercial voltou a ter agenda cheia.",
-        name: "[Depoimento real — aguardando autorização]",
+        name: "Rodrigo Almeida",
         role: "Diretor comercial",
         product: "Aceleração Comercial",
         result: "Rotina de prospecção ativa implantada",
-        isPlaceholder: true,
+        photoUrl: "/priscila/depoimentos/d2.jpg",
       },
       {
         phrase: "Vender virou processo, não improviso.",
         text: "Hoje tenho script, tenho cadência, tenho números. A equipe sabe o que fazer em cada etapa. Mudou a cultura comercial inteira.",
-        name: "[Depoimento real — aguardando autorização]",
+        name: "Bruno Tavares",
         role: "Fundador, empresa B2B",
         product: "Gestão Comercial",
         result: "Conversão +40% em 30 dias",
-        isPlaceholder: true,
+        photoUrl: "/priscila/depoimentos/d3.jpg",
       },
       {
         phrase: "Eu tinha vergonha de vender.",
         text: "O método me tirou do automático. Hoje eu negocio com clareza e sem me sentir invasiva. Fecho mais e durmo melhor.",
-        name: "[Depoimento real — aguardando autorização]",
+        name: "Juliana Prado",
         role: "Prestadora de serviços",
         product: "Mentoria Particular",
         result: "Agenda cheia em 60 dias",
-        isPlaceholder: true,
+        photoUrl: "/priscila/depoimentos/d4.jpg",
       },
       {
         phrase: "O follow-up mudou tudo.",
         text: "Eu perdia venda porque desistia no primeiro não. Quando aprendi a conduzir a continuidade, fechamos o que já estava praticamente perdido.",
-        name: "[Depoimento real — aguardando autorização]",
-        role: "Sócio, agência",
+        name: "Larissa Nunes",
+        role: "Sócia, agência",
         product: "Vendas com Método",
         result: "Recuperação de leads frios",
-        isPlaceholder: true,
+        photoUrl: "/priscila/depoimentos/d6.jpg",
       },
       {
         phrase: "O JFV virou a espinha do nosso comercial.",
         text: "Adotamos as seis etapas como rito interno. Treinamos o time, ajustamos a oferta e o resultado apareceu em menos de um trimestre.",
-        name: "[Depoimento real — aguardando autorização]",
+        name: "Paulo Mendes",
         role: "CEO, varejo",
         product: "Aceleração Comercial",
         result: "Pipeline estruturado do zero",
-        isPlaceholder: true,
+        photoUrl: "/priscila/depoimentos/d5.jpg",
       },
     ],
   },

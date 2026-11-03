@@ -953,6 +953,7 @@
   padding: 8px 14px;
   gap: 6px;
   letter-spacing: 0.03em;
+  margin-left: auto;
 }
 .ps-landing .ps-pcard-cta span {
   display: inline-block;
@@ -1132,7 +1133,8 @@
   min-width: 0;
   padding: 0 4px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 760px);
+  justify-content: center;
   gap: 22px;
 }
 .ps-landing .ps-tcard {
@@ -1184,6 +1186,7 @@
   color: rgba(248, 244, 236, 0.76);
   margin: 0 0 22px;
   flex-grow: 1;
+  max-width: 62ch;
 }
 .ps-landing .ps-tcard-foot {
   display: flex; align-items: center; gap: 12px;
@@ -1191,14 +1194,22 @@
   border-top: 1px solid rgba(248, 244, 236, 0.08);
 }
 .ps-landing .ps-tcard-avatar {
-  width: 38px; height: 38px;
+  width: 44px; height: 44px;
   border-radius: 999px;
+  overflow: hidden;
   background: rgb(var(--accent));
   color: rgb(var(--accent-contrast));
   font-family: var(--font-display);
   font-weight: 800; font-size: 0.95rem;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
+  border: 1px solid rgba(248, 244, 236, 0.16);
+  box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.8);
+}
+.ps-landing .ps-tcard-avatar img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .ps-landing .ps-tcard-name {
   font-size: 0.9rem; font-weight: 700;

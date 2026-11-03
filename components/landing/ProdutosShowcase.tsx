@@ -74,18 +74,20 @@ function ShowcaseCard({ card, index }: { card: ProductCard; index: number }) {
         <p className="ps-pcard-ideal">{card.idealFor}</p>
 
         <div className="ps-pcard-foot">
-          <div className="ps-pcard-price">
-            {card.price ? (
-              <>
-                <span className="ps-pcard-price-value">{card.price}</span>
-                {card.priceSuffix && (
-                  <span className="ps-pcard-price-suffix">{card.priceSuffix}</span>
-                )}
-              </>
-            ) : (
-              <span className="ps-pcard-price-consult">Sob consulta</span>
-            )}
-          </div>
+          {!card.hidePrice && (
+            <div className="ps-pcard-price">
+              {card.price ? (
+                <>
+                  <span className="ps-pcard-price-value">{card.price}</span>
+                  {card.priceSuffix && (
+                    <span className="ps-pcard-price-suffix">{card.priceSuffix}</span>
+                  )}
+                </>
+              ) : (
+                <span className="ps-pcard-price-consult">Sob consulta</span>
+              )}
+            </div>
+          )}
           <a
             href={card.href}
             target={isExternal ? "_blank" : undefined}

@@ -69,7 +69,11 @@ export function TestimonialCarousel({ items }: { items: Depoimento[] }) {
                 <p className="ps-tcard-text">{t.text}</p>
                 <div className="ps-tcard-foot">
                   <div className="ps-tcard-avatar" aria-hidden>
-                    {t.name?.charAt(0)?.toUpperCase() || "·"}
+                    {t.photoUrl ? (
+                      <img src={t.photoUrl} alt="" loading="lazy" width={44} height={44} />
+                    ) : (
+                      t.name?.charAt(0)?.toUpperCase() || "·"
+                    )}
                   </div>
                   <div>
                     <span className="ps-tcard-name">{t.name}</span>
