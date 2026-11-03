@@ -36,6 +36,7 @@ const themeScript = `(function(){try{
 }catch(e){document.documentElement.dataset.theme='dark';}})();`;
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://jfv.smdigtal.com"),
   title: "Priscila Sinópolis — Método JFV | Jeito Fácil de Vender",
   description:
     "Especialista em Vendas, Estratégia Comercial e Gestão. Mais de 7 anos ajudando pessoas e empresas a venderem mais com o Método JFV.",
@@ -58,6 +59,8 @@ export const metadata: Metadata = {
     title: "Priscila Sinópolis — Método JFV | Jeito Fácil de Vender",
     description:
       "Especialista em Vendas e criadora do Método JFV — o jeito simples e poderoso de vender mais todos os dias.",
+    url: "https://jfv.smdigtal.com",
+    siteName: "Priscila Sinópolis · Método JFV",
     type: "website",
     locale: "pt_BR",
   },

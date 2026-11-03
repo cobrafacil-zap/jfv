@@ -5,7 +5,7 @@ export function getSiteUrl(): string {
   const raw =
     process.env.NEXT_PUBLIC_SITE_URL ||
     process.env.MERCADOPAGO_WEBHOOK_URL?.replace("/api/webhook/mercadopago", "") ||
-    "https://jeitofacildevender.online";
+    "https://jfv.smdigtal.com";
 
   // Limpa caracteres invisíveis, espaços e quebras de linha
   let url = raw
