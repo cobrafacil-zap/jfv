@@ -206,7 +206,7 @@ export const defaultContent: LandingContent = {
         buttonLabel: "Aplicar para a mentoria",
         href: "/aplicacao",
         coverUrl: "/priscila/zero-10k.jpg",
-        coverPosition: "50% 50%",
+        coverPosition: "32% 40%",
         coverFilter: "none",
       },
       {
