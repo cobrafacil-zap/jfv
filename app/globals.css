@@ -785,6 +785,61 @@
 .ps-landing .ps-pcard.is-featured {
   border-color: rgba(196, 78, 35, 0.4);
 }
+/* ===== Fita de LED animada contornando o card ===== */
+@property --ps-pcard-led {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.ps-landing .ps-pcard::before,
+.ps-landing .ps-pcard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  padding: 2px;
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--ps-pcard-led, 0deg),
+    transparent 0deg,
+    transparent 42deg,
+    rgba(232, 142, 88, 0.85) 78deg,
+    #ffd9b8 102deg,
+    rgba(196, 78, 35, 0.85) 128deg,
+    transparent 165deg,
+    transparent 228deg,
+    rgba(232, 142, 88, 0.5) 262deg,
+    rgba(232, 142, 88, 0.18) 292deg,
+    transparent 330deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  z-index: 5;
+  animation: ps-pcard-led-rotate 6s linear infinite;
+  transition: opacity var(--transition);
+}
+/* Halo (brilho) da fita de LED */
+.ps-landing .ps-pcard::after {
+  padding: 10px;
+  filter: blur(9px);
+  opacity: 0.55;
+}
+@keyframes ps-pcard-led-rotate {
+  to { --ps-pcard-led: 360deg; }
+}
+.ps-landing .ps-pcard:hover::before {
+  animation-duration: 3.4s;
+}
+.ps-landing .ps-pcard:hover::after {
+  opacity: 0.85;
+  animation-duration: 3.4s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ps-landing .ps-pcard::before,
+  .ps-landing .ps-pcard::after { animation: none; }
+}
 .ps-landing .ps-pcard-cover {
   position: relative;
   height: 100%;
