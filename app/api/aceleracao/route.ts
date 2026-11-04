@@ -126,7 +126,7 @@ export async function POST(request: Request) {
 
   const salvoNoBanco = await salvarNoSupabase(lead);
   const enviadoParaWebhook = await enviarParaWebhook(lead);
-  const emailEnviado = await enviarEmailLead({
+  const emailResultado = await enviarEmailLead({
     assunto: `Novo diagnóstico · Aceleração Comercial — ${nome}`,
     lead,
     campos: [
@@ -146,6 +146,8 @@ export async function POST(request: Request) {
     ],
   });
 
+  const emailEnviado = emailResultado.ok;
+
   if (!salvoNoBanco && !enviadoParaWebhook && !emailEnviado) {
     console.info("[aceleracao] lead sem destino configurado", JSON.stringify(lead));
   }
@@ -155,5 +157,6 @@ export async function POST(request: Request) {
     stored: salvoNoBanco || enviadoParaWebhook || emailEnviado,
     saved: salvoNoBanco,
     emailed: emailEnviado,
+    emailStatus: emailResultado.status,
   });
 }

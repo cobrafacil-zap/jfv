@@ -42,22 +42,27 @@ function formatarData(iso: unknown) {
   }).format(data);
 }
 
+export type ResultadoEmail = {
+  ok: boolean;
+  status: "sent" | "not_configured" | "rejected" | "error";
+};
+
 export async function enviarEmailLead(params: {
   assunto: string;
   lead: Lead;
   campos: CampoLead[];
-}): Promise<boolean> {
+}): Promise<ResultadoEmail> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     console.warn("[leads-email] RESEND_API_KEY não configurada.");
-    return false;
+    return { ok: false, status: "not_configured" };
   }
 
   const linhas = params.campos
     .map((campo) => ({ rotulo: campo.rotulo, valor: texto(params.lead[campo.chave]) }))
     .filter((linha) => linha.valor.length > 0);
 
-  if (linhas.length === 0) return false;
+  if (linhas.length === 0) return { ok: false, status: "error" };
 
   const recebidoEm = formatarData(params.lead.recebido_em);
   const emailLead = texto(params.lead.email);
@@ -129,12 +134,12 @@ export async function enviarEmailLead(params: {
 
     if (error) {
       console.warn("[leads-email] Resend recusou o envio:", error.message);
-      return false;
+      return { ok: false, status: "rejected" };
     }
 
-    return true;
+    return { ok: true, status: "sent" };
   } catch (erro) {
     console.warn("[leads-email] erro ao enviar notificação:", erro);
-    return false;
+    return { ok: false, status: "error" };
   }
 }
