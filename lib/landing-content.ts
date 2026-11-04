@@ -62,6 +62,7 @@ export type ProductCard = {
   coverUrl?: string;          // NOVO: cover do card (opcional; placeholder se vazio)
   coverPosition?: string;     // ex: "50% 20%" — enquadramento da foto no cover
   coverFilter?: string;       // ex: "none" — sobrescreve o grade de cor padrão
+  coverPlain?: boolean;       // true: foto crua sem vinheta/brilho — visual mais humano
   hidePrice?: boolean;        // true = card sem bloco de valor
 };
 
@@ -211,8 +212,9 @@ export const defaultContent: LandingContent = {
         buttonLabel: "Aplicar para a mentoria",
         href: "/aplicacao",
         coverUrl: "/priscila/zero-10k.jpg",
-        coverPosition: "32% 40%",
+        coverPosition: "50% 15%",
         coverFilter: "none",
+        coverPlain: true,
       },
       {
         id: "empresas-aceleracao",
