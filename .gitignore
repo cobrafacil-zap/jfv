@@ -44,3 +44,4 @@ supabase/.temp
 .idea/
 *.swp
 *.swo
+.env*

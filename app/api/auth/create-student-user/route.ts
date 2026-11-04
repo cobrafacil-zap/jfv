@@ -248,7 +248,7 @@ export async function POST(req: Request) {
           const resend = new Resend(process.env.RESEND_API_KEY);
           const fromAddress =
             process.env.RESEND_FROM ||
-            "Priscila Sinópolis <contato@jeitofacildevender.online>";
+            "Priscila Sinópolis <contato@smdigtal.com>";
 
           // Template otimizado pra não cair em spam:
           // - Texto alternativo (não só imagem)

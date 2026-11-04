@@ -10,8 +10,7 @@ import { Resend } from "resend";
  */
 
 const DESTINO_PADRAO = "contatocomercialsocial@gmail.com";
-const REMETENTE_PADRAO =
-  "Priscila Sinópolis <contato@jeitofacildevender.online>";
+const REMETENTE_PADRAO = "Priscila Sinópolis <contato@smdigtal.com>";
 
 type Lead = Record<string, unknown>;
 
