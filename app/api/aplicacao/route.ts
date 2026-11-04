@@ -4,6 +4,7 @@ import {
   supabaseServiceRoleKey,
   supabaseUrl,
 } from "@/lib/supabase";
+import { enviarEmailLead } from "@/lib/leads-email";
 
 /**
  * Recebe as aplicações da mentoria Do Zero aos 10k.
@@ -124,13 +125,33 @@ export async function POST(request: Request) {
 
   const salvoNoBanco = await salvarNoSupabase(lead);
   const enviadoParaWebhook = await enviarParaWebhook(lead);
+  const emailEnviado = await enviarEmailLead({
+    assunto: `Nova aplicação · Mentoria Do Zero aos 10k — ${nome}`,
+    lead,
+    campos: [
+      { rotulo: "Nome", chave: "nome" },
+      { rotulo: "Agência", chave: "agencia" },
+      { rotulo: "Tempo de mercado", chave: "tempo_mercado" },
+      { rotulo: "Faturamento", chave: "faturamento" },
+      { rotulo: "Time", chave: "tamanho_time" },
+      { rotulo: "Desafio", chave: "desafio" },
+      { rotulo: "Canais", chave: "canais_aquisicao" },
+      { rotulo: "Meta em 6 meses", chave: "meta_faturamento" },
+      { rotulo: "Investimento", chave: "faixa_investimento" },
+      { rotulo: "Prazo", chave: "prazo" },
+      { rotulo: "Email", chave: "email" },
+      { rotulo: "WhatsApp", chave: "whatsapp" },
+    ],
+  });
 
-  if (!salvoNoBanco && !enviadoParaWebhook) {
+  if (!salvoNoBanco && !enviadoParaWebhook && !emailEnviado) {
     console.info("[aplicacao] lead sem destino configurado", JSON.stringify(lead));
   }
 
   return NextResponse.json({
     ok: true,
-    stored: salvoNoBanco || enviadoParaWebhook,
+    stored: salvoNoBanco || enviadoParaWebhook || emailEnviado,
+    saved: salvoNoBanco,
+    emailed: emailEnviado,
   });
 }

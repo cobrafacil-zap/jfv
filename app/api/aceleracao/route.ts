@@ -4,6 +4,7 @@ import {
   supabaseServiceRoleKey,
   supabaseUrl,
 } from "@/lib/supabase";
+import { enviarEmailLead } from "@/lib/leads-email";
 
 /**
  * Recebe os diagnósticos da Aceleração Comercial.
@@ -125,13 +126,34 @@ export async function POST(request: Request) {
 
   const salvoNoBanco = await salvarNoSupabase(lead);
   const enviadoParaWebhook = await enviarParaWebhook(lead);
+  const emailEnviado = await enviarEmailLead({
+    assunto: `Novo diagnóstico · Aceleração Comercial — ${nome}`,
+    lead,
+    campos: [
+      { rotulo: "Nome", chave: "nome" },
+      { rotulo: "Empresa", chave: "empresa" },
+      { rotulo: "Segmento", chave: "segmento" },
+      { rotulo: "Tempo de mercado", chave: "tempo_mercado" },
+      { rotulo: "Faturamento", chave: "faturamento" },
+      { rotulo: "Time comercial", chave: "time_comercial" },
+      { rotulo: "Desafio", chave: "desafio" },
+      { rotulo: "Canais", chave: "canais_aquisicao" },
+      { rotulo: "Meta em 6 meses", chave: "meta_faturamento" },
+      { rotulo: "Investimento", chave: "faixa_investimento" },
+      { rotulo: "Prazo", chave: "prazo" },
+      { rotulo: "Email", chave: "email" },
+      { rotulo: "WhatsApp", chave: "whatsapp" },
+    ],
+  });
 
-  if (!salvoNoBanco && !enviadoParaWebhook) {
+  if (!salvoNoBanco && !enviadoParaWebhook && !emailEnviado) {
     console.info("[aceleracao] lead sem destino configurado", JSON.stringify(lead));
   }
 
   return NextResponse.json({
     ok: true,
-    stored: salvoNoBanco || enviadoParaWebhook,
+    stored: salvoNoBanco || enviadoParaWebhook || emailEnviado,
+    saved: salvoNoBanco,
+    emailed: emailEnviado,
   });
 }
