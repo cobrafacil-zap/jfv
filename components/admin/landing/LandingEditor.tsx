@@ -13,7 +13,6 @@ import {
   SobreForm,
   ResultadosForm,
   FaqForm,
-  ClosingForm,
   FooterForm,
 } from "./sections";
 
@@ -24,7 +23,6 @@ const TABS: { key: LandingSectionKey; label: string }[] = [
   { key: "sobre", label: "Sobre" },
   { key: "resultados", label: "Resultados" },
   { key: "faq", label: "FAQ" },
-  { key: "closing", label: "Encerramento" },
   { key: "footer", label: "Rodapé" },
 ];
 
@@ -95,8 +93,6 @@ export function LandingEditor({ initial }: { initial: LandingContent }) {
         return <ResultadosForm value={content.resultados} onChange={(v) => update("resultados", v)} />;
       case "faq":
         return <FaqForm value={content.faq} onChange={(v) => update("faq", v)} />;
-      case "closing":
-        return <ClosingForm value={content.closing} onChange={(v) => update("closing", v)} />;
       case "footer":
         return <FooterForm value={content.footer} onChange={(v) => update("footer", v)} />;
     }
