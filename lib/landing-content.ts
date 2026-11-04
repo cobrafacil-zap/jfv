@@ -65,6 +65,7 @@ export type ProductCard = {
   coverPlain?: boolean;       // true: foto crua sem vinheta/brilho — visual mais humano
   hidePrice?: boolean;        // true = card sem bloco de valor
   highlights?: string[];      // bullets curtos que enriquecem o corpo do card
+  urgency?: string;           // selo de urgência real (ex: vagas da turma)
 };
 
 export type ProdutosContent = {
@@ -167,7 +168,7 @@ export const defaultContent: LandingContent = {
     eyebrow: "MÉTODO JFV · VENDAS SEM COMPLICAÇÃO",
     name: "Priscila Sinópolis",
     method: "Método JFV",
-    tagline: "Vender não precisa ser complicado.",
+    tagline: "O método que já ajudou +500 pessoas a vender melhor",
     sub: "Eu transformei anos de experiência comercial em um método simples para quem precisa vender mais — seja um produto, um serviço ou uma empresa inteira.",
     photoUrl: "/priscila/hero.jpg",
     stats: [
@@ -193,6 +194,7 @@ export const defaultContent: LandingContent = {
         title: "Jeito Fácil de Vender",
         desc: "Comunidade e conteúdo semanal para quem quer vender todos os dias com método, sem improvisar.",
         idealFor: "Para quem está começando e quer construir base.",
+        urgency: "Nova turma abrindo · vagas limitadas",
         price: "R$ 19,90",
         priceSuffix: "/mês",
         buttonLabel: "Assinar agora",
@@ -209,6 +211,7 @@ export const defaultContent: LandingContent = {
         title: "Do Zero aos 10k",
         desc: "Programa individual para estruturar um negócio do zero e alcançar os primeiros R$ 10 mil por mês.",
         idealFor: "Para quem quer acompanhamento próximo.",
+        urgency: "Turma com vagas limitadas · seleção por aplicação",
         hidePrice: true,
         buttonLabel: "Não quero mais ficar estagnado",
         href: "/aplicacao",
@@ -224,6 +227,7 @@ export const defaultContent: LandingContent = {
         title: "Aceleração Comercial",
         desc: "Consultoria estratégica para empresas que querem aumentar faturamento e estruturar equipes de vendas.",
         idealFor: "Para empresas com operação comercial ativa.",
+        urgency: "Agenda limitada · poucas empresas por mês",
         price: "Sob consulta",
         buttonLabel: "Solicitar diagnóstico",
         href: "/aceleracao",

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 /* ============================================================
@@ -1238,7 +1239,7 @@ export function AceleracaoForm() {
           </div>
 
           <figure className="aplic-cover-photo">
-            <img
+            <Image
               src="/priscila/aceleracao-comercial.jpg"
               alt="Priscila Sinópolis conduzindo um diagnóstico de Aceleração Comercial"
               width={1536}

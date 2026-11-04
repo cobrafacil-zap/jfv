@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import type { Depoimento } from "@/lib/landing-content";
 
 /**
@@ -70,7 +71,7 @@ export function TestimonialCarousel({ items }: { items: Depoimento[] }) {
                 <div className="ps-tcard-foot">
                   <div className="ps-tcard-avatar" aria-hidden>
                     {t.photoUrl ? (
-                      <img src={t.photoUrl} alt="" loading="lazy" width={44} height={44} />
+                      <Image src={t.photoUrl} alt="" width={44} height={44} />
                     ) : (
                       t.name?.charAt(0)?.toUpperCase() || "·"
                     )}

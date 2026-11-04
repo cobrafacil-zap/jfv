@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { ApresentacaoContent } from "@/lib/landing-content";
 
 /**
@@ -55,12 +56,13 @@ export function Apresentacao({ content }: { content: ApresentacaoContent }) {
 
           <div className="ps-apresentacao-name-row">
             {content.photoUrl && (
-              <img
+              <Image
                 src={content.photoUrl}
                 alt={`Foto de ${content.name}`}
                 className="ps-apresentacao-avatar"
                 width={88}
                 height={88}
+                priority
               />
             )}
             <div>
@@ -123,12 +125,13 @@ export function Apresentacao({ content }: { content: ApresentacaoContent }) {
 
           <figure className="ps-hero-photo-card">
             {content.photoUrl && (
-              <img
+              <Image
                 src={content.photoUrl}
                 alt=""
                 className="ps-hero-photo"
                 width={400}
                 height={500}
+                priority
               />
             )}
             <figcaption className="ps-hero-photo-caption">

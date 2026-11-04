@@ -1006,6 +1006,92 @@
   font-weight: 700;
   margin-top: 1px;
 }
+/* Selo de urgência — vagas/turmas */
+.ps-landing .ps-pcard-urgency {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  background: rgba(232, 142, 88, 0.12);
+  border: 1px solid rgba(232, 142, 88, 0.32);
+  font-family: var(--font-label);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #f0a878;
+}
+.ps-pcard-urgency-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #e88e58;
+  box-shadow: 0 0 0 0 rgba(232, 142, 88, 0.55);
+  animation: ps-urgency-pulse 2s ease-out infinite;
+}
+@keyframes ps-urgency-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(232, 142, 88, 0.55); }
+  70% { box-shadow: 0 0 0 7px rgba(232, 142, 88, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(232, 142, 88, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ps-pcard-urgency-dot { animation: none; }
+}
+
+/* ===== Botão flutuante de WhatsApp ===== */
+.ps-whatsapp-float {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 90;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 18px 13px 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #25d366 0%, #128c4b 100%);
+  color: #fff;
+  font-family: var(--font-label);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  box-shadow:
+    0 14px 34px -12px rgba(37, 211, 102, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+  transition: opacity 0.45s var(--ease-out-expo), transform 0.45s var(--ease-out-expo),
+    box-shadow var(--transition);
+}
+.ps-whatsapp-float.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.ps-whatsapp-float:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 22px 44px -12px rgba(37, 211, 102, 0.65),
+    0 0 0 1px rgba(255, 255, 255, 0.18) inset;
+}
+.ps-whatsapp-float-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ps-whatsapp-float-label { white-space: nowrap; }
+@media (max-width: 600px) {
+  .ps-whatsapp-float {
+    right: 14px;
+    bottom: 14px;
+    padding: 15px;
+  }
+  .ps-whatsapp-float-label { display: none; }
+}
 .ps-landing .ps-pcard-foot {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding-top: 14px;

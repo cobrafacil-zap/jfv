@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { ProdutosContent, ProductCard } from "@/lib/landing-content";
 
 /**
@@ -53,10 +54,11 @@ function ShowcaseCard({ card, index }: { card: ProductCard; index: number }) {
         aria-hidden={!card.coverUrl}
       >
         {card.coverUrl ? (
-          <img
+          <Image
             src={card.coverUrl}
             alt=""
-            loading="lazy"
+            fill
+            sizes="(max-width: 860px) 100vw, 288px"
             style={{
               ...(card.coverPosition ? { objectPosition: card.coverPosition } : {}),
               ...(card.coverFilter ? { filter: card.coverFilter } : {}),
@@ -75,6 +77,13 @@ function ShowcaseCard({ card, index }: { card: ProductCard; index: number }) {
         <h3 className="ps-pcard-title">{card.title}</h3>
         <p className="ps-pcard-desc">{card.desc}</p>
         <p className="ps-pcard-ideal">{card.idealFor}</p>
+
+        {card.urgency && (
+          <p className="ps-pcard-urgency">
+            <span className="ps-pcard-urgency-dot" aria-hidden />
+            {card.urgency}
+          </p>
+        )}
 
         {card.highlights && card.highlights.length > 0 && (
           <ul className="ps-pcard-highlights">

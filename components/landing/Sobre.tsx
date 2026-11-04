@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Image from "next/image";
 import type { SobreContent } from "@/lib/landing-content";
 
 function escaparRegex(texto: string) {
@@ -39,28 +40,25 @@ export function Sobre({ content }: { content: SobreContent }) {
       <div className="ps-sobre-inner">
         <div className="ps-sobre-visual">
           <figure className="ps-sobre-fig-main">
-            <img
+            <Image
               src={content.photoMain}
               alt="Priscila Sinópolis"
-              loading="lazy"
               width={780}
               height={980}
             />
           </figure>
           <figure className="ps-sobre-fig-sm ps-sobre-fig-sm--a">
-            <img
+            <Image
               src={content.photoSm1}
               alt="Priscila Sinópolis em ação"
-              loading="lazy"
               width={420}
               height={520}
             />
           </figure>
           <figure className="ps-sobre-fig-sm ps-sobre-fig-sm--b">
-            <img
+            <Image
               src={content.photoSm2}
               alt="Priscila Sinópolis"
-              loading="lazy"
               width={420}
               height={520}
             />

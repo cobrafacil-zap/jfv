@@ -9,6 +9,8 @@ import { Footer } from "@/components/landing/Footer";
 import { LandingScripts } from "@/components/landing/LandingScripts";
 import { ScrollProgress } from "@/components/landing/ScrollProgress";
 import { LedAmbience } from "@/components/landing/LedAmbience";
+import { WhatsAppFloat } from "@/components/landing/WhatsAppFloat";
+import { JsonLd } from "@/components/landing/JsonLd";
 
 export const revalidate = 300;
 
@@ -17,6 +19,7 @@ export default async function Home() {
 
   return (
     <main className="ps-landing">
+      <JsonLd content={c} />
       <ScrollProgress />
       <LedAmbience />
 
@@ -27,6 +30,7 @@ export default async function Home() {
       <Resultados content={c.resultados} />
       <FAQ content={c.faq} />
       <Footer content={c.footer} />
+      <WhatsAppFloat />
       <LandingScripts />
     </main>
   );

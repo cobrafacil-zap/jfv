@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 /* ============================================================
@@ -1207,7 +1208,7 @@ export function AplicacaoForm() {
           </div>
 
           <figure className="aplic-cover-photo">
-            <img
+            <Image
               src="/priscila/aplicacao-retrato.jpg"
               alt="Priscila Sinópolis, criadora do Método JFV"
               width={675}

@@ -5,6 +5,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'i.imgur.com' },
       { protocol: 'https', hostname: 'ig.tonized.com.br' },
+      { protocol: 'https', hostname: 'rafjcnfggmvwkrgfptja.supabase.co' },
     ],
   },
 };
