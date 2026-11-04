@@ -69,6 +69,22 @@ export const metadata: Metadata = {
     siteName: "Priscila Sinópolis · Método JFV",
     type: "website",
     locale: "pt_BR",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Priscila Sinópolis — Método JFV, Jeito Fácil de Vender",
+        type: "image/jpeg",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Priscila Sinópolis — Método JFV | Jeito Fácil de Vender",
+    description:
+      "O método que já ajudou +500 pessoas a vender melhor. Jeito Fácil de Vender, com Priscila Sinópolis.",
+    images: ["/og-image.jpg"],
   },
 };
 

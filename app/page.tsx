@@ -10,6 +10,7 @@ import { LandingScripts } from "@/components/landing/LandingScripts";
 import { ScrollProgress } from "@/components/landing/ScrollProgress";
 import { LedAmbience } from "@/components/landing/LedAmbience";
 import { WhatsAppFloat } from "@/components/landing/WhatsAppFloat";
+import { StayPopup } from "@/components/landing/StayPopup";
 import { JsonLd } from "@/components/landing/JsonLd";
 
 export const revalidate = 300;
@@ -31,6 +32,7 @@ export default async function Home() {
       <FAQ content={c.faq} />
       <Footer content={c.footer} />
       <WhatsAppFloat />
+      <StayPopup />
       <LandingScripts />
     </main>
   );

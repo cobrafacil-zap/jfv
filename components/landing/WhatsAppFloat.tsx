@@ -6,17 +6,15 @@ const WHATSAPP_URL =
   "https://wa.me/5543996820296?text=Ol%C3%A1%2C%20Priscila!%20Vim%20pelo%20site%20e%20quero%20saber%20mais%20sobre%20os%20programas.";
 
 /**
- * Botão flutuante de WhatsApp — presente em qualquer ponto da página.
- * Aparece após a pessoa rolar um pouco (para não competir com o hero).
+ * Botão flutuante de WhatsApp — sempre visível, em qualquer ponto da página.
  */
 export function WhatsAppFloat() {
   const [visivel, setVisivel] = useState(false);
 
   useEffect(() => {
-    const aoRolar = () => setVisivel(window.scrollY > 420);
-    aoRolar();
-    window.addEventListener("scroll", aoRolar, { passive: true });
-    return () => window.removeEventListener("scroll", aoRolar);
+    // entrada suave ao montar; depois fica fixo
+    const t = setTimeout(() => setVisivel(true), 120);
+    return () => clearTimeout(t);
   }, []);
 
   return (
