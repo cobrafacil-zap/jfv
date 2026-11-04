@@ -1,27 +1,33 @@
 import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans, IBM_Plex_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { getThemeColors, buildThemeCss } from "@/lib/theme-colors";
 
-const inter = Inter({
-  subsets: ["latin"],
+// Fontes hospedadas localmente (app/fonts) para o build não depender da rede
+// do Google Fonts — evita falhas intermitentes de deploy no Vercel.
+const inter = localFont({
+  src: "./fonts/inter-latin.woff2",
+  weight: "100 900",
   variable: "--font-inter",
   display: "swap",
 });
 
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
+const jakarta = localFont({
+  src: "./fonts/jakarta-latin.woff2",
+  weight: "200 800",
   variable: "--font-jakarta",
   display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
 });
 
-const plexMono = IBM_Plex_Mono({
-  subsets: ["latin"],
+const plexMono = localFont({
+  src: [
+    { path: "./fonts/plex-mono-latin-400.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/plex-mono-latin-500.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/plex-mono-latin-600.woff2", weight: "600", style: "normal" },
+  ],
   variable: "--font-plex",
   display: "swap",
-  weight: ["400", "500", "600"],
 });
 
 // Script que roda antes da pintura para evitar flash do tema errado (FOUC).
