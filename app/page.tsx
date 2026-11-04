@@ -9,9 +9,9 @@ import { Closing } from "@/components/landing/Closing";
 import { Footer } from "@/components/landing/Footer";
 import { LandingScripts } from "@/components/landing/LandingScripts";
 import { ScrollProgress } from "@/components/landing/ScrollProgress";
+import { LedAmbience } from "@/components/landing/LedAmbience";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 300;
 
 export default async function Home() {
   const c = await getLandingContent();
@@ -19,6 +19,7 @@ export default async function Home() {
   return (
     <main className="ps-landing">
       <ScrollProgress />
+      <LedAmbience />
 
       <Navbar content={c.nav} />
       <Apresentacao content={c.apresentacao} />

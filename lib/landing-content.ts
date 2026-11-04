@@ -33,8 +33,13 @@ export type ApresentacaoContent = {
 export type SobreContent = {
   eyebrow: string;
   title: string;
+  /** Trechos do título exibidos em laranja. */
+  titleHighlights?: string[];
+  /** Frase final opcional em itálico (mantida por compatibilidade). */
   highlight: string;
   paragraphs: string[];
+  /** Frase de fechamento exibida como destaque. */
+  closingLine?: string;
   photoMain: string;
   photoSm1: string;
   photoSm2: string;
@@ -218,7 +223,7 @@ export const defaultContent: LandingContent = {
         idealFor: "Para empresas com operação comercial ativa.",
         price: "Sob consulta",
         buttonLabel: "Solicitar diagnóstico",
-        href: "https://forms.gle/sWTZ5FmFDRutLZfH7",
+        href: "/aceleracao",
         coverUrl: "/priscila/aceleracao-comercial.jpg",
         coverPosition: "50% 50%",
         coverFilter: "none",
@@ -228,22 +233,32 @@ export const defaultContent: LandingContent = {
   },
   sobre: {
     eyebrow: "QUEM É",
-    title: "Eu ensino vendas",
-    highlight: "porque vivo vendas.",
+    title:
+      "Do vendedor de bolo ao dono de agência. Eu ensino você a conquistar clientes que pagam melhor.",
+    titleHighlights: ["conquistar clientes", "pagam melhor"],
+    highlight: "",
     paragraphs: [
-      "Priscila Sinópolis é empresária, mentora e estrategista comercial, com mais de 7 anos de experiência construindo estratégias de aquisição, vendas e crescimento para profissionais e empresas.",
-      "Ao longo dessa trajetória, transformou a experiência prática em uma metodologia própria: o JFV — Jeito Fácil de Vender.",
-      "Um método criado para tirar vendas do campo da improvisação e transformar o comercial em um processo simples, replicável e escalável.",
+      "Sou Priscila Sinópolis, empresária, mentora e estrategista comercial, com mais de 7 anos de experiência no mercado.",
+      "Minha missão é simples: ensinar pessoas comuns e empresários a venderem melhor. Não importa se você está começando agora, vende produtos em casa, presta serviços ou já administra uma empresa.",
+      "Eu quero te mostrar como encontrar clientes, despertar interesse pelo que você vende, se posicionar melhor e atrair pessoas dispostas a pagar pelo valor do seu trabalho.",
+      "Foi com esse propósito que criei o JFV, Jeito Fácil de Vender — um método que transforma vendas em algo simples, estratégico e aplicável à realidade de qualquer negócio.",
     ],
+    closingLine: "Porque vender não é sorte. É processo.",
     photoMain: "/priscila/sobre-main.jpg",
     photoSm1: "/priscila/sobre-1.jpg",
     photoSm2: "/priscila/sobre-2.jpg",
     stats: [
-      { value: "+7", label: "anos em vendas" },
-      { value: "+500", label: "clientes atendidos" },
-      { value: "JFV", label: "método próprio" },
+      { value: "+7 ANOS", label: "Vivendo de vendas" },
+      { value: "+500", label: "Clientes atendidos" },
+      { value: "JFV", label: "Vendas para todos" },
     ],
-    tags: ["Vendas", "Estratégia Comercial", "Gestão", "Mentoria", "Empresas"],
+    tags: [
+      "Quem vende em casa",
+      "Presta serviços",
+      "Pequeno comércio",
+      "Agência",
+      "Empresa",
+    ],
   },
   resultados: {
     eyebrow: "RESULTADOS",
@@ -379,10 +394,15 @@ function mergeSection<K extends keyof LandingContent>(
  * e mescla com os defaults. Resiliente: em erro/tabela ausente, retorna defaults.
  */
 export async function getLandingContent(): Promise<LandingContent> {
+  const controle = new AbortController();
+  // Se o Supabase demorar, a home não pode ficar travada: cai nos defaults.
+  const limite = setTimeout(() => controle.abort(), 2500);
+
   try {
     const { data, error } = await supabaseAdmin
       .from("landing_content")
-      .select("section, content");
+      .select("section, content")
+      .abortSignal(controle.signal);
 
     if (error || !data) return defaultContent;
 
@@ -403,5 +423,7 @@ export async function getLandingContent(): Promise<LandingContent> {
     };
   } catch {
     return defaultContent;
+  } finally {
+    clearTimeout(limite);
   }
 }

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { supabaseAdmin } from "@/lib/supabase";
 import { requireAdmin } from "@/lib/admin-api";
@@ -58,6 +59,7 @@ export async function PUT(req: Request) {
       .single();
 
     if (upsertError) throw upsertError;
+    revalidatePath("/");
     return NextResponse.json({ section: data });
   } catch (err) {
     console.error("Erro ao salvar conteúdo da landing:", err);

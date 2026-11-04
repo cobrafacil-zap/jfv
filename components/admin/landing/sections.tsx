@@ -180,12 +180,25 @@ export function SobreForm({ value, onChange }: SectionFormProps<SobreContent>) {
         <Field label="Título (frase principal)">
           <TextInput value={value.title} onChange={(title) => onChange({ ...value, title })} />
         </Field>
-        <Field label="Destaque (em itálico)">
+        <Field label="Destaque final (opcional, em itálico)">
           <TextInput value={value.highlight} onChange={(highlight) => onChange({ ...value, highlight })} />
         </Field>
       </div>
+      <Field label="Palavras do título em laranja">
+        <StringList
+          values={value.titleHighlights ?? []}
+          onChange={(titleHighlights) => onChange({ ...value, titleHighlights })}
+          itemLabel="Destaque"
+        />
+      </Field>
       <Field label="Parágrafos">
         <StringList values={value.paragraphs} onChange={(paragraphs) => onChange({ ...value, paragraphs })} itemLabel="Parágrafo" />
+      </Field>
+      <Field label="Frase de fechamento (destaque)">
+        <TextInput
+          value={value.closingLine ?? ""}
+          onChange={(closingLine) => onChange({ ...value, closingLine })}
+        />
       </Field>
       <div>
         <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-text-muted">
