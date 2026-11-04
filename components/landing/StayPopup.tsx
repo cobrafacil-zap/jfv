@@ -19,20 +19,31 @@ export function StayPopup() {
   useEffect(() => {
     if (sessionStorage.getItem(CHAVE_SESSAO)) return;
 
-    const aoRolar = () => {
+    const tentarDisparar = () => {
       if (disparado.current) return;
       const fimDaPagina =
-        window.innerHeight + window.scrollY >= document.body.scrollHeight - 280;
+        window.innerHeight + window.scrollY >= document.body.scrollHeight - 320;
       if (fimDaPagina) {
         disparado.current = true;
         sessionStorage.setItem(CHAVE_SESSAO, "1");
+        window.removeEventListener("scroll", tentarDisparar);
         // pequena pausa para a pessoa perceber o rodapé antes do popup
         setTimeout(() => setAberto(true), 700);
       }
     };
 
-    window.addEventListener("scroll", aoRolar, { passive: true });
-    return () => window.removeEventListener("scroll", aoRolar);
+    window.addEventListener("scroll", tentarDisparar, { passive: true });
+    window.addEventListener("resize", tentarDisparar);
+    // cobre abertura já no fim (restauração de rolagem) e layout que carrega depois
+    const t1 = setTimeout(tentarDisparar, 1200);
+    const t2 = setTimeout(tentarDisparar, 3000);
+
+    return () => {
+      window.removeEventListener("scroll", tentarDisparar);
+      window.removeEventListener("resize", tentarDisparar);
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, []);
 
   useEffect(() => {
