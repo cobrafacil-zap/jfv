@@ -848,6 +848,8 @@
   background: linear-gradient(135deg, rgb(40 30 22) 0%, rgb(20 14 10) 100%);
 }
 .ps-landing .ps-pcard-cover img {
+  position: absolute;
+  inset: 0;
   width: 100%; height: 100%;
   object-fit: cover; display: block;
   object-position: 50% 42%;

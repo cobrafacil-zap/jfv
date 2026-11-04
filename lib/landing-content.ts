@@ -209,12 +209,6 @@ export const defaultContent: LandingContent = {
         title: "Do Zero aos 10k",
         desc: "Programa individual para estruturar um negócio do zero e alcançar os primeiros R$ 10 mil por mês.",
         idealFor: "Para quem quer acompanhamento próximo.",
-        highlights: [
-          "Mentoria individual com a Priscila",
-          "Diagnóstico completo do seu negócio",
-          "Plano de ação para os primeiros R$ 10 mil",
-          "Acompanhamento passo a passo",
-        ],
         hidePrice: true,
         buttonLabel: "Não quero mais ficar estagnado",
         href: "/aplicacao",
