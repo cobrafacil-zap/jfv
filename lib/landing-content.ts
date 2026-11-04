@@ -64,6 +64,7 @@ export type ProductCard = {
   coverFilter?: string;       // ex: "none" — sobrescreve o grade de cor padrão
   coverPlain?: boolean;       // true: foto crua sem vinheta/brilho — visual mais humano
   hidePrice?: boolean;        // true = card sem bloco de valor
+  highlights?: string[];      // bullets curtos que enriquecem o corpo do card
 };
 
 export type ProdutosContent = {
@@ -208,6 +209,12 @@ export const defaultContent: LandingContent = {
         title: "Do Zero aos 10k",
         desc: "Programa individual para estruturar um negócio do zero e alcançar os primeiros R$ 10 mil por mês.",
         idealFor: "Para quem quer acompanhamento próximo.",
+        highlights: [
+          "Mentoria individual com a Priscila",
+          "Diagnóstico completo do seu negócio",
+          "Plano de ação para os primeiros R$ 10 mil",
+          "Acompanhamento passo a passo",
+        ],
         hidePrice: true,
         buttonLabel: "Aplicar para a mentoria",
         href: "/aplicacao",

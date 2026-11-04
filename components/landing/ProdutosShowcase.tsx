@@ -76,6 +76,17 @@ function ShowcaseCard({ card, index }: { card: ProductCard; index: number }) {
         <p className="ps-pcard-desc">{card.desc}</p>
         <p className="ps-pcard-ideal">{card.idealFor}</p>
 
+        {card.highlights && card.highlights.length > 0 && (
+          <ul className="ps-pcard-highlights">
+            {card.highlights.map((item, i) => (
+              <li key={i}>
+                <span className="ps-pcard-highlight-check" aria-hidden>✓</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        )}
+
         <div className="ps-pcard-foot">
           {!card.hidePrice && (
             <div className="ps-pcard-price">
