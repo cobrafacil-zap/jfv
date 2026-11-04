@@ -178,7 +178,7 @@ export const defaultContent: LandingContent = {
     ],
     primaryCta: { label: "Conheça os programas", href: "#programas" },
     secondaryCta: { label: "Falar no WhatsApp", href: "https://wa.me/5543996820296" },
-    instagramHandle: "@priscila_sinopolis",
+    instagramHandle: "@priscila_jeito_facil_de_vender",
   },
   produtos: {
     eyebrow: "PROGRAMAS",
@@ -378,7 +378,7 @@ export const defaultContent: LandingContent = {
     method: "Método JFV · Jeito Fácil de Vender",
     tagline: "Venda de um jeito mais simples. Cresça de um jeito mais inteligente.",
     socials: [
-      { label: "Instagram", href: "https://www.instagram.com/priscila_sinopolis/" },
+      { label: "Instagram", href: "https://www.instagram.com/priscila_jeito_facil_de_vender/" },
       { label: "LinkedIn", href: "https://www.linkedin.com/in/priscila-sin%C3%B3polis/" },
       { label: "WhatsApp", href: "https://wa.me/5543996820296" },
     ],

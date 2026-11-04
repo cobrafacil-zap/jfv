@@ -338,7 +338,7 @@ Cada seção está em `components/landing/[Secao].tsx`.
 
 ## 📞 Contato
 
-Priscila Sinópolis: [@priscila_sinopolis](https://www.instagram.com/priscila_sinopolis/)
+Priscila Sinópolis: [@priscila_jeito_facil_de_vender](https://www.instagram.com/priscila_jeito_facil_de_vender/)
 
 ---
 
