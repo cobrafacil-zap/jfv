@@ -216,7 +216,7 @@ export const defaultContent: LandingContent = {
           "Acompanhamento passo a passo",
         ],
         hidePrice: true,
-        buttonLabel: "Aplicar para a mentoria",
+        buttonLabel: "Não quero mais ficar estagnado",
         href: "/aplicacao",
         coverUrl: "/priscila/zero-10k.jpg",
         coverPosition: "50% 15%",
