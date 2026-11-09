@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { Tracker } from "@/components/analytics/Tracker";
 import { getThemeColors, buildThemeCss } from "@/lib/theme-colors";
 
 // Fontes hospedadas localmente (app/fonts) para o build não depender da rede
@@ -107,6 +108,7 @@ export default async function RootLayout({
         <style id="theme-vars" dangerouslySetInnerHTML={{ __html: themeCss }} />
       </head>
       <body className="bg-bg-primary text-text-primary font-body antialiased">
+        <Tracker />
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

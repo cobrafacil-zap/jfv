@@ -23,6 +23,7 @@ export function Footer({ content }: { content: FooterContent }) {
                 target={isExternal(s.href) ? "_blank" : undefined}
                 rel={isExternal(s.href) ? "noopener noreferrer" : undefined}
                 className="ps-footer-social"
+                data-wa-placement="footer"
               >
                 {s.label}
               </a>

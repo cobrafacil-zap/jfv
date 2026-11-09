@@ -32,6 +32,7 @@ export function ProdutosShowcase({ content }: { content: ProdutosContent }) {
               href={content.allCta.href}
               target={content.allCta.href.startsWith("http") ? "_blank" : undefined}
               rel={content.allCta.href.startsWith("http") ? "noopener noreferrer" : undefined}
+              data-wa-placement="programas-equipe"
             >
               {content.allCta.label} →
             </a>
@@ -48,6 +49,8 @@ function ShowcaseCard({ card, index }: { card: ProductCard; index: number }) {
     <article
       className={`ps-pcard${card.featured ? " is-featured" : ""} fade-up`}
       data-index={index}
+      data-program-id={card.id}
+      data-program-name={card.title}
     >
       <div
         className={`ps-pcard-cover${card.coverPlain ? " is-plain" : ""}`}
@@ -116,6 +119,7 @@ function ShowcaseCard({ card, index }: { card: ProductCard; index: number }) {
             target={isExternal ? "_blank" : undefined}
             rel={isExternal ? "noopener noreferrer" : undefined}
             className="ps-btn ps-btn--primary ps-pcard-cta"
+            data-wa-placement={`programa-${card.id}`}
           >
             {card.buttonLabel}
             <span aria-hidden>→</span>

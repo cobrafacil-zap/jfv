@@ -45,3 +45,6 @@ supabase/.temp
 *.swp
 *.swo
 .env*
+
+# analytics local (fallback em desenvolvimento)
+/.data/

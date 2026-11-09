@@ -100,6 +100,7 @@ export function StayPopup() {
             target="_blank"
             rel="noopener noreferrer"
             className="ps-btn ps-btn--primary ps-stay-cta"
+            data-wa-placement="popup-saida"
             onClick={() => setAberto(false)}
           >
             Conversar agora no WhatsApp

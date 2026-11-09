@@ -326,6 +326,65 @@ Cada seção está em `components/landing/[Secao].tsx`.
 
 ---
 
+## 📊 Painel de métricas da landing (`/painel`)
+
+Painel standalone (não usa o login do Supabase) para acompanhar o funil da landing.
+
+**Acesso:** `https://jfv.smdigtal.com/painel`
+
+### O que é medido
+- **Visitantes únicos** — deduplicados por um ID anônimo de 24h (cookie/localStorage).
+- **Origem do tráfego** — UTMs (`utm_source`, `utm_medium`, `utm_campaign`) e referrer.
+- **Cliques por programa** — card do programa clicado.
+- **Cliques no WhatsApp** — botão flutuante, popup e links.
+- **Formulários enviados** — Aceleração Comercial e aplicação da mentoria.
+- **Taxa de conversão** — formulários enviados ÷ visitantes únicos.
+
+Eventos: `pageview`, `click_programa`, `click_whatsapp`, `form_submit`. Nenhum dado
+pessoal é enviado ao analytics (sem e-mail, telefone ou nome).
+
+### Variáveis de ambiente
+| Variável | Descrição |
+| --- | --- |
+| `PAINEL_ADMIN_PASSWORD_HASH` | Hash scrypt no formato `scrypt$<salt>$<hash>` |
+| `PAINEL_SESSION_SECRET` | Segredo HMAC (32+ bytes) da sessão |
+| `PAINEL_ADMIN_PASSWORD` | Alternativa em texto puro (apenas desenvolvimento) |
+
+Sessão: cookie `jfv_painel_session` (HttpOnly, SameSite=Lax, Secure em produção, 8h).
+Login com rate limit de 6 falhas / 10 min → bloqueio de 15 min por IP.
+
+Gerar um hash:
+
+```bash
+node -e "const {randomBytes,scryptSync}=require('crypto');const p=process.argv[1];const s=randomBytes(16).toString('hex');console.log('scrypt\$'+s+'\$'+scryptSync(p,s,64).toString('hex'))" 'SUA-SENHA-FORTE'
+```
+
+### Armazenamento
+Ordem de preferência, detectada automaticamente:
+1. Tabela `analytics_events` — recomendada. Rode `supabase/schema-v8-analytics.sql`.
+2. KV em `site_settings` (`analytics:evt:<dia>:<uuid>`) — fallback sem SQL.
+3. `.data/analytics.json` — somente desenvolvimento local.
+
+As chaves `analytics:%` são excluídas de `GET /api/admin/settings`.
+
+### Recursos do painel
+- Períodos 7/14/30 dias + intervalo personalizado.
+- Comparação automática com o período anterior.
+- Gráfico de visitas/conversões, rosca de origem, ranking e tabela ordenável.
+- Exportação CSV (programas, origens e diário).
+- Modo demonstração com dados fictícios (`demo-v*`), removível pelo painel.
+- Modo escuro opcional e layout responsivo.
+
+### Migração
+```sql
+-- no SQL Editor do Supabase
+-- cole o conteúdo de supabase/schema-v8-analytics.sql
+```
+
+Enquanto a tabela não existir, o painel funciona normalmente usando `site_settings`.
+
+---
+
 ## 📚 Recursos úteis
 
 - [Next.js 14 Docs](https://nextjs.org/docs)

@@ -92,6 +92,7 @@ export function Apresentacao({ content }: { content: ApresentacaoContent }) {
               className="ps-btn ps-btn--ghost"
               target={isExternal(content.secondaryCta.href) ? "_blank" : undefined}
               rel={isExternal(content.secondaryCta.href) ? "noopener noreferrer" : undefined}
+              data-wa-placement="hero"
             >
               {content.secondaryCta.label}
             </a>

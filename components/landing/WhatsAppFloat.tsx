@@ -23,6 +23,7 @@ export function WhatsAppFloat() {
       target="_blank"
       rel="noopener noreferrer"
       className={`ps-whatsapp-float${visivel ? " is-visible" : ""}`}
+      data-wa-placement="flutuante"
       aria-label="Falar no WhatsApp com a equipe da Priscila Sinópolis"
     >
       <span className="ps-whatsapp-float-icon" aria-hidden>

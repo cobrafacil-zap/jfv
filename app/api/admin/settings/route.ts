@@ -15,6 +15,9 @@ export async function GET() {
   const { data, error } = await supabaseAdmin
     .from("site_settings")
     .select("key, value, updated_at")
+    // Eventos de analytics usam esta tabela como fallback KV e não são
+    // configurações do site — não devem aparecer no admin.
+    .not("key", "like", "analytics:%")
     .order("key");
 
   if (error) {

@@ -668,6 +668,7 @@ export function AceleracaoForm() {
         /* ignora */
       }
       setStatus("concluido");
+      window.jfvTrack?.("form_submit", { form_id: "aceleracao" });
       window.scrollTo({ top: 0, behavior: "auto" });
     } catch {
       setStatus("form");
