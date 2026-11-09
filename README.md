@@ -370,7 +370,7 @@ As chaves `analytics:%` são excluídas de `GET /api/admin/settings`.
 ### Recursos do painel
 - Períodos 7/14/30 dias + intervalo personalizado.
 - Comparação automática com o período anterior.
-- Gráfico de visitas/conversões, rosca de origem, ranking e tabela ordenável.
+- Rosca de origem, ranking de cliques e tabela ordenável.
 - Exportação CSV (programas, origens e diário).
 - Modo demonstração com dados fictícios (`demo-v*`), removível pelo painel.
 - Modo escuro opcional e layout responsivo.

@@ -797,6 +797,10 @@
   grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
 }
 
+.pnl-row--equal {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .pnl-chart-card {
   padding: 18px 18px 16px;
   min-width: 0;
@@ -1460,7 +1464,8 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .pnl-row--2 {
+  .pnl-row--2,
+  .pnl-row--equal {
     grid-template-columns: minmax(0, 1fr);
   }
 }

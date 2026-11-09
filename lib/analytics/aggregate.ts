@@ -62,6 +62,8 @@ export type Metrics = {
   };
   changes: {
     visitors: number | null;
+    pageviews: number | null;
+    whatsappClicks: number | null;
     whatsappVisitors: number | null;
     programClicks: number | null;
     conversionRate: number | null;
@@ -71,6 +73,7 @@ export type Metrics = {
   programs: ProgramRow[];
   sparklines: {
     visitors: number[];
+    pageviews: number[];
     whatsapp: number[];
     programClicks: number[];
     conversionRate: number[];
@@ -342,6 +345,11 @@ export function computeMetrics(
     },
     changes: {
       visitors: percentChange(current.visitors.size, previous.visitors.size),
+      pageviews: percentChange(current.pageviews, previous.pageviews),
+      whatsappClicks: percentChange(
+        current.whatsappClicks,
+        previous.whatsappClicks
+      ),
       whatsappVisitors: percentChange(
         current.whatsappVisitors.size,
         previous.whatsappVisitors.size
@@ -354,7 +362,8 @@ export function computeMetrics(
     programs,
     sparklines: {
       visitors: daily.map((point) => point.visitors),
-      whatsapp: daily.map((point) => point.whatsappVisitors),
+      pageviews: daily.map((point) => point.pageviews),
+      whatsapp: daily.map((point) => point.whatsappClicks),
       programClicks: daily.map((point) => point.programClicks),
       conversionRate: daily.map((point) => point.conversionRate),
     },

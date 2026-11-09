@@ -7,6 +7,7 @@ import {
   ArrowUpRight,
   BarChart3,
   CalendarDays,
+  ClipboardCheck,
   Download,
   ExternalLink,
   LogOut,
@@ -16,7 +17,6 @@ import {
   RefreshCw,
   Sparkles,
   Sun,
-  Target,
   Users,
   X,
 } from "lucide-react";
@@ -27,7 +27,7 @@ import {
   todayLocal,
 } from "@/lib/analytics/time";
 import { usePainelTheme } from "./theme";
-import { BarList, Donut, LineChart, Sparkline } from "./Charts";
+import { BarList, Donut, Sparkline } from "./Charts";
 
 type ApiMetrics = Metrics & {
   period: { from: string; to: string; days: number };
@@ -65,6 +65,18 @@ function formatNumber(value: number): string {
 
 function formatPercent(value: number): string {
   return `${value.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`;
+}
+
+function differentPeople(value: number): string {
+  return value === 1
+    ? "1 pessoa diferente"
+    : `${formatNumber(value)} pessoas diferentes`;
+}
+
+function clickers(value: number): string {
+  return value === 1
+    ? "1 pessoa clicou"
+    : `${formatNumber(value)} pessoas clicaram`;
 }
 
 function formatDateBR(day: string): string {
@@ -379,29 +391,29 @@ export function Dashboard() {
   const cards = data
     ? [
         {
-          label: "Visitantes únicos",
-          value: formatNumber(data.totals.visitors),
-          detail: `${formatNumber(data.totals.pageviews)} pageviews no período`,
-          change: data.changes.visitors,
+          label: "Total de visitas na página",
+          value: formatNumber(data.totals.pageviews),
+          detail: differentPeople(data.totals.visitors),
+          change: data.changes.pageviews,
           icon: Users,
           color: "#2563eb",
-          sparkline: data.sparklines.visitors,
+          sparkline: data.sparklines.pageviews,
           tooltip: false,
         },
         {
-          label: "WhatsApp",
-          value: formatNumber(data.totals.whatsappVisitors),
-          detail: `${formatNumber(data.totals.whatsappClicks)} cliques no total`,
-          change: data.changes.whatsappVisitors,
+          label: "Chamadas no WhatsApp",
+          value: formatNumber(data.totals.whatsappClicks),
+          detail: clickers(data.totals.whatsappVisitors),
+          change: data.changes.whatsappClicks,
           icon: MessageCircle,
           color: "#16a34a",
           sparkline: data.sparklines.whatsapp,
           tooltip: true,
         },
         {
-          label: "Cliques nos programas",
+          label: "Clique nos programas",
           value: formatNumber(data.totals.programClicks),
-          detail: `${formatNumber(data.totals.programVisitors)} pessoas clicaram`,
+          detail: clickers(data.totals.programVisitors),
           change: data.changes.programClicks,
           icon: MousePointerClick,
           color: "#7c3aed",
@@ -409,11 +421,11 @@ export function Dashboard() {
           tooltip: false,
         },
         {
-          label: "Taxa de conversão",
-          value: formatPercent(data.totals.conversionRate),
-          detail: `${formatNumber(data.totals.formSubmits)} formulários enviados`,
+          label: "Formulários Preenchidos",
+          value: formatNumber(data.totals.formSubmits),
+          detail: `${formatPercent(data.totals.conversionRate)} dos visitantes preencheram`,
           change: data.changes.conversionRate,
-          icon: Target,
+          icon: ClipboardCheck,
           color: "#0ea5e9",
           sparkline: data.sparklines.conversionRate,
           tooltip: false,
@@ -424,11 +436,6 @@ export function Dashboard() {
   const periodLabel = data
     ? `${formatDateBR(data.period.from)} a ${formatDateBR(data.period.to)}`
     : "Carregando período…";
-
-  const lineSeries = [
-    { key: "visitors" as const, label: "Visitantes únicos", color: "#2563eb" },
-    { key: "conversions" as const, label: "Conversões", color: "#16a34a" },
-  ];
 
   return (
     <div className="pnl" data-theme={theme}>
@@ -619,7 +626,9 @@ export function Dashboard() {
                       color={card.color}
                       labels={data?.daily.map((day) => day.label)}
                       showTooltip={card.tooltip}
-                      valueSuffix={card.label === "WhatsApp" ? " pessoas" : ""}
+                      valueSuffix={
+                        card.label === "Chamadas no WhatsApp" ? " chamadas" : ""
+                      }
                     />
                   </article>
                 );
@@ -641,11 +650,11 @@ export function Dashboard() {
                   <div>
                     <strong>O que já está sendo medido</strong>
                     <ul>
-                      <li>Visitantes únicos por dia</li>
+                      <li>Total de visitas na página</li>
                       <li>Origem do tráfego (Instagram, Google, direto…)</li>
-                      <li>Cliques em cada programa</li>
-                      <li>Cliques no WhatsApp</li>
-                      <li>Formulários enviados e taxa de conversão</li>
+                      <li>Clique nos programas</li>
+                      <li>Chamadas no WhatsApp</li>
+                      <li>Formulários preenchidos</li>
                     </ul>
                   </div>
                   <div className="pnl-empty-hint-box">
@@ -675,33 +684,12 @@ export function Dashboard() {
               </section>
             ) : (
               <>
-                <div className="pnl-row pnl-row--2">
-                  <section className="pnl-card pnl-chart-card">
-                    <div className="pnl-chart-head">
-                      <div>
-                        <h2>Visitas e conversões por dia</h2>
-                        <p>Visitantes únicos e formulários enviados.</p>
-                      </div>
-                      <div className="pnl-legend">
-                        <span>
-                          <i style={{ background: "#2563eb" }} />
-                          Visitantes
-                        </span>
-                        <span>
-                          <i style={{ background: "#16a34a" }} />
-                          Conversões
-                        </span>
-                      </div>
-                    </div>
-
-                    <LineChart data={data?.daily ?? []} series={lineSeries} />
-                  </section>
-
+                <div className="pnl-row pnl-row--equal">
                   <section className="pnl-card pnl-chart-card">
                     <div className="pnl-chart-head">
                       <div>
                         <h2>Origem do tráfego</h2>
-                        <p>De onde vieram os visitantes únicos.</p>
+                        <p>De onde vieram os visitantes.</p>
                       </div>
                     </div>
 
@@ -712,13 +700,11 @@ export function Dashboard() {
                       onExport={() => exportCsv("sources")}
                     />
                   </section>
-                </div>
 
-                <div className="pnl-row pnl-row--2 pnl-row--bottom">
                   <section className="pnl-card pnl-chart-card">
                     <div className="pnl-chart-head">
                       <div>
-                        <h2>Cliques por programa</h2>
+                        <h2>Clique nos programas</h2>
                         <p>Qual serviço despertou mais interesse no período.</p>
                       </div>
                       <button
@@ -736,7 +722,9 @@ export function Dashboard() {
                       total={data?.totals.programClicks ?? 0}
                     />
                   </section>
+                </div>
 
+                <div className="pnl-row">
                   <section className="pnl-card pnl-chart-card">
                     <div className="pnl-chart-head">
                       <div>
