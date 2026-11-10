@@ -79,6 +79,7 @@ type ExportType =
   | "leads";
 
 const PRESETS = [
+  { label: "Hoje", days: 1 },
   { label: "7 dias", days: 7 },
   { label: "14 dias", days: 14 },
   { label: "30 dias", days: 30 },
@@ -564,7 +565,9 @@ export function Dashboard() {
     : [];
 
   const periodLabel = data
-    ? `${formatDateBR(data.period.from)} a ${formatDateBR(data.period.to)}`
+    ? data.period.from === data.period.to
+      ? formatDateBR(data.period.from)
+      : `${formatDateBR(data.period.from)} a ${formatDateBR(data.period.to)}`
     : "Carregando período…";
 
   return (
