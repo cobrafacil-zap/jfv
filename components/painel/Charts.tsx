@@ -1,7 +1,12 @@
 "use client";
 
-import { useId, useState } from "react";
-import type { DailyPoint, ProgramRow, SourceRow } from "@/lib/analytics/aggregate";
+import { Fragment, useId, useState } from "react";
+import type {
+  DailyPoint,
+  FunnelStage,
+  Heatmap as HeatmapData,
+  SourceRow,
+} from "@/lib/analytics/aggregate";
 
 /* ============================================================
    Sparkline — mini gráfico de linha usado nos cards.
@@ -470,7 +475,12 @@ export function Donut({ data, total, colors, onExport }: DonutProps) {
    ============================================================ */
 
 type BarListProps = {
-  data: ProgramRow[];
+  data: Array<{
+    id: string;
+    name: string;
+    clicks: number;
+    share: number;
+  }>;
   total: number;
 };
 
@@ -509,6 +519,126 @@ export function BarList({ data, total }: BarListProps) {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+/* ============================================================
+   Funnel — etapas até o formulário.
+   ============================================================ */
+
+export function Funnel({ stages }: { stages: FunnelStage[] }) {
+  if (!stages.some((stage) => stage.value > 0)) {
+    return (
+      <p className="pnl-muted pnl-empty-inline">
+        Nenhuma visita no período para montar o funil.
+      </p>
+    );
+  }
+
+  const max = Math.max(1, ...stages.map((stage) => stage.value));
+
+  return (
+    <div className="pnl-funnel">
+      {stages.map((stage, index) => (
+        <div className="pnl-funnel-step" key={stage.key}>
+          <div className="pnl-funnel-top">
+            <span className="pnl-funnel-label">{stage.label}</span>
+            <span className="pnl-funnel-value">
+              {stage.value.toLocaleString("pt-BR")}
+            </span>
+          </div>
+          <div className="pnl-funnel-track">
+            <span
+              className="pnl-funnel-fill"
+              style={{
+                width: `${
+                  stage.value > 0
+                    ? Math.max(2, (stage.value / max) * 100)
+                    : 0
+                }%`,
+              }}
+            />
+          </div>
+          <div className="pnl-funnel-meta">
+            <span>
+              {stage.fromStart.toLocaleString("pt-BR", {
+                maximumFractionDigits: 1,
+              })}
+              % das visitas
+            </span>
+            {index > 0 && (
+              <span className={stage.fromPrevious < 40 ? "is-low" : ""}>
+                {stage.fromPrevious.toLocaleString("pt-BR", {
+                  maximumFractionDigits: 1,
+                })}
+                % da etapa anterior
+              </span>
+            )}
+          </div>
+        </div>
+      ))}
+
+      <p className="pnl-funnel-note">
+        Cada etapa conta pessoas diferentes. Uma pessoa pode aparecer em mais de
+        uma etapa.
+      </p>
+    </div>
+  );
+}
+
+/* ============================================================
+   Heatmap — melhores dias e horários.
+   ============================================================ */
+
+export function Heatmap({ data }: { data: HeatmapData }) {
+  const max = Math.max(1, data.max);
+
+  return (
+    <div className="pnl-heat">
+      <div
+        className="pnl-heat-grid"
+        style={{
+          gridTemplateColumns: `52px repeat(${data.buckets.length}, minmax(0, 1fr))`,
+        }}
+      >
+        <span />
+        {data.buckets.map((bucket) => (
+          <span key={bucket} className="pnl-heat-head">
+            {bucket}
+          </span>
+        ))}
+
+        {data.weekdays.map((day, weekdayIndex) => (
+          <Fragment key={day}>
+            <span className="pnl-heat-day">{day}</span>
+            {(data.cells[weekdayIndex] ?? []).map((value, bucketIndex) => {
+              const ratio = value / max;
+              return (
+                <span
+                  key={`${day}-${bucketIndex}`}
+                  className="pnl-heat-cell"
+                  style={{
+                    background: `rgba(37, 99, 235, ${0.06 + ratio * 0.86})`,
+                    color: ratio > 0.55 ? "#ffffff" : "var(--pnl-muted)",
+                  }}
+                  title={`${day}, ${data.buckets[bucketIndex]}: ${value} visitas`}
+                >
+                  {value > 0 ? value : ""}
+                </span>
+              );
+            })}
+          </Fragment>
+        ))}
+      </div>
+
+      <div className="pnl-heat-legend">
+        <span>Menos movimento</span>
+        {[0.08, 0.28, 0.5, 0.72, 0.92].map((ratio) => (
+          <i key={ratio} style={{ background: `rgba(37, 99, 235, ${ratio})` }} />
+        ))}
+        <span>Mais movimento</span>
+      </div>
     </div>
   );
 }

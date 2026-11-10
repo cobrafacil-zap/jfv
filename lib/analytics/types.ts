@@ -15,6 +15,7 @@ export type StoredEvent = {
   programId?: string;
   programName?: string;
   formId?: string;
+  placement?: string;
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;

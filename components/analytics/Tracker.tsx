@@ -33,7 +33,8 @@ type QueuedEvent = {
 const VISITOR_KEY = "jfv_vid";
 const VISITOR_AT_KEY = "jfv_vid_at";
 const SESSION_KEY = "jfv_sid";
-const UTM_KEY = "jfv_utm";
+const ATTR_COOKIE = "jfv_attr";
+const ATTR_DAYS = 30;
 
 const EXCLUDED_PATHS = ["/painel", "/admin", "/membros", "/checkout", "/api"];
 const FLUSH_INTERVAL = 5000;
@@ -80,36 +81,90 @@ function getSessionId(): string {
   }
 }
 
-function getUtms() {
-  let stored: { utm_source?: string; utm_medium?: string; utm_campaign?: string } = {};
+type Attribution = {
+  utm_source: string;
+  utm_medium: string;
+  utm_campaign: string;
+  referrer: string;
+};
 
+function readCookie(name: string): string | null {
   try {
-    const raw = sessionStorage.getItem(UTM_KEY);
-    if (raw) stored = JSON.parse(raw);
+    const match = document.cookie.match(
+      new RegExp(`(?:^|; )${name}=([^;]*)`)
+    );
+    return match ? decodeURIComponent(match[1]) : null;
   } catch {
-    stored = {};
+    return null;
   }
+}
 
+function writeCookie(name: string, value: string, days: number) {
+  try {
+    const secure = window.location.protocol === "https:" ? "; Secure" : "";
+    document.cookie = `${name}=${encodeURIComponent(
+      value
+    )}; Path=/; Max-Age=${days * 86400}; SameSite=Lax${secure}`;
+  } catch {
+    // cookie indisponível: segue sem persistir a atribuição
+  }
+}
+
+/**
+ * Atribuição first-touch: guarda por 30 dias a primeira origem
+ * relevante (UTM ou referrer externo). Assim quem vê no Instagram,
+ * sai e volta digitando o site não vira "Direto".
+ */
+function getAttribution(): Attribution {
   const params = new URLSearchParams(window.location.search);
   const fromUrl = {
     utm_source: params.get("utm_source") || "",
     utm_medium: params.get("utm_medium") || "",
     utm_campaign: params.get("utm_campaign") || "",
   };
+  const hasUrlUtm = Boolean(
+    fromUrl.utm_source || fromUrl.utm_medium || fromUrl.utm_campaign
+  );
 
-  const merged = {
-    utm_source: fromUrl.utm_source || stored.utm_source || "",
-    utm_medium: fromUrl.utm_medium || stored.utm_medium || "",
-    utm_campaign: fromUrl.utm_campaign || stored.utm_campaign || "",
-  };
-
-  try {
-    sessionStorage.setItem(UTM_KEY, JSON.stringify(merged));
-  } catch {
-    // armazenamento indisponível: segue com os dados da URL
+  let stored: (Attribution & { at?: number }) | null = null;
+  const raw = readCookie(ATTR_COOKIE);
+  if (raw) {
+    try {
+      stored = JSON.parse(raw);
+    } catch {
+      stored = null;
+    }
   }
 
-  return merged;
+  const hasStoredUtm = Boolean(
+    stored?.utm_source || stored?.utm_medium || stored?.utm_campaign
+  );
+  const currentReferrer = externalReferrer();
+
+  if (hasUrlUtm && !hasStoredUtm) {
+    stored = {
+      ...fromUrl,
+      referrer: currentReferrer || stored?.referrer || "",
+      at: Date.now(),
+    };
+    writeCookie(ATTR_COOKIE, JSON.stringify(stored), ATTR_DAYS);
+  } else if (!stored && currentReferrer) {
+    stored = {
+      utm_source: "",
+      utm_medium: "",
+      utm_campaign: "",
+      referrer: currentReferrer,
+      at: Date.now(),
+    };
+    writeCookie(ATTR_COOKIE, JSON.stringify(stored), ATTR_DAYS);
+  }
+
+  return {
+    utm_source: stored?.utm_source || fromUrl.utm_source || "",
+    utm_medium: stored?.utm_medium || fromUrl.utm_medium || "",
+    utm_campaign: stored?.utm_campaign || fromUrl.utm_campaign || "",
+    referrer: stored?.referrer || currentReferrer || "",
+  };
 }
 
 function externalReferrer(): string {
@@ -194,7 +249,7 @@ export function Tracker() {
     };
 
     const enqueue = (type: AnalyticsEventType, data: TrackData = {}) => {
-      const utms = getUtms();
+      const attribution = getAttribution();
 
       queue.push({
         type,
@@ -205,10 +260,10 @@ export function Tracker() {
           ? "mobile"
           : "desktop",
         ts: new Date().toISOString(),
-        utm_source: utms.utm_source,
-        utm_medium: utms.utm_medium,
-        utm_campaign: utms.utm_campaign,
-        referrer: externalReferrer(),
+        utm_source: attribution.utm_source,
+        utm_medium: attribution.utm_medium,
+        utm_campaign: attribution.utm_campaign,
+        referrer: attribution.referrer,
         ...data,
       });
 

@@ -1,4 +1,4 @@
-import { formatDayLabel, localDay } from "./time";
+import { ANALYTICS_TIMEZONE, formatDayLabel, localDay } from "./time";
 import { KNOWN_PROGRAMS } from "./programs";
 import type { StoredEvent } from "./types";
 
@@ -46,6 +46,66 @@ export type ProgramRow = {
   change: number | null;
 };
 
+export type FunnelStage = {
+  key: "visitors" | "program" | "whatsapp" | "form";
+  label: string;
+  value: number;
+  /** % em relação à primeira etapa */
+  fromStart: number;
+  /** % em relação à etapa anterior */
+  fromPrevious: number;
+};
+
+export type CampaignRow = {
+  key: string;
+  source: string;
+  medium: string;
+  campaign: string;
+  visitors: number;
+  programClicks: number;
+  formSubmits: number;
+  conversionRate: number;
+  share: number;
+};
+
+export type DeviceName = "mobile" | "desktop" | "desconhecido";
+
+export type DeviceRow = {
+  name: DeviceName;
+  label: string;
+  visitors: number;
+  pageviews: number;
+  formSubmits: number;
+  conversionRate: number;
+  share: number;
+};
+
+export type PlacementRow = {
+  id: string;
+  name: string;
+  clicks: number;
+  visitors: number;
+  share: number;
+};
+
+export type PageRow = {
+  page: string;
+  label: string;
+  pageviews: number;
+  visitors: number;
+  formSubmits: number;
+  conversionRate: number;
+  share: number;
+};
+
+export type Heatmap = {
+  weekdays: string[];
+  buckets: string[];
+  /** cells[diaDaSemana][faixaDeHorario] = visitas */
+  cells: number[][];
+  max: number;
+};
+
 export type Metrics = {
   hasData: boolean;
   eventCount: number;
@@ -71,6 +131,12 @@ export type Metrics = {
   daily: DailyPoint[];
   sources: SourceRow[];
   programs: ProgramRow[];
+  funnel: FunnelStage[];
+  campaigns: CampaignRow[];
+  devices: DeviceRow[];
+  placements: PlacementRow[];
+  pages: PageRow[];
+  heatmap: Heatmap;
   sparklines: {
     visitors: number[];
     pageviews: number[];
@@ -96,6 +162,34 @@ type ProgramBucket = {
   visitors: Set<string>;
 };
 
+type CampaignBucket = {
+  source: string;
+  medium: string;
+  campaign: string;
+  visitors: Set<string>;
+  programClicks: number;
+  formSubmits: number;
+};
+
+type DeviceBucket = {
+  visitors: Set<string>;
+  pageviews: number;
+  formSubmits: number;
+  formVisitors: Set<string>;
+};
+
+type PlacementBucket = {
+  clicks: number;
+  visitors: Set<string>;
+};
+
+type PageBucket = {
+  pageviews: number;
+  visitors: Set<string>;
+  formSubmits: number;
+  formVisitors: Set<string>;
+};
+
 type Aggregate = {
   visitors: Set<string>;
   pageviews: number;
@@ -109,7 +203,51 @@ type Aggregate = {
   daily: Map<string, DailyBucket>;
   programs: Map<string, ProgramBucket>;
   sources: Map<SourceName, Set<string>>;
+  campaigns: Map<string, CampaignBucket>;
+  devices: Map<DeviceName, DeviceBucket>;
+  placements: Map<string, PlacementBucket>;
+  pages: Map<string, PageBucket>;
+  heatmap: number[][];
 };
+
+const WEEKDAY_SHORT = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+const HEAT_BUCKETS = [
+  "0–2h",
+  "3–5h",
+  "6–8h",
+  "9–11h",
+  "12–14h",
+  "15–17h",
+  "18–20h",
+  "21–23h",
+];
+
+const DEVICE_ORDER: DeviceName[] = ["mobile", "desktop", "desconhecido"];
+const DEVICE_LABELS: Record<DeviceName, string> = {
+  mobile: "Celular",
+  desktop: "Computador",
+  desconhecido: "Não identificado",
+};
+
+const hourFormatter = new Intl.DateTimeFormat("en-US", {
+  timeZone: ANALYTICS_TIMEZONE,
+  hour: "2-digit",
+  hourCycle: "h23",
+});
+
+function localHour(ts: string): number {
+  const date = new Date(ts);
+  if (Number.isNaN(date.getTime())) return 0;
+  const hour = Number(hourFormatter.format(date));
+  if (!Number.isFinite(hour)) return 0;
+  return Math.min(23, Math.max(0, hour));
+}
+
+function weekdayOf(day: string): number {
+  const [year, month, date] = day.split("-").map(Number);
+  const value = new Date(Date.UTC(year, month - 1, date, 12)).getUTCDay();
+  return Number.isFinite(value) ? value : 0;
+}
 
 function emptyDaily(): DailyBucket {
   return {
@@ -122,9 +260,26 @@ function emptyDaily(): DailyBucket {
   };
 }
 
+function emptyDevice(): DeviceBucket {
+  return {
+    visitors: new Set(),
+    pageviews: 0,
+    formSubmits: 0,
+    formVisitors: new Set(),
+  };
+}
+
 function emptyAggregate(days: string[]): Aggregate {
   const daily = new Map<string, DailyBucket>();
   for (const day of days) daily.set(day, emptyDaily());
+
+  const devices = new Map<DeviceName, DeviceBucket>();
+  for (const name of DEVICE_ORDER) devices.set(name, emptyDevice());
+
+  const heatmap = Array.from({ length: 7 }, () =>
+    Array.from({ length: HEAT_BUCKETS.length }, () => 0)
+  );
+
   return {
     visitors: new Set(),
     pageviews: 0,
@@ -138,6 +293,11 @@ function emptyAggregate(days: string[]): Aggregate {
     daily,
     programs: new Map(),
     sources: new Map(),
+    campaigns: new Map(),
+    devices,
+    placements: new Map(),
+    pages: new Map(),
+    heatmap,
   };
 }
 
@@ -173,6 +333,68 @@ function classifySource(event: StoredEvent): SourceName {
   return "Direto";
 }
 
+function campaignOf(event: StoredEvent): {
+  key: string;
+  source: string;
+  medium: string;
+  campaign: string;
+} {
+  const source = (event.utmSource || "").trim();
+  const medium = (event.utmMedium || "").trim();
+  const campaign = (event.utmCampaign || "").trim();
+
+  if (!source && !medium && !campaign) {
+    const auto = classifySource(event);
+    return {
+      key: `auto:${auto}`,
+      source: auto,
+      medium: "—",
+      campaign: "Sem campanha",
+    };
+  }
+
+  const sourceLabel = source || "(sem origem)";
+  const mediumLabel = medium || "(sem mídia)";
+  const campaignLabel = campaign || "(sem campanha)";
+
+  return {
+    key: `${sourceLabel}|${mediumLabel}|${campaignLabel}`,
+    source: sourceLabel,
+    medium: mediumLabel,
+    campaign: campaignLabel,
+  };
+}
+
+function placementLabel(id: string): string {
+  if (id.startsWith("programa-")) {
+    const programId = id.slice("programa-".length);
+    const known = KNOWN_PROGRAMS.find((program) => program.id === programId);
+    return known ? `Card · ${known.name}` : "Card do programa";
+  }
+
+  switch (id) {
+    case "programas-equipe":
+      return "Seção de programas";
+    case "hero":
+      return "Topo da página";
+    case "footer":
+      return "Rodapé";
+    case "popup-saida":
+      return "Popup de saída";
+    case "flutuante":
+      return "Botão flutuante";
+    default:
+      return "Outros links";
+  }
+}
+
+function pageLabel(page: string): string {
+  if (page === "/" || page === "") return "Página inicial";
+  if (page === "/aceleracao") return "Aceleração Comercial";
+  if (page === "/aplicacao") return "Aplicação · Do Zero aos 10k";
+  return page;
+}
+
 function aggregateEvents(events: StoredEvent[], days: string[]): Aggregate {
   const aggregate = emptyAggregate(days);
   const daySet = new Set(days);
@@ -200,11 +422,56 @@ function aggregateEvents(events: StoredEvent[], days: string[]): Aggregate {
       if (!current || (current === "Direto" && source !== "Direto")) {
         visitorSource.set(event.visitorId, source);
       }
+
+      const campaignInfo = campaignOf(event);
+      const campaign = aggregate.campaigns.get(campaignInfo.key) ?? {
+        source: campaignInfo.source,
+        medium: campaignInfo.medium,
+        campaign: campaignInfo.campaign,
+        visitors: new Set<string>(),
+        programClicks: 0,
+        formSubmits: 0,
+      };
+      campaign.visitors.add(event.visitorId);
+      aggregate.campaigns.set(campaignInfo.key, campaign);
+
+      const deviceName: DeviceName = event.device ?? "desconhecido";
+      const device = aggregate.devices.get(deviceName) ?? emptyDevice();
+      device.visitors.add(event.visitorId);
+      device.pageviews += 1;
+      aggregate.devices.set(deviceName, device);
+
+      const page = event.page || "/";
+      const pageBucket = aggregate.pages.get(page) ?? {
+        pageviews: 0,
+        visitors: new Set<string>(),
+        formSubmits: 0,
+        formVisitors: new Set<string>(),
+      };
+      pageBucket.pageviews += 1;
+      pageBucket.visitors.add(event.visitorId);
+      aggregate.pages.set(page, pageBucket);
+
+      const weekday = weekdayOf(day);
+      const hourBucket = Math.min(
+        HEAT_BUCKETS.length - 1,
+        Math.floor(localHour(event.ts) / 3)
+      );
+      aggregate.heatmap[weekday][hourBucket] += 1;
     } else if (event.type === "click_whatsapp") {
       aggregate.whatsappClicks += 1;
       aggregate.whatsappVisitors.add(event.visitorId);
       bucket.whatsappClicks += 1;
       bucket.whatsappVisitors.add(event.visitorId);
+
+      const placement = event.placement || "link";
+      const row = aggregate.placements.get(placement) ?? {
+        clicks: 0,
+        visitors: new Set<string>(),
+      };
+      row.clicks += 1;
+      row.visitors.add(event.visitorId);
+      aggregate.placements.set(placement, row);
     } else if (event.type === "click_programa") {
       aggregate.programClicks += 1;
       aggregate.programVisitors.add(event.visitorId);
@@ -223,10 +490,35 @@ function aggregateEvents(events: StoredEvent[], days: string[]): Aggregate {
       // Mantém o nome mais recente enviado pelo site.
       if (event.programName) program.name = event.programName;
       aggregate.programs.set(id, program);
+
+      const campaignInfo = campaignOf(event);
+      const campaign = aggregate.campaigns.get(campaignInfo.key);
+      if (campaign) campaign.programClicks += 1;
     } else if (event.type === "form_submit") {
       aggregate.formSubmits += 1;
       aggregate.formVisitors.add(event.visitorId);
       bucket.conversions += 1;
+
+      const campaignInfo = campaignOf(event);
+      const campaign = aggregate.campaigns.get(campaignInfo.key);
+      if (campaign) campaign.formSubmits += 1;
+
+      const deviceName: DeviceName = event.device ?? "desconhecido";
+      const device = aggregate.devices.get(deviceName) ?? emptyDevice();
+      device.formSubmits += 1;
+      device.formVisitors.add(event.visitorId);
+      aggregate.devices.set(deviceName, device);
+
+      const page = event.page || "/";
+      const pageBucket = aggregate.pages.get(page) ?? {
+        pageviews: 0,
+        visitors: new Set<string>(),
+        formSubmits: 0,
+        formVisitors: new Set<string>(),
+      };
+      pageBucket.formSubmits += 1;
+      pageBucket.formVisitors.add(event.visitorId);
+      aggregate.pages.set(page, pageBucket);
     }
   }
 
@@ -325,6 +617,134 @@ export function computeMetrics(
     };
   });
 
+  const funnelValues: Array<{
+    key: FunnelStage["key"];
+    label: string;
+    value: number;
+  }> = [
+    { key: "visitors", label: "Visitaram a página", value: current.visitors.size },
+    {
+      key: "program",
+      label: "Clicaram em um programa",
+      value: current.programVisitors.size,
+    },
+    {
+      key: "whatsapp",
+      label: "Chamaram no WhatsApp",
+      value: current.whatsappVisitors.size,
+    },
+    {
+      key: "form",
+      label: "Preencheram o formulário",
+      value: current.formVisitors.size,
+    },
+  ];
+
+  const funnel: FunnelStage[] = funnelValues.map((stage, index) => {
+    const previousValue = index === 0 ? stage.value : funnelValues[index - 1].value;
+    return {
+      ...stage,
+      fromStart: round(rate(stage.value, funnelValues[0].value)),
+      fromPrevious:
+        index === 0
+          ? 100
+          : previousValue > 0
+          ? round(rate(stage.value, previousValue))
+          : stage.value > 0
+          ? 100
+          : 0,
+    };
+  });
+
+  const totalCampaignVisitors = Array.from(current.campaigns.values()).reduce(
+    (sum, row) => sum + row.visitors.size,
+    0
+  );
+
+  const campaigns: CampaignRow[] = Array.from(current.campaigns.entries())
+    .map(([key, row]) => ({
+      key,
+      source: row.source,
+      medium: row.medium,
+      campaign: row.campaign,
+      visitors: row.visitors.size,
+      programClicks: row.programClicks,
+      formSubmits: row.formSubmits,
+      conversionRate: round(rate(row.formSubmits, row.visitors.size)),
+      share:
+        totalCampaignVisitors > 0
+          ? round((row.visitors.size / totalCampaignVisitors) * 100)
+          : 0,
+    }))
+    .filter((row) => row.visitors > 0 || row.programClicks > 0 || row.formSubmits > 0)
+    .sort((a, b) => {
+      if (b.visitors !== a.visitors) return b.visitors - a.visitors;
+      if (b.formSubmits !== a.formSubmits) return b.formSubmits - a.formSubmits;
+      return a.source.localeCompare(b.source, "pt-BR");
+    });
+
+  const totalDeviceVisitors = Array.from(current.devices.values()).reduce(
+    (sum, row) => sum + row.visitors.size,
+    0
+  );
+
+  const devices: DeviceRow[] = DEVICE_ORDER.map((name) => {
+    const row = current.devices.get(name) ?? emptyDevice();
+    return {
+      name,
+      label: DEVICE_LABELS[name],
+      visitors: row.visitors.size,
+      pageviews: row.pageviews,
+      formSubmits: row.formSubmits,
+      conversionRate: round(rate(row.formSubmits, row.visitors.size)),
+      share:
+        totalDeviceVisitors > 0
+          ? round((row.visitors.size / totalDeviceVisitors) * 100)
+          : 0,
+    };
+  }).filter((row) => row.visitors > 0 || row.formSubmits > 0);
+
+  const placements: PlacementRow[] = Array.from(current.placements.entries())
+    .map(([id, row]) => ({
+      id,
+      name: placementLabel(id),
+      clicks: row.clicks,
+      visitors: row.visitors.size,
+      share:
+        current.whatsappClicks > 0
+          ? round((row.clicks / current.whatsappClicks) * 100)
+          : 0,
+    }))
+    .filter((row) => row.clicks > 0)
+    .sort((a, b) => {
+      if (b.clicks !== a.clicks) return b.clicks - a.clicks;
+      return a.name.localeCompare(b.name, "pt-BR");
+    });
+
+  const pages: PageRow[] = Array.from(current.pages.entries())
+    .map(([page, row]) => ({
+      page,
+      label: pageLabel(page),
+      pageviews: row.pageviews,
+      visitors: row.visitors.size,
+      formSubmits: row.formSubmits,
+      conversionRate: round(rate(row.formSubmits, row.visitors.size)),
+      share:
+        current.pageviews > 0 ? round((row.pageviews / current.pageviews) * 100) : 0,
+    }))
+    .filter((row) => row.pageviews > 0 || row.formSubmits > 0)
+    .sort((a, b) => {
+      if (b.pageviews !== a.pageviews) return b.pageviews - a.pageviews;
+      return a.label.localeCompare(b.label, "pt-BR");
+    });
+
+  const heatmap: Heatmap = {
+    weekdays: WEEKDAY_SHORT,
+    buckets: HEAT_BUCKETS,
+    cells: current.heatmap,
+    max: Math.max(0, ...current.heatmap.flat()),
+  };
+
   return {
     hasData:
       current.pageviews > 0 ||
@@ -360,6 +780,12 @@ export function computeMetrics(
     daily,
     sources,
     programs,
+    funnel,
+    campaigns,
+    devices,
+    placements,
+    pages,
+    heatmap,
     sparklines: {
       visitors: daily.map((point) => point.visitors),
       pageviews: daily.map((point) => point.pageviews),

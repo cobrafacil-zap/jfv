@@ -145,6 +145,7 @@ export async function POST(request: Request) {
       programId: clean(event.program_id, 80),
       programName: clean(event.program_name, 120),
       formId: clean(event.form_id, 80),
+      placement: clean(event.placement, 40),
       utmSource: clean(event.utm_source, 120),
       utmMedium: clean(event.utm_medium, 120),
       utmCampaign: clean(event.utm_campaign, 120),

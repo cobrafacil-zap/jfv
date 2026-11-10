@@ -3,20 +3,26 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
+  AlertTriangle,
   ArrowDownRight,
   ArrowUpRight,
   BarChart3,
+  Building2,
   CalendarDays,
   ClipboardCheck,
   Download,
   ExternalLink,
   LogOut,
+  Mail,
   MessageCircle,
   Moon,
   MousePointerClick,
+  Pencil,
+  Phone,
   RefreshCw,
   Sparkles,
   Sun,
+  Target,
   Users,
   X,
 } from "lucide-react";
@@ -27,7 +33,7 @@ import {
   todayLocal,
 } from "@/lib/analytics/time";
 import { usePainelTheme } from "./theme";
-import { BarList, Donut, Sparkline } from "./Charts";
+import { BarList, Donut, Funnel, Heatmap, Sparkline } from "./Charts";
 
 type ApiMetrics = Metrics & {
   period: { from: string; to: string; days: number };
@@ -39,8 +45,38 @@ type ApiMetrics = Metrics & {
   updatedAt: string;
 };
 
+type PainelLead = {
+  id: string;
+  name: string;
+  email: string;
+  whatsapp: string;
+  company?: string;
+  program: "mentoria" | "aceleracao";
+  programLabel: string;
+  origem?: string;
+  createdAt: string;
+};
+
+type LeadsApi = {
+  leads: PainelLead[];
+  counts: { total: number; mentoria: number; aceleracao: number };
+  monthTotal: number;
+  available: boolean;
+  demo: boolean;
+};
+
 type SortKey = "name" | "clicks" | "share" | "change";
 type SortDirection = "asc" | "desc";
+type ExportType =
+  | "programs"
+  | "sources"
+  | "daily"
+  | "campaigns"
+  | "devices"
+  | "placements"
+  | "pages"
+  | "heatmap"
+  | "leads";
 
 const PRESETS = [
   { label: "7 dias", days: 7 },
@@ -55,6 +91,13 @@ const SOURCE_COLORS: Record<string, string> = {
   "E-mail": "#f59e0b",
   WhatsApp: "#16a34a",
   Outras: "#94a3b8",
+};
+
+const EMPTY_HEATMAP = {
+  weekdays: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+  buckets: ["0–2h", "3–5h", "6–8h", "9–11h", "12–14h", "15–17h", "18–20h", "21–23h"],
+  cells: Array.from({ length: 7 }, () => Array.from({ length: 8 }, () => 0)),
+  max: 0,
 };
 
 const numberFormatter = new Intl.NumberFormat("pt-BR");
@@ -77,6 +120,17 @@ function clickers(value: number): string {
   return value === 1
     ? "1 pessoa clicou"
     : `${formatNumber(value)} pessoas clicaram`;
+}
+
+function whatsappLink(value: string): string {
+  const digits = value.replace(/\D/g, "");
+  if (!digits) return "#";
+  return `https://wa.me/${digits.startsWith("55") ? digits : `55${digits}`}`;
+}
+
+function goalPercent(current: number, goal: number): number {
+  if (goal <= 0) return 0;
+  return Math.min(100, (current / goal) * 100);
 }
 
 function formatDateBR(day: string): string {
@@ -198,6 +252,11 @@ export function Dashboard() {
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [now, setNow] = useState(() => Date.now());
   const [loggingOut, setLoggingOut] = useState(false);
+  const [leads, setLeads] = useState<LeadsApi | null>(null);
+  const [goal, setGoal] = useState<number | null>(null);
+  const [goalEditing, setGoalEditing] = useState(false);
+  const [goalDraft, setGoalDraft] = useState("");
+  const [savingGoal, setSavingGoal] = useState(false);
 
   const load = useCallback(
     async (from: string, to: string, nextMode: "real" | "demo") => {
@@ -205,21 +264,23 @@ export function Dashboard() {
       setError(null);
 
       try {
-        const response = await fetch(
-          `/api/painel/metrics?from=${encodeURIComponent(
-            from
-          )}&to=${encodeURIComponent(to)}&mode=${nextMode}`,
-          { cache: "no-store" }
-        );
+        const query = `from=${encodeURIComponent(
+          from
+        )}&to=${encodeURIComponent(to)}&mode=${nextMode}`;
 
-        if (response.status === 401) {
+        const [metricsResponse, leadsResponse] = await Promise.all([
+          fetch(`/api/painel/metrics?${query}`, { cache: "no-store" }),
+          fetch(`/api/painel/leads?${query}&limit=50`, { cache: "no-store" }),
+        ]);
+
+        if (metricsResponse.status === 401 || leadsResponse.status === 401) {
           router.replace("/painel/login?next=/painel");
           return;
         }
 
-        const payload = await response.json().catch(() => null);
+        const payload = await metricsResponse.json().catch(() => null);
 
-        if (!response.ok) {
+        if (!metricsResponse.ok) {
           throw new Error(
             payload?.error || "Não foi possível carregar as métricas."
           );
@@ -228,6 +289,13 @@ export function Dashboard() {
         setData(payload as ApiMetrics);
         setPeriod({ from, to });
         setMode(nextMode);
+
+        if (leadsResponse.ok) {
+          const leadsPayload = await leadsResponse.json().catch(() => null);
+          setLeads(leadsPayload as LeadsApi);
+        } else {
+          setLeads(null);
+        }
       } catch (err) {
         setError(
           err instanceof Error
@@ -252,6 +320,22 @@ export function Dashboard() {
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 30_000);
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch("/api/painel/goal", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((payload) => {
+        if (cancelled) return;
+        setGoal(typeof payload?.goal === "number" ? payload.goal : null);
+      })
+      .catch(() => null);
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const selectPreset = (days: number) => {
@@ -349,9 +433,55 @@ export function Dashboard() {
     }
   };
 
-  const exportCsv = (type: "programs" | "sources" | "daily") => {
+  const exportCsv = (type: ExportType) => {
     if (!period) return;
     window.location.href = `/api/painel/export?type=${type}&from=${period.from}&to=${period.to}&mode=${mode}`;
+  };
+
+  const openGoalEditor = () => {
+    setGoalDraft(goal !== null ? String(goal) : "");
+    setGoalEditing(true);
+  };
+
+  const saveGoal = async () => {
+    const raw = goalDraft.trim();
+    const value = raw === "" ? null : Number(raw);
+
+    if (value !== null && (!Number.isFinite(value) || value < 0)) {
+      setError("Informe uma meta válida (número de leads por mês).");
+      return;
+    }
+
+    setSavingGoal(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/painel/goal", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ goal: value }),
+      });
+
+      if (response.status === 401) {
+        router.replace("/painel/login?next=/painel");
+        return;
+      }
+
+      const payload = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(payload?.error || "Não foi possível salvar a meta.");
+      }
+
+      setGoal(typeof payload?.goal === "number" ? payload.goal : null);
+      setGoalEditing(false);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Não foi possível salvar a meta."
+      );
+    } finally {
+      setSavingGoal(false);
+    }
   };
 
   const toggleSort = (key: SortKey) => {
@@ -655,6 +785,8 @@ export function Dashboard() {
                       <li>Clique nos programas</li>
                       <li>Chamadas no WhatsApp</li>
                       <li>Formulários preenchidos</li>
+                      <li>Funil, campanhas, dispositivos e horários</li>
+                      <li>Leads reais e meta mensal</li>
                     </ul>
                   </div>
                   <div className="pnl-empty-hint-box">
@@ -684,7 +816,18 @@ export function Dashboard() {
               </section>
             ) : (
               <>
-                <div className="pnl-row pnl-row--equal">
+                <div className="pnl-row pnl-row--2">
+                  <section className="pnl-card pnl-chart-card">
+                    <div className="pnl-chart-head">
+                      <div>
+                        <h2>Funil de conversão</h2>
+                        <p>O caminho da visita até o formulário.</p>
+                      </div>
+                    </div>
+
+                    <Funnel stages={data?.funnel ?? []} />
+                  </section>
+
                   <section className="pnl-card pnl-chart-card">
                     <div className="pnl-chart-head">
                       <div>
@@ -700,7 +843,9 @@ export function Dashboard() {
                       onExport={() => exportCsv("sources")}
                     />
                   </section>
+                </div>
 
+                <div className="pnl-row pnl-row--equal">
                   <section className="pnl-card pnl-chart-card">
                     <div className="pnl-chart-head">
                       <div>
@@ -721,6 +866,204 @@ export function Dashboard() {
                       data={data?.programs ?? []}
                       total={data?.totals.programClicks ?? 0}
                     />
+                  </section>
+
+                  <section className="pnl-card pnl-chart-card">
+                    <div className="pnl-chart-head">
+                      <div>
+                        <h2>Chamadas por botão</h2>
+                        <p>Qual botão de WhatsApp recebe mais cliques.</p>
+                      </div>
+                      <button
+                        type="button"
+                        className="pnl-icon-btn pnl-icon-btn--wide"
+                        onClick={() => exportCsv("placements")}
+                      >
+                        <Download size={14} />
+                        <span>CSV</span>
+                      </button>
+                    </div>
+
+                    <BarList
+                      data={data?.placements ?? []}
+                      total={data?.totals.whatsappClicks ?? 0}
+                    />
+
+                    <p className="pnl-foot-note">
+                      A posição vem do próprio botão: flutuante, topo, cards,
+                      popup e rodapé.
+                    </p>
+                  </section>
+                </div>
+
+                <div className="pnl-row">
+                  <section className="pnl-card pnl-chart-card">
+                    <div className="pnl-chart-head">
+                      <div>
+                        <h2>Campanhas e origens</h2>
+                        <p>Quais UTMs e referrers trazem gente que converte.</p>
+                      </div>
+                      <button
+                        type="button"
+                        className="pnl-icon-btn pnl-icon-btn--wide"
+                        onClick={() => exportCsv("campaigns")}
+                      >
+                        <Download size={14} />
+                        <span>CSV</span>
+                      </button>
+                    </div>
+
+                    {(data?.campaigns ?? []).length > 0 ? (
+                      <div className="pnl-table-wrap">
+                        <table className="pnl-table">
+                          <thead>
+                            <tr>
+                              <th>Campanha</th>
+                              <th className="pnl-right">Pessoas</th>
+                              <th className="pnl-right">Cliques prog.</th>
+                              <th className="pnl-right">Formulários</th>
+                              <th className="pnl-right">Conversão</th>
+                              <th className="pnl-right">% visitas</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {data?.campaigns.map((campaign) => (
+                              <tr key={campaign.key}>
+                                <td>
+                                  <span className="pnl-table-name">
+                                    {campaign.source}
+                                  </span>
+                                  <span className="pnl-table-id">
+                                    {campaign.medium} · {campaign.campaign}
+                                  </span>
+                                </td>
+                                <td className="pnl-right pnl-strong">
+                                  {formatNumber(campaign.visitors)}
+                                </td>
+                                <td className="pnl-right">
+                                  {formatNumber(campaign.programClicks)}
+                                </td>
+                                <td className="pnl-right">
+                                  {formatNumber(campaign.formSubmits)}
+                                </td>
+                                <td className="pnl-right">
+                                  {formatPercent(campaign.conversionRate)}
+                                </td>
+                                <td className="pnl-right pnl-muted">
+                                  {formatPercent(campaign.share)}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <p className="pnl-muted pnl-empty-inline">
+                        Nenhuma campanha no período.
+                      </p>
+                    )}
+                  </section>
+                </div>
+
+                <div className="pnl-row pnl-row--equal">
+                  <section className="pnl-card pnl-chart-card">
+                    <div className="pnl-chart-head">
+                      <div>
+                        <h2>Dispositivos</h2>
+                        <p>De onde as pessoas acessam a página.</p>
+                      </div>
+                      <button
+                        type="button"
+                        className="pnl-icon-btn pnl-icon-btn--wide"
+                        onClick={() => exportCsv("devices")}
+                      >
+                        <Download size={14} />
+                        <span>CSV</span>
+                      </button>
+                    </div>
+
+                    <BarList
+                      data={(data?.devices ?? []).map((device) => ({
+                        id: device.name,
+                        name: device.label,
+                        clicks: device.visitors,
+                        share: device.share,
+                      }))}
+                      total={data?.totals.visitors ?? 0}
+                    />
+
+                    <p className="pnl-foot-note">
+                      Conversão:{" "}
+                      {(data?.devices ?? [])
+                        .map(
+                          (device) =>
+                            `${device.label} ${formatPercent(
+                              device.conversionRate
+                            )}`
+                        )
+                        .join(" · ") || "sem dados no período"}
+                    </p>
+                  </section>
+
+                  <section className="pnl-card pnl-chart-card">
+                    <div className="pnl-chart-head">
+                      <div>
+                        <h2>Páginas</h2>
+                        <p>Visitas e formulários em cada página do site.</p>
+                      </div>
+                      <button
+                        type="button"
+                        className="pnl-icon-btn pnl-icon-btn--wide"
+                        onClick={() => exportCsv("pages")}
+                      >
+                        <Download size={14} />
+                        <span>CSV</span>
+                      </button>
+                    </div>
+
+                    {(data?.pages ?? []).length > 0 ? (
+                      <div className="pnl-table-wrap">
+                        <table className="pnl-table">
+                          <thead>
+                            <tr>
+                              <th>Página</th>
+                              <th className="pnl-right">Visitas</th>
+                              <th className="pnl-right">Pessoas</th>
+                              <th className="pnl-right">Formulários</th>
+                              <th className="pnl-right">Conversão</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {data?.pages.map((page) => (
+                              <tr key={page.page}>
+                                <td>
+                                  <span className="pnl-table-name">
+                                    {page.label}
+                                  </span>
+                                  <span className="pnl-table-id">{page.page}</span>
+                                </td>
+                                <td className="pnl-right pnl-strong">
+                                  {formatNumber(page.pageviews)}
+                                </td>
+                                <td className="pnl-right">
+                                  {formatNumber(page.visitors)}
+                                </td>
+                                <td className="pnl-right">
+                                  {formatNumber(page.formSubmits)}
+                                </td>
+                                <td className="pnl-right">
+                                  {formatPercent(page.conversionRate)}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <p className="pnl-muted pnl-empty-inline">
+                        Nenhuma página no período.
+                      </p>
+                    )}
                   </section>
                 </div>
 
@@ -804,6 +1147,235 @@ export function Dashboard() {
                         </tbody>
                       </table>
                     </div>
+                  </section>
+                </div>
+
+                <div className="pnl-row">
+                  <section className="pnl-card pnl-chart-card">
+                    <div className="pnl-chart-head">
+                      <div>
+                        <h2>Melhor dia e horário</h2>
+                        <p>Quando a página recebe mais visitas na semana.</p>
+                      </div>
+                      <button
+                        type="button"
+                        className="pnl-icon-btn pnl-icon-btn--wide"
+                        onClick={() => exportCsv("heatmap")}
+                      >
+                        <Download size={14} />
+                        <span>CSV</span>
+                      </button>
+                    </div>
+
+                    <Heatmap data={data?.heatmap ?? EMPTY_HEATMAP} />
+                  </section>
+                </div>
+
+                <div className="pnl-row">
+                  <section className="pnl-card pnl-chart-card pnl-leads-card">
+                    <div className="pnl-chart-head">
+                      <div>
+                        <h2>Leads recebidos</h2>
+                        <p>Quem preencheu os formulários no período.</p>
+                      </div>
+                      <button
+                        type="button"
+                        className="pnl-icon-btn pnl-icon-btn--wide"
+                        onClick={() => exportCsv("leads")}
+                      >
+                        <Download size={14} />
+                        <span>CSV</span>
+                      </button>
+                    </div>
+
+                    {!leads && (
+                      <p className="pnl-muted pnl-empty-inline">
+                        Não foi possível carregar os leads agora.
+                      </p>
+                    )}
+
+                    {leads && !leads.available && (
+                      <p className="pnl-note pnl-note--warn">
+                        <AlertTriangle size={14} />
+                        As tabelas de leads ainda não estão configuradas no
+                        Supabase. Os formulários continuam funcionando assim que
+                        elas existirem.
+                      </p>
+                    )}
+
+                    {leads?.available && (
+                      <div className="pnl-leads-summary">
+                        <div className="pnl-leads-stat">
+                          <span>Total no período</span>
+                          <strong>{formatNumber(leads.counts.total)}</strong>
+                        </div>
+                        <div className="pnl-leads-stat">
+                          <span>Do Zero aos 10k</span>
+                          <strong>{formatNumber(leads.counts.mentoria)}</strong>
+                        </div>
+                        <div className="pnl-leads-stat">
+                          <span>Aceleração Comercial</span>
+                          <strong>{formatNumber(leads.counts.aceleracao)}</strong>
+                        </div>
+
+                        {!leads.demo && (
+                          <div className="pnl-goal">
+                            <div className="pnl-goal-head">
+                              <span>
+                                <Target size={13} /> Meta do mês
+                              </span>
+                              <button
+                                type="button"
+                                className="pnl-text-btn"
+                                onClick={openGoalEditor}
+                              >
+                                <Pencil size={12} />
+                                {goal !== null ? "Editar" : "Definir meta"}
+                              </button>
+                            </div>
+
+                            {goal !== null ? (
+                              <>
+                                <strong className="pnl-goal-value">
+                                  {formatNumber(leads.monthTotal)}
+                                  <em> / {formatNumber(goal)}</em>
+                                </strong>
+                                <div className="pnl-goal-track">
+                                  <span
+                                    style={{
+                                      width: `${goalPercent(
+                                        leads.monthTotal,
+                                        goal
+                                      )}%`,
+                                    }}
+                                  />
+                                </div>
+                                <span className="pnl-goal-note">
+                                  {leads.monthTotal >= goal
+                                    ? "Meta do mês batida."
+                                    : `${formatNumber(
+                                        goal - leads.monthTotal
+                                      )} leads para bater a meta.`}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="pnl-goal-note">
+                                Defina quantos leads quer receber por mês.
+                              </span>
+                            )}
+
+                            {goalEditing && (
+                              <form
+                                className="pnl-goal-form"
+                                onSubmit={(event) => {
+                                  event.preventDefault();
+                                  void saveGoal();
+                                }}
+                              >
+                                <input
+                                  type="number"
+                                  min={0}
+                                  step={1}
+                                  inputMode="numeric"
+                                  value={goalDraft}
+                                  placeholder="Ex.: 20"
+                                  onChange={(event) =>
+                                    setGoalDraft(event.target.value)
+                                  }
+                                />
+                                <button
+                                  type="submit"
+                                  className="pnl-btn pnl-btn--primary"
+                                  disabled={savingGoal}
+                                >
+                                  {savingGoal ? "Salvando…" : "Salvar"}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="pnl-text-btn"
+                                  onClick={() => setGoalEditing(false)}
+                                >
+                                  Cancelar
+                                </button>
+                              </form>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {leads?.demo && (
+                      <p className="pnl-foot-note">
+                        No modo demonstração os leads são fictícios. Os dados
+                        reais aparecem fora da demonstração.
+                      </p>
+                    )}
+
+                    {leads?.available && leads.leads.length > 0 ? (
+                      <div className="pnl-table-wrap">
+                        <table className="pnl-table pnl-table--leads">
+                          <thead>
+                            <tr>
+                              <th>Lead</th>
+                              <th>Contato</th>
+                              <th>Programa</th>
+                              <th className="pnl-right">Recebido</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {leads.leads.map((lead) => (
+                              <tr key={`${lead.program}-${lead.id}`}>
+                                <td>
+                                  <span className="pnl-table-name">
+                                    {lead.name}
+                                  </span>
+                                  {lead.company && (
+                                    <span className="pnl-table-id pnl-lead-company">
+                                      <Building2 size={11} />
+                                      {lead.company}
+                                    </span>
+                                  )}
+                                </td>
+                                <td>
+                                  <div className="pnl-lead-contact">
+                                    {lead.email && (
+                                      <a href={`mailto:${lead.email}`}>
+                                        <Mail size={12} />
+                                        {lead.email}
+                                      </a>
+                                    )}
+                                    {lead.whatsapp && (
+                                      <a
+                                        href={whatsappLink(lead.whatsapp)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                      >
+                                        <Phone size={12} />
+                                        {lead.whatsapp}
+                                      </a>
+                                    )}
+                                  </div>
+                                </td>
+                                <td>
+                                  <span
+                                    className={`pnl-badge pnl-badge--${lead.program}`}
+                                  >
+                                    {lead.programLabel}
+                                  </span>
+                                </td>
+                                <td className="pnl-right pnl-muted">
+                                  {formatDateTime(lead.createdAt)}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : leads?.available && !leads.demo ? (
+                      <p className="pnl-muted pnl-empty-inline">
+                        Nenhum lead no período selecionado.
+                      </p>
+                    ) : null}
                   </section>
                 </div>
               </>

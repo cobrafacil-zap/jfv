@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
 import path from "path";
 import { supabaseAdmin } from "@/lib/supabase";
-import { localDay } from "./time";
+import { addDays, dayStartISO, localDay, todayLocal } from "./time";
 import type { EventQuery, StoreMode, StoredEvent } from "./types";
 
 /* ============================================================
@@ -93,6 +93,30 @@ function isMissingTableError(error: unknown): boolean {
   );
 }
 
+/** Detecta coluna ausente (schema antigo) para reinserir sem o campo novo. */
+function isMissingColumnError(error: unknown, column: string): boolean {
+  if (!error) return false;
+
+  const code =
+    typeof error === "object" && error !== null && "code" in error
+      ? String((error as { code?: unknown }).code ?? "")
+      : "";
+
+  const message =
+    typeof error === "object" && error !== null && "message" in error
+      ? String((error as { message?: unknown }).message ?? "")
+      : String(error);
+
+  const normalized = message.toLowerCase();
+
+  return (
+    code === "42703" ||
+    code === "PGRST204" ||
+    normalized.includes(`'${column.toLowerCase()}' column`) ||
+    normalized.includes(`column "${column.toLowerCase()}"`)
+  );
+}
+
 /* ============================================================
    Chaves do KV
    ============================================================ */
@@ -111,6 +135,7 @@ function toTableRow(event: StoredEvent) {
     program_id: event.programId ?? null,
     program_name: event.programName ?? null,
     form_id: event.formId ?? null,
+    placement: event.placement ?? null,
     utm_source: event.utmSource ?? null,
     utm_medium: event.utmMedium ?? null,
     utm_campaign: event.utmCampaign ?? null,
@@ -130,6 +155,7 @@ function fromTableRow(row: Record<string, unknown>): StoredEvent {
     programId: (row.program_id as string | null) ?? undefined,
     programName: (row.program_name as string | null) ?? undefined,
     formId: (row.form_id as string | null) ?? undefined,
+    placement: (row.placement as string | null) ?? undefined,
     utmSource: (row.utm_source as string | null) ?? undefined,
     utmMedium: (row.utm_medium as string | null) ?? undefined,
     utmCampaign: (row.utm_campaign as string | null) ?? undefined,
@@ -169,7 +195,19 @@ export async function insertEvents(events: StoredEvent[]): Promise<StoreMode> {
   let mode = await getStoreMode();
 
   if (mode === "table") {
-    const { error } = await supabaseAdmin.from(TABLE).insert(events.map(toTableRow));
+    let { error } = await supabaseAdmin.from(TABLE).insert(events.map(toTableRow));
+
+    // Instalações com o schema antigo não têm a coluna `placement`.
+    // Nesse caso grava o restante do evento em vez de perder o lote.
+    if (error && isMissingColumnError(error, "placement")) {
+      const fallbackRows = events.map((event) => {
+        const row: Record<string, unknown> = { ...toTableRow(event) };
+        delete row.placement;
+        return row;
+      });
+      const retry = await supabaseAdmin.from(TABLE).insert(fallbackRows);
+      error = retry.error;
+    }
 
     if (!error) return "table";
 
@@ -244,7 +282,7 @@ async function fetchFromTable(query: EventQuery) {
     let builder = supabaseAdmin
       .from(TABLE)
       .select(
-        "event_type,visitor_id,session_id,page,program_id,program_name,form_id,utm_source,utm_medium,utm_campaign,referrer,device,event_ts"
+        "event_type,visitor_id,session_id,page,program_id,program_name,form_id,placement,utm_source,utm_medium,utm_campaign,referrer,device,event_ts"
       )
       .gte("event_ts", query.fromISO)
       .lt("event_ts", query.toISO)
@@ -408,6 +446,75 @@ export async function deleteDemoEvents(): Promise<number> {
     await fs.mkdir(path.dirname(FILE_PATH), { recursive: true });
     await fs.writeFile(FILE_PATH, JSON.stringify(keep), "utf8");
     return all.length - keep.length;
+  });
+}
+
+/* ============================================================
+   Retenção — remove eventos antigos (padrão: 1 ano)
+   ============================================================ */
+
+export async function cleanupOldEvents(retainDays = 365): Promise<{
+  mode: StoreMode;
+  deleted: number;
+}> {
+  const safeDays = Math.max(30, Math.floor(retainDays));
+  const cutoffDay = addDays(todayLocal(), -safeDays);
+  const cutoffISO = dayStartISO(cutoffDay);
+  const mode = await getStoreMode();
+
+  if (mode === "table") {
+    const { count, error } = await supabaseAdmin
+      .from(TABLE)
+      .delete({ count: "exact" })
+      .lt("event_ts", cutoffISO);
+
+    if (error) {
+      throw new Error(`Não foi possível limpar eventos antigos: ${error.message}`);
+    }
+
+    return { mode, deleted: count ?? 0 };
+  }
+
+  if (mode === "kv") {
+    const demoPrefix = `${KV_PREFIX}demo:`;
+    const ranges: Array<[string, string]> = [
+      [KV_PREFIX, `${KV_PREFIX}${cutoffDay}`],
+      [demoPrefix, `${demoPrefix}${cutoffDay}`],
+    ];
+
+    let deleted = 0;
+
+    for (const [prefix, bound] of ranges) {
+      const { count, error } = await supabaseAdmin
+        .from(KV_TABLE)
+        .delete({ count: "exact" })
+        .gte("key", prefix)
+        .lt("key", bound);
+
+      if (error) {
+        throw new Error(
+          `Não foi possível limpar eventos antigos: ${error.message}`
+        );
+      }
+
+      deleted += count ?? 0;
+    }
+
+    return { mode, deleted };
+  }
+
+  return withFileLock(async () => {
+    const all = await readFileEvents();
+    const cutoff = new Date(cutoffISO).getTime();
+    const keep = all.filter((event) => {
+      const ts = new Date(event.ts).getTime();
+      return Number.isFinite(ts) && ts >= cutoff;
+    });
+
+    await fs.mkdir(path.dirname(FILE_PATH), { recursive: true });
+    await fs.writeFile(FILE_PATH, JSON.stringify(keep), "utf8");
+
+    return { mode, deleted: all.length - keep.length };
   });
 }
 

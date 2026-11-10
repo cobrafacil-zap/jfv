@@ -334,14 +334,21 @@ Painel standalone (não usa o login do Supabase) para acompanhar o funil da land
 
 ### O que é medido
 - **Visitantes únicos** — deduplicados por um ID anônimo de 24h (cookie/localStorage).
-- **Origem do tráfego** — UTMs (`utm_source`, `utm_medium`, `utm_campaign`) e referrer.
+- **Origem do tráfego** — UTMs (`utm_source`, `utm_medium`, `utm_campaign`) e referrer, com atribuição **first-touch por 30 dias**.
+- **Funil** — visitas → clique em programa → WhatsApp → formulário, com a queda entre etapas.
+- **Campanhas** — tabela por origem/mídia/campanha com pessoas, cliques e conversão.
 - **Cliques por programa** — card do programa clicado.
-- **Cliques no WhatsApp** — botão flutuante, popup e links.
-- **Formulários enviados** — Aceleração Comercial e aplicação da mentoria.
-- **Taxa de conversão** — formulários enviados ÷ visitantes únicos.
+- **WhatsApp por botão** — flutuante, topo, cards, popup e rodapé.
+- **Dispositivos** — celular × computador, com conversão de cada um.
+- **Páginas** — visitas e formulários por página (`/`, `/aceleracao`, `/aplicacao`).
+- **Melhor dia e horário** — mapa de calor por dia da semana e faixa de 3h.
+- **Leads reais** — lidos das tabelas `leads` e `leads_aceleracao`, com contato e programa.
+- **Meta mensal de leads** — definida no próprio painel, salva em `site_settings`.
+- **Formulários enviados** e **taxa de conversão**.
 
 Eventos: `pageview`, `click_programa`, `click_whatsapp`, `form_submit`. Nenhum dado
-pessoal é enviado ao analytics (sem e-mail, telefone ou nome).
+pessoal é enviado ao analytics (sem e-mail, telefone ou nome). Os leads ficam apenas
+nas tabelas do Supabase e só aparecem no painel autenticado.
 
 ### Variáveis de ambiente
 | Variável | Descrição |
@@ -349,6 +356,10 @@ pessoal é enviado ao analytics (sem e-mail, telefone ou nome).
 | `PAINEL_ADMIN_PASSWORD_HASH` | Hash scrypt no formato `scrypt$<salt>$<hash>` |
 | `PAINEL_SESSION_SECRET` | Segredo HMAC (32+ bytes) da sessão |
 | `PAINEL_ADMIN_PASSWORD` | Alternativa em texto puro (apenas desenvolvimento) |
+| `RESEND_API_KEY` | Envio do resumo diário por e-mail |
+| `CRON_SECRET` | Autentica o cron da Vercel |
+| `PAINEL_SUMMARY_EMAIL` | Destino do resumo (padrão `contatocomercialsocial@gmail.com`) |
+| `RESEND_FROM` | Remetente do resumo (padrão `Priscila Sinópolis <contato@smdigtal.com>`) |
 
 Sessão: cookie `jfv_painel_session` (HttpOnly, SameSite=Lax, Secure em produção, 8h).
 Login com rate limit de 6 falhas / 10 min → bloqueio de 15 min por IP.
@@ -361,7 +372,7 @@ node -e "const {randomBytes,scryptSync}=require('crypto');const p=process.argv[1
 
 ### Armazenamento
 Ordem de preferência, detectada automaticamente:
-1. Tabela `analytics_events` — recomendada. Rode `supabase/schema-v8-analytics.sql`.
+1. Tabela `analytics_events` — recomendada. Rode `supabase/schema-v8-analytics.sql` e `supabase/schema-v9-painel.sql`.
 2. KV em `site_settings` (`analytics:evt:<dia>:<uuid>`) — fallback sem SQL.
 3. `.data/analytics.json` — somente desenvolvimento local.
 
@@ -370,18 +381,34 @@ As chaves `analytics:%` são excluídas de `GET /api/admin/settings`.
 ### Recursos do painel
 - Períodos 7/14/30 dias + intervalo personalizado.
 - Comparação automática com o período anterior.
-- Rosca de origem, ranking de cliques e tabela ordenável.
-- Exportação CSV (programas, origens e diário).
+- Funil, rosca de origem, campanhas, dispositivos, páginas, mapa de horários e tabela ordenável.
+- Lista de leads com atalho para WhatsApp e e-mail.
+- Meta mensal de leads com barra de progresso.
+- Exportação CSV (programas, origens, diário, campanhas, dispositivos, botões, páginas, horários e leads).
 - Modo demonstração com dados fictícios (`demo-v*`), removível pelo painel.
 - Modo escuro opcional e layout responsivo.
+
+### Rotina automática
+`vercel.json` agenda o cron `0 11 * * *` (8h em Brasília):
+- envia o resumo do dia anterior por e-mail;
+- remove eventos com mais de 365 dias.
+
+Para rodar manualmente:
+
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" https://jfv.smdigtal.com/api/cron/summary
+```
 
 ### Migração
 ```sql
 -- no SQL Editor do Supabase
 -- cole o conteúdo de supabase/schema-v8-analytics.sql
+-- depois, supabase/schema-v9-painel.sql
 ```
 
 Enquanto a tabela não existir, o painel funciona normalmente usando `site_settings`.
+As tabelas `leads` e `leads_aceleracao` já são usadas pelos formulários; se não existirem,
+o painel mostra um aviso em vez de quebrar.
 
 ---
 

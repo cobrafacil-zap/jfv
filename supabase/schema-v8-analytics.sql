@@ -19,6 +19,7 @@ create table if not exists public.analytics_events (
   program_id text,
   program_name text,
   form_id text,
+  placement text,
   utm_source text,
   utm_medium text,
   utm_campaign text,

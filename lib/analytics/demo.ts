@@ -129,7 +129,18 @@ export function buildDemoEvents(days: string[]): StoredEvent[] {
       }
 
       if (random() < 0.17) {
-        events.push({ ...base, type: "click_whatsapp" });
+        const placements = [
+          { id: "flutuante", weight: 0.46 },
+          { id: "hero", weight: 0.2 },
+          { id: "programa-jfv-assinatura", weight: 0.12 },
+          { id: "popup-saida", weight: 0.14 },
+          { id: "footer", weight: 0.08 },
+        ];
+        events.push({
+          ...base,
+          type: "click_whatsapp",
+          placement: weightedPick(placements, random).id,
+        });
       }
 
       if (random() < 0.048) {

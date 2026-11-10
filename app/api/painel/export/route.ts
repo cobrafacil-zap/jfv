@@ -1,12 +1,22 @@
 import { NextResponse } from "next/server";
 import { loadMetrics } from "@/lib/analytics/query-metrics";
+import { fetchPainelLeads } from "@/lib/analytics/leads";
 import { PeriodError } from "@/lib/analytics/period";
 import { hasPainelSession } from "@/lib/painel/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-type ExportType = "programs" | "sources" | "daily";
+type ExportType =
+  | "programs"
+  | "sources"
+  | "daily"
+  | "campaigns"
+  | "devices"
+  | "placements"
+  | "pages"
+  | "heatmap"
+  | "leads";
 
 function csvCell(value: string | number | null | undefined): string {
   const text = String(value ?? "");
@@ -27,6 +37,16 @@ function percent(value: number | null): string {
   })}%`;
 }
 
+function formatDateTime(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  return new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short",
+    timeZone: "America/Sao_Paulo",
+  }).format(date);
+}
+
 export async function GET(request: Request) {
   if (!hasPainelSession()) {
     return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
@@ -36,7 +56,7 @@ export async function GET(request: Request) {
   const type = (url.searchParams.get("type") || "programs") as ExportType;
   const onlyDemo = url.searchParams.get("mode") === "demo";
 
-  if (!["programs", "sources", "daily"].includes(type)) {
+  if (!["programs", "sources", "daily", "campaigns", "devices", "placements", "pages", "heatmap", "leads"].includes(type)) {
     return NextResponse.json({ error: "Tipo de exportação inválido." }, { status: 400 });
   }
 
@@ -69,7 +89,7 @@ export async function GET(request: Request) {
           percent(source.share),
         ]),
       ];
-    } else {
+    } else if (type === "daily") {
       rows = [
         [
           "Dia",
@@ -88,6 +108,91 @@ export async function GET(request: Request) {
           day.whatsappClicks,
           day.programClicks,
           percent(day.conversionRate),
+        ]),
+      ];
+    } else if (type === "campaigns") {
+      rows = [
+        [
+          "Origem",
+          "Mídia",
+          "Campanha",
+          "Pessoas",
+          "Cliques em programas",
+          "Formulários",
+          "Conversão %",
+          "% das visitas",
+        ],
+        ...data.campaigns.map((campaign) => [
+          campaign.source,
+          campaign.medium,
+          campaign.campaign,
+          campaign.visitors,
+          campaign.programClicks,
+          campaign.formSubmits,
+          percent(campaign.conversionRate),
+          percent(campaign.share),
+        ]),
+      ];
+    } else if (type === "devices") {
+      rows = [
+        ["Dispositivo", "Pessoas", "Visitas", "Formulários", "Conversão %", "% das visitas"],
+        ...data.devices.map((device) => [
+          device.label,
+          device.visitors,
+          device.pageviews,
+          device.formSubmits,
+          percent(device.conversionRate),
+          percent(device.share),
+        ]),
+      ];
+    } else if (type === "placements") {
+      rows = [
+        ["Botão de WhatsApp", "Cliques", "Pessoas", "% dos cliques"],
+        ...data.placements.map((placement) => [
+          placement.name,
+          placement.clicks,
+          placement.visitors,
+          percent(placement.share),
+        ]),
+      ];
+    } else if (type === "pages") {
+      rows = [
+        ["Página", "Visitas", "Pessoas", "Formulários", "Conversão %", "% das visitas"],
+        ...data.pages.map((page) => [
+          page.label,
+          page.pageviews,
+          page.visitors,
+          page.formSubmits,
+          percent(page.conversionRate),
+          percent(page.share),
+        ]),
+      ];
+    } else if (type === "heatmap") {
+      rows = [
+        ["Dia", ...data.heatmap.buckets],
+        ...data.heatmap.weekdays.map((weekday, index) => [
+          weekday,
+          ...(data.heatmap.cells[index] ?? []),
+        ]),
+      ];
+    } else {
+      const leads = await fetchPainelLeads({
+        fromDay: data.period.from,
+        toDay: data.period.to,
+        limit: 100,
+        onlyDemo,
+      });
+
+      rows = [
+        ["Nome", "Email", "WhatsApp", "Empresa", "Programa", "Origem", "Recebido em"],
+        ...leads.leads.map((lead) => [
+          lead.name,
+          lead.email,
+          lead.whatsapp,
+          lead.company ?? "",
+          lead.programLabel,
+          lead.origem ?? "",
+          formatDateTime(lead.createdAt),
         ]),
       ];
     }
