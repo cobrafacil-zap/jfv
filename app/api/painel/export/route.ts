@@ -15,6 +15,7 @@ type ExportType =
   | "devices"
   | "placements"
   | "pages"
+  | "scroll"
   | "heatmap"
   | "leads";
 
@@ -56,7 +57,7 @@ export async function GET(request: Request) {
   const type = (url.searchParams.get("type") || "programs") as ExportType;
   const onlyDemo = url.searchParams.get("mode") === "demo";
 
-  if (!["programs", "sources", "daily", "campaigns", "devices", "placements", "pages", "heatmap", "leads"].includes(type)) {
+  if (!["programs", "sources", "daily", "campaigns", "devices", "placements", "pages", "scroll", "heatmap", "leads"].includes(type)) {
     return NextResponse.json({ error: "Tipo de exportação inválido." }, { status: 400 });
   }
 
@@ -165,6 +166,21 @@ export async function GET(request: Request) {
           page.formSubmits,
           percent(page.conversionRate),
           percent(page.share),
+        ]),
+      ];
+    } else if (type === "scroll") {
+      rows = [
+        [
+          "Profundidade",
+          "Pessoas",
+          "% das visitas",
+          "% da faixa anterior",
+        ],
+        ...data.scrollDepth.map((row) => [
+          row.label,
+          row.visitors,
+          percent(row.share),
+          percent(row.fromPrevious),
         ]),
       ];
     } else if (type === "heatmap") {

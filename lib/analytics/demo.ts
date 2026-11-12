@@ -118,6 +118,26 @@ export function buildDemoEvents(days: string[]): StoredEvent[] {
 
       events.push({ ...base, type: "pageview" });
 
+      // Profundidade de leitura com queda realista entre as faixas.
+      const reachRoll = random();
+      const reached =
+        reachRoll < 0.08
+          ? 0
+          : reachRoll < 0.2
+          ? 25
+          : reachRoll < 0.42
+          ? 50
+          : reachRoll < 0.68
+          ? 75
+          : reachRoll < 0.85
+          ? 90
+          : 100;
+      for (const depth of [25, 50, 75, 90, 100]) {
+        if (depth <= reached) {
+          events.push({ ...base, type: "scroll_depth", depth });
+        }
+      }
+
       if (random() < 0.34) {
         const program = weightedPick(PROGRAMS, random);
         events.push({

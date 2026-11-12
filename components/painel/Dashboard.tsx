@@ -75,6 +75,7 @@ type ExportType =
   | "devices"
   | "placements"
   | "pages"
+  | "scroll"
   | "heatmap"
   | "leads";
 
@@ -789,6 +790,7 @@ export function Dashboard() {
                       <li>Chamadas no WhatsApp</li>
                       <li>Formulários preenchidos</li>
                       <li>Funil, campanhas, dispositivos e horários</li>
+                      <li>Profundidade de leitura da página</li>
                       <li>Leads reais e meta mensal</li>
                     </ul>
                   </div>
@@ -895,6 +897,49 @@ export function Dashboard() {
                     <p className="pnl-foot-note">
                       A posição vem do próprio botão: flutuante, topo, cards,
                       popup e rodapé.
+                    </p>
+                  </section>
+                </div>
+
+                <div className="pnl-row">
+                  <section className="pnl-card pnl-chart-card">
+                    <div className="pnl-chart-head">
+                      <div>
+                        <h2>Profundidade de leitura</h2>
+                        <p>Até onde as pessoas rolam a página.</p>
+                      </div>
+                      <button
+                        type="button"
+                        className="pnl-icon-btn pnl-icon-btn--wide"
+                        onClick={() => exportCsv("scroll")}
+                      >
+                        <Download size={14} />
+                        <span>CSV</span>
+                      </button>
+                    </div>
+
+                    {(data?.scrollDepth ?? []).some(
+                      (row) => row.visitors > 0
+                    ) ? (
+                      <BarList
+                        data={(data?.scrollDepth ?? []).map((row) => ({
+                          id: String(row.depth),
+                          name: row.label,
+                          clicks: row.visitors,
+                          share: row.share,
+                        }))}
+                        total={data?.totals.visitors ?? 0}
+                      />
+                    ) : (
+                      <p className="pnl-muted pnl-empty-inline">
+                        Ainda não há dados de profundidade no período.
+                      </p>
+                    )}
+
+                    <p className="pnl-foot-note">
+                      Quantas pessoas diferentes chegaram a cada ponto da página.
+                      A queda entre uma faixa e outra mostra onde o conteúdo perde
+                      interesse.
                     </p>
                   </section>
                 </div>

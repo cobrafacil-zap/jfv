@@ -2,7 +2,8 @@ export type AnalyticsEventType =
   | "pageview"
   | "click_programa"
   | "click_whatsapp"
-  | "form_submit";
+  | "form_submit"
+  | "scroll_depth";
 
 export type DeviceType = "mobile" | "desktop";
 
@@ -16,6 +17,8 @@ export type StoredEvent = {
   programName?: string;
   formId?: string;
   placement?: string;
+  /** Profundidade de leitura da página (25, 50, 75, 90 ou 100). */
+  depth?: number;
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;

@@ -341,14 +341,15 @@ Painel standalone (não usa o login do Supabase) para acompanhar o funil da land
 - **WhatsApp por botão** — flutuante, topo, cards, popup e rodapé.
 - **Dispositivos** — celular × computador, com conversão de cada um.
 - **Páginas** — visitas e formulários por página (`/`, `/aceleracao`, `/aplicacao`).
+- **Profundidade de leitura** — quantas pessoas chegam a 25/50/75/90/100% da página.
 - **Melhor dia e horário** — mapa de calor por dia da semana e faixa de 3h.
 - **Leads reais** — lidos das tabelas `leads` e `leads_aceleracao`, com contato e programa.
 - **Meta mensal de leads** — definida no próprio painel, salva em `site_settings`.
 - **Formulários enviados** e **taxa de conversão**.
 
-Eventos: `pageview`, `click_programa`, `click_whatsapp`, `form_submit`. Nenhum dado
-pessoal é enviado ao analytics (sem e-mail, telefone ou nome). Os leads ficam apenas
-nas tabelas do Supabase e só aparecem no painel autenticado.
+Eventos: `pageview`, `click_programa`, `click_whatsapp`, `form_submit` e `scroll_depth`.
+Nenhum dado pessoal é enviado ao analytics (sem e-mail, telefone ou nome). Os leads
+ficam apenas nas tabelas do Supabase e só aparecem no painel autenticado.
 
 ### Variáveis de ambiente
 | Variável | Descrição |
@@ -372,7 +373,7 @@ node -e "const {randomBytes,scryptSync}=require('crypto');const p=process.argv[1
 
 ### Armazenamento
 Ordem de preferência, detectada automaticamente:
-1. Tabela `analytics_events` — recomendada. Rode `supabase/schema-v8-analytics.sql` e `supabase/schema-v9-painel.sql`.
+1. Tabela `analytics_events` — recomendada. Rode `supabase/schema-v8-analytics.sql`, `supabase/schema-v9-painel.sql` e `supabase/schema-v10-scroll-depth.sql`.
 2. KV em `site_settings` (`analytics:evt:<dia>:<uuid>`) — fallback sem SQL.
 3. `.data/analytics.json` — somente desenvolvimento local.
 

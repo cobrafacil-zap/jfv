@@ -11,7 +11,7 @@
 create table if not exists public.analytics_events (
   id uuid primary key default uuid_generate_v4(),
   event_type text not null check (
-    event_type in ('pageview', 'click_programa', 'click_whatsapp', 'form_submit')
+    event_type in ('pageview', 'click_programa', 'click_whatsapp', 'form_submit', 'scroll_depth')
   ),
   visitor_id text not null,
   session_id text,
@@ -20,6 +20,7 @@ create table if not exists public.analytics_events (
   program_name text,
   form_id text,
   placement text,
+  depth integer check (depth is null or (depth between 1 and 100)),
   utm_source text,
   utm_medium text,
   utm_campaign text,

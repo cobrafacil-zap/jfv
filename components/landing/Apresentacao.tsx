@@ -66,14 +66,14 @@ export function Apresentacao({ content }: { content: ApresentacaoContent }) {
               />
             )}
             <div>
-              <h1 className="ps-apresentacao-name">{content.name}</h1>
+              <p className="ps-apresentacao-name">{content.name}</p>
               <span className="ps-apresentacao-method">{content.method}</span>
             </div>
           </div>
 
-          <p className="ps-apresentacao-tagline">
+          <h1 className="ps-apresentacao-tagline">
             {content.tagline.replace(/\.$/, "")}<em>.</em>
-          </p>
+          </h1>
 
           <p className="ps-apresentacao-sub">{content.sub}</p>
 

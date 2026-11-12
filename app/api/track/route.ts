@@ -9,7 +9,13 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const eventSchema = z.object({
-  type: z.enum(["pageview", "click_programa", "click_whatsapp", "form_submit"]),
+  type: z.enum([
+    "pageview",
+    "click_programa",
+    "click_whatsapp",
+    "form_submit",
+    "scroll_depth",
+  ]),
   visitor_id: z
     .string()
     .min(6)
@@ -25,6 +31,7 @@ const eventSchema = z.object({
   program_name: z.string().max(120).optional(),
   form_id: z.string().max(80).optional(),
   placement: z.string().max(40).optional(),
+  depth: z.number().int().min(1).max(100).optional(),
   utm_source: z.string().max(120).optional(),
   utm_medium: z.string().max(120).optional(),
   utm_campaign: z.string().max(120).optional(),
@@ -146,6 +153,10 @@ export async function POST(request: Request) {
       programName: clean(event.program_name, 120),
       formId: clean(event.form_id, 80),
       placement: clean(event.placement, 40),
+      depth:
+        event.type === "scroll_depth" && typeof event.depth === "number"
+          ? Math.round(event.depth)
+          : undefined,
       utmSource: clean(event.utm_source, 120),
       utmMedium: clean(event.utm_medium, 120),
       utmCampaign: clean(event.utm_campaign, 120),

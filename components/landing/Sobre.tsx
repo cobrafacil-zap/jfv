@@ -80,6 +80,14 @@ export function Sobre({ content }: { content: SobreContent }) {
 
           {primeiro && <p className="ps-sobre-intro">{primeiro}</p>}
 
+          <div className="ps-sobre-callout">
+            <span>Quer aplicar isso no seu negócio?</span>
+            <a className="ps-sobre-callout-link" href="#programas">
+              Ver os programas
+              <span aria-hidden>→</span>
+            </a>
+          </div>
+
           <div className="ps-sobre-paras">
             {restantes.map((p, i) => (
               <p key={i}>{p}</p>

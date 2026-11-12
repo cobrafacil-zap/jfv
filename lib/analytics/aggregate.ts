@@ -98,6 +98,16 @@ export type PageRow = {
   share: number;
 };
 
+export type ScrollDepthRow = {
+  depth: number;
+  label: string;
+  visitors: number;
+  /** % das pessoas que chegaram a essa profundidade */
+  share: number;
+  /** % em relação à etapa anterior */
+  fromPrevious: number;
+};
+
 export type Heatmap = {
   weekdays: string[];
   buckets: string[];
@@ -136,6 +146,7 @@ export type Metrics = {
   devices: DeviceRow[];
   placements: PlacementRow[];
   pages: PageRow[];
+  scrollDepth: ScrollDepthRow[];
   heatmap: Heatmap;
   sparklines: {
     visitors: number[];
@@ -207,6 +218,7 @@ type Aggregate = {
   devices: Map<DeviceName, DeviceBucket>;
   placements: Map<string, PlacementBucket>;
   pages: Map<string, PageBucket>;
+  scroll: Map<number, Set<string>>;
   heatmap: number[][];
 };
 
@@ -297,6 +309,7 @@ function emptyAggregate(days: string[]): Aggregate {
     devices,
     placements: new Map(),
     pages: new Map(),
+    scroll: new Map(),
     heatmap,
   };
 }
@@ -519,6 +532,13 @@ function aggregateEvents(events: StoredEvent[], days: string[]): Aggregate {
       pageBucket.formSubmits += 1;
       pageBucket.formVisitors.add(event.visitorId);
       aggregate.pages.set(page, pageBucket);
+    } else if (event.type === "scroll_depth") {
+      const depth = Math.min(100, Math.max(1, Math.round(event.depth ?? 0)));
+      if (depth > 0) {
+        const set = aggregate.scroll.get(depth) ?? new Set<string>();
+        set.add(event.visitorId);
+        aggregate.scroll.set(depth, set);
+      }
     }
   }
 
@@ -738,6 +758,22 @@ export function computeMetrics(
       return a.label.localeCompare(b.label, "pt-BR");
     });
 
+  const scrollSteps = [25, 50, 75, 90, 100];
+  const scrollDepth: ScrollDepthRow[] = scrollSteps.map((depth, index) => {
+    const visitors = current.scroll.get(depth)?.size ?? 0;
+    const previousValue =
+      index === 0
+        ? current.visitors.size
+        : current.scroll.get(scrollSteps[index - 1])?.size ?? 0;
+    return {
+      depth,
+      label: `${depth}% da página`,
+      visitors,
+      share: round(rate(visitors, current.visitors.size)),
+      fromPrevious: round(rate(visitors, previousValue)),
+    };
+  });
+
   const heatmap: Heatmap = {
     weekdays: WEEKDAY_SHORT,
     buckets: HEAT_BUCKETS,
@@ -785,6 +821,7 @@ export function computeMetrics(
     devices,
     placements,
     pages,
+    scrollDepth,
     heatmap,
     sparklines: {
       visitors: daily.map((point) => point.visitors),

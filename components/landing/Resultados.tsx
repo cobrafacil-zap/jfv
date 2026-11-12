@@ -14,6 +14,14 @@ export function Resultados({ content }: { content: ResultadosContent }) {
         </header>
 
         <TestimonialCarousel items={content.testimonials} />
+
+        <div className="ps-resultados-cta">
+          <p>Quer construir um resultado assim?</p>
+          <a className="ps-btn ps-btn--primary" href="#programas">
+            Escolher meu programa
+            <span aria-hidden>→</span>
+          </a>
+        </div>
       </div>
     </section>
   );

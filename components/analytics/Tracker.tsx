@@ -15,6 +15,7 @@ type TrackData = {
   program_name?: string;
   form_id?: string;
   placement?: string;
+  depth?: number;
 };
 
 type QueuedEvent = {
@@ -278,7 +279,8 @@ export function Tracker() {
         type !== "pageview" &&
         type !== "click_programa" &&
         type !== "click_whatsapp" &&
-        type !== "form_submit"
+        type !== "form_submit" &&
+        type !== "scroll_depth"
       ) {
         return;
       }
@@ -322,19 +324,51 @@ export function Tracker() {
       track("form_submit", detail);
     };
 
+    // Profundidade de leitura: 25/50/75/90/100% uma vez por carregamento.
+    const SCROLL_STEPS = [25, 50, 75, 90, 100];
+    const seenDepths = new Set<number>();
+    let scrollFrame: number | null = null;
+
+    const measureScroll = () => {
+      scrollFrame = null;
+      const doc = document.documentElement;
+      const scrollable = doc.scrollHeight - window.innerHeight;
+      if (scrollable <= 0) return;
+
+      const percent =
+        ((window.scrollY + window.innerHeight) / doc.scrollHeight) * 100;
+
+      for (const depth of SCROLL_STEPS) {
+        if (percent + 0.5 >= depth && !seenDepths.has(depth)) {
+          seenDepths.add(depth);
+          enqueue("scroll_depth", { depth });
+        }
+      }
+    };
+
+    const handleScroll = () => {
+      if (scrollFrame !== null) return;
+      scrollFrame = window.requestAnimationFrame(measureScroll);
+    };
+
     window.jfvTrack = track;
     document.addEventListener("click", handleClick, true);
     document.addEventListener("visibilitychange", handleVisibility);
     window.addEventListener("pagehide", handlePageHide);
     window.addEventListener("jfv:form-submit", handleCustomFormSubmit);
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     enqueue("pageview");
+    const scrollTimer = setTimeout(measureScroll, 1200);
 
     return () => {
       document.removeEventListener("click", handleClick, true);
       document.removeEventListener("visibilitychange", handleVisibility);
       window.removeEventListener("pagehide", handlePageHide);
       window.removeEventListener("jfv:form-submit", handleCustomFormSubmit);
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(scrollTimer);
+      if (scrollFrame !== null) window.cancelAnimationFrame(scrollFrame);
 
       if (timer) clearTimeout(timer);
       void flush(true);

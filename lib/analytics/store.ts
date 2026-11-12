@@ -136,6 +136,7 @@ function toTableRow(event: StoredEvent) {
     program_name: event.programName ?? null,
     form_id: event.formId ?? null,
     placement: event.placement ?? null,
+    depth: event.depth ?? null,
     utm_source: event.utmSource ?? null,
     utm_medium: event.utmMedium ?? null,
     utm_campaign: event.utmCampaign ?? null,
@@ -156,6 +157,12 @@ function fromTableRow(row: Record<string, unknown>): StoredEvent {
     programName: (row.program_name as string | null) ?? undefined,
     formId: (row.form_id as string | null) ?? undefined,
     placement: (row.placement as string | null) ?? undefined,
+    depth:
+      typeof row.depth === "number"
+        ? row.depth
+        : row.depth != null && row.depth !== ""
+        ? Number(row.depth)
+        : undefined,
     utmSource: (row.utm_source as string | null) ?? undefined,
     utmMedium: (row.utm_medium as string | null) ?? undefined,
     utmCampaign: (row.utm_campaign as string | null) ?? undefined,
@@ -195,17 +202,26 @@ export async function insertEvents(events: StoredEvent[]): Promise<StoreMode> {
   let mode = await getStoreMode();
 
   if (mode === "table") {
-    let { error } = await supabaseAdmin.from(TABLE).insert(events.map(toTableRow));
+    // Colunas opcionais podem não existir em instalações com schema antigo.
+    // Em vez de perder o lote, tenta novamente sem a coluna problemática.
+    const optionalColumns = ["placement", "depth"];
+    let rows: Array<Record<string, unknown>> = events.map((event) => ({
+      ...toTableRow(event),
+    }));
+    let { error } = await supabaseAdmin.from(TABLE).insert(rows);
 
-    // Instalações com o schema antigo não têm a coluna `placement`.
-    // Nesse caso grava o restante do evento em vez de perder o lote.
-    if (error && isMissingColumnError(error, "placement")) {
-      const fallbackRows = events.map((event) => {
-        const row: Record<string, unknown> = { ...toTableRow(event) };
-        delete row.placement;
-        return row;
+    for (let attempt = 0; attempt < optionalColumns.length; attempt += 1) {
+      if (!error) break;
+      const missing = optionalColumns.find((column) =>
+        isMissingColumnError(error, column)
+      );
+      if (!missing) break;
+      rows = rows.map((row) => {
+        const next: Record<string, unknown> = { ...row };
+        delete next[missing];
+        return next;
       });
-      const retry = await supabaseAdmin.from(TABLE).insert(fallbackRows);
+      const retry = await supabaseAdmin.from(TABLE).insert(rows);
       error = retry.error;
     }
 
@@ -274,16 +290,43 @@ export async function fetchEvents(query: EventQuery): Promise<{
 }
 
 async function fetchFromTable(query: EventQuery) {
+  try {
+    return await fetchFromTableRows(query, true);
+  } catch (error) {
+    // Schema antigo sem a coluna `depth`: relê sem ela.
+    if (isMissingColumnError(error, "depth")) {
+      return fetchFromTableRows(query, false);
+    }
+    throw error;
+  }
+}
+
+async function fetchFromTableRows(query: EventQuery, includeDepth: boolean) {
   const events: StoredEvent[] = [];
   let offset = 0;
   let truncated = false;
+  const columns = [
+    "event_type",
+    "visitor_id",
+    "session_id",
+    "page",
+    "program_id",
+    "program_name",
+    "form_id",
+    "placement",
+    ...(includeDepth ? ["depth"] : []),
+    "utm_source",
+    "utm_medium",
+    "utm_campaign",
+    "referrer",
+    "device",
+    "event_ts",
+  ].join(",");
 
   while (true) {
     let builder = supabaseAdmin
       .from(TABLE)
-      .select(
-        "event_type,visitor_id,session_id,page,program_id,program_name,form_id,placement,utm_source,utm_medium,utm_campaign,referrer,device,event_ts"
-      )
+      .select(columns)
       .gte("event_ts", query.fromISO)
       .lt("event_ts", query.toISO)
       .order("event_ts", { ascending: true });
@@ -299,7 +342,7 @@ async function fetchFromTable(query: EventQuery) {
     }
 
     for (const row of data ?? []) {
-      events.push(fromTableRow(row as Record<string, unknown>));
+      events.push(fromTableRow(row as unknown as Record<string, unknown>));
     }
 
     if ((data?.length ?? 0) < PAGE_SIZE) break;
