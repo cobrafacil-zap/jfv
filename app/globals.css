@@ -1213,6 +1213,8 @@
   .ps-stay-card { padding: 32px 22px 26px; }
   .ps-stay-actions { flex-direction: column; }
   .ps-stay-cta, .ps-stay-secondary { width: 100%; justify-content: center; }
+  /* No flex-column, `flex-basis` vira altura. Sem isto o botão vira um círculo gigante. */
+  .ps-stay-cta { flex: 0 0 auto; }
 }
 .ps-landing .ps-pcard-foot {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
